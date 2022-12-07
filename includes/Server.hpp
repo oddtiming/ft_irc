@@ -13,7 +13,7 @@
 #include <vector>
 #include <map>
 
-/* User Includes */
+/* Local Includes */
 #include "User.hpp"
 #include "Channel.hpp"
 #include "Command.hpp"
