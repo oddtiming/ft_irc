@@ -8,7 +8,8 @@
 #include <string>
 
 /* Local Includes */
-#include "User.hpp"
+
+class User;
 
 class Channel {
 	public:
