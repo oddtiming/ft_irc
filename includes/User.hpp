@@ -6,9 +6,11 @@
 /* System Includes */
 #include <map>
 #include <string>
+#include <sys/socket.h>
 
 /* Local Includes */
 #include "Channel.hpp"
+#include "Message.hpp"
 
 class User {
 	public:
@@ -30,20 +32,21 @@ class User {
 
 		
 		void				setChannelModes(const char& mode);
-		bool				checkChannelModes(const char& mode);
+		bool				checkChannelModes(const std::string& channel, const char& mode);
 
 		void				setGlobalModes(const char& mode);
 		bool				checkGlobalModes(const char& mode);
 
 		/* Public Member Functions */
+		Message*	read();
 
 	private:
-		const int					_userSocket;
-		std::string					_nickname;
-		std::string					_username;
-		std::string					_password;
-		std::map<Channel *, char>	_channelModes;		/* Per channel member modes for each user */
-		char						_globalModes;		/* Mode flags stored using bitmask */
+		const int						_socket;
+		std::string						_nickname;
+		std::string						_username;
+		std::string						_password;
+		char							_globalModes;		/* Mode flags stored using bitmask */
+		std::map<std::string, char>		_channelModes;		/* Per client channel modes */
 };
 
 

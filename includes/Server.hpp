@@ -17,6 +17,7 @@
 #include "User.hpp"
 #include "Channel.hpp"
 #include "Command.hpp"
+#include "Message.hpp"
 
 #define MAX_CONNECTIONS 5
 
@@ -40,6 +41,7 @@ class Server {
 
 		/* Public Member Functions */
 		void	initializeServer();
+		void	initializeCommands();
 		void	runServer();
 
 		/* Exceptions */
@@ -80,13 +82,13 @@ class Server {
 	private:
 		/* General Server Data */
 		std::string							_hostname;
-		std::string							_serverPassword;
-		int									_serverStatus;
+		std::string							_password;
+		int									_status;
 
 		/* Networking Data */
 		const int							_port;
-		struct sockaddr_in					_serverAddress;
-		int									_serverSocket;
+		struct sockaddr_in					_address;
+		int									_socket;
 		std::vector<pollfd>					_pfds;
 
 		/* IRC Server Data */

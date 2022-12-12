@@ -1,14 +1,15 @@
 #include "Server.hpp"
 
-/* Constructors & Destructor */
 
+/* Constructors & Destructor */
 Server::Server(const std::string& hostname, const int port, const std::string& password) :
-	_hostname(hostname), _serverPassword(password), _port(port) {
+	_hostname(hostname), _password(password), _port(port) {
 	
 	/* Setup server connection */
 	initializeServer();
 	
-	/* FIXME - Any other initialization? */
+	/* Initialize commands map */
+	initializeCommands();
 
 	/* Start Server Loop */
 	runServer();
@@ -30,28 +31,28 @@ Server::~Server() {
 
 void	Server::initializeServer(void) {
 	/* Create socket */
-	if ((_serverSocket  = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	if ((_socket  = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		throw Server::socketException();
 
 	/* Set socket as non-blocking */
-	fcntl(_serverSocket, F_SETFL, O_NONBLOCK);
+	fcntl(_socket, F_SETFL, O_NONBLOCK);
 
 	/* Setup socket address struct */
-	_serverAddress.sin_port = htons(_port);
-	_serverAddress.sin_family = AF_INET;
-	_serverAddress.sin_addr.s_addr = INADDR_ANY;
+	_address.sin_port = htons(_port);
+	_address.sin_family = AF_INET;
+	_address.sin_addr.s_addr = INADDR_ANY;
 
 	std::cout << "port: " << _port << std::endl;
 	/* Bind Socket */
-	if (bind(_serverSocket, (struct sockaddr *)&_serverAddress, sizeof(_serverAddress)) < 0)
+	if (bind(_socket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
 		throw Server::bindException();
 	
 		/* Set socket to passive listening */
-	if (listen(_serverSocket, MAX_CONNECTIONS) < 0)
+	if (listen(_socket, MAX_CONNECTIONS) < 0)
 		throw Server::listenException();
 	
 	/* Set Server Status */
-	_serverStatus = ONLINE;
+	_status = ONLINE;
 }
 
 void	Server::runServer(void) {
@@ -60,11 +61,11 @@ void	Server::runServer(void) {
 	char	serv_msg[1024] = "Connection to server successful";
 
 
-	pollfd pfd = {.fd = _serverSocket, .events = POLLIN, .revents = 0};
+	pollfd pfd = {.fd = _socket, .events = POLLIN, .revents = 0};
 	_pfds.push_back(pfd);
 
 	/* Run main server code in this loop */
-	while (this->_serverStatus == ONLINE) {
+	while (this->_status == ONLINE) {
 
 		/* Check for error returns from pollfds */
 		if (poll(_pfds.data(), _pfds.size(), -1) == -1)
@@ -74,9 +75,9 @@ void	Server::runServer(void) {
 			/* If an event is detected */
 			if (_pfds[i].revents & POLLIN) {
 				/* If the event is on the server socket, check for new connection */
-				if (_pfds[i].fd == _serverSocket) {
+				if (_pfds[i].fd == _socket) {
 					int	new_fd;
-					if ((new_fd = accept(_serverSocket, NULL, NULL)) < 0)
+					if ((new_fd = accept(_socket, NULL, NULL)) < 0)
 						throw Server::acceptException();
 					_users.push_back(new User(new_fd));
 					pollfd pfd = {.fd = new_fd, .events = POLLIN, .revents = 0};
@@ -90,10 +91,10 @@ void	Server::runServer(void) {
 				/* If the event is on a client socket */
 				else if (i > 0) {
 					/* Handle all messaging and commands*/
+					Message* message = _users[i - 1]->read();
 
 				}
 			}
 		}
 	}
 }
-

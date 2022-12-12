@@ -1,5 +1,5 @@
-#ifndef CHANNEL_HPP
-# define CHANNEL_HPP
+#ifndef MESSAGE_HPP
+# define MESSAGE_HPP
 
 #pragma once
 
@@ -7,12 +7,16 @@
 #include <string>
 
 /* Local Includes */
-#include "User.hpp"
+
+class User;
+
+/* Class Prototypes */
+class Command;
 
 class Message {
 	public:
 		/* Constructors & Destructor */
-		Message();
+		Message(User* user);
 		~Message();
 
 		/* Operator Overloads */
@@ -22,9 +26,14 @@ class Message {
 		/* Public Member Functions */
 
 	private:
-		std::string	_rawMessage;
+		Command *	_command;
+		std::string	_raw;
+		std::string _reply;
 		User*		_owner;
 
 };
 
 #endif
+
+
+

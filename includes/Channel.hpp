@@ -41,12 +41,11 @@ class Channel {
 		/* Public Member Functions */
 
 	private:
-		std::string			_name;			/* Channel name */
-		std::string			_topic;			/* Channel topic */
-		User *				_owner;			/* Channel ownder*/
-		std::vector<User *>	_opList;		/* Channel operator list */
-		std::vector<User *>	_members;		/* Channel member list */
-		char				_modes;			/* Channel modes */
+		std::string						_name;			/* Channel name */
+		std::string						_topic;			/* Channel topic */
+		User *							_owner;			/* Channel owner */
+		std::map<std::string, User *>	_members;		/* Channel member list */
+		char							_modes;			/* Channel modes */
 };
 
 #endif
