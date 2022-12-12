@@ -20,7 +20,7 @@ class Command {
 		/* Setters & Getters */
 
 		/* Public Member Functions */
-		virtual const std::string&	execute(const Message& msg) const = 0;
+		virtual const std::string&	execute(const Message& msg) = 0;
 
 	protected:
 		Command(const std::string& name);
