@@ -1,5 +1,5 @@
 #include "Server.hpp"
-
+#include "commands/Join.hpp"
 
 /* Constructors & Destructor */
 Server::Server(const std::string& hostname, const int port, const std::string& password) :
@@ -30,12 +30,18 @@ Server::~Server() {
 /* Public Member Functions */
 
 void	Server::initializeServer(void) {
+	int	yes = 1;
+
 	/* Create socket */
 	if ((_socket  = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		throw Server::socketException();
 
 	/* Set socket as non-blocking */
 	fcntl(_socket, F_SETFL, O_NONBLOCK);
+
+	/* Set socket options to reuse addresses */
+	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) < 0)
+		throw Server::socketException();
 
 	/* Setup socket address struct */
 	_address.sin_port = htons(_port);
@@ -55,12 +61,31 @@ void	Server::initializeServer(void) {
 	_status = ONLINE;
 }
 
+/* Intialize Commands Map */
+void	Server::initializeCommands(void) {
+	// _commands["ping"] = 
+	// _commands["info"] = 
+	// _commands["exit"] = 
+	// _commands["echo"] = 
+	// _commands["help"] = 
+	// _commands["ban"] =
+	// _commands["ope"] =
+	// _commands["quit"] =
+
+	// // Channel commands
+	// _commands["privmsg"] =
+	_commands["join"] = new Join();
+	// _commands["part"] =
+	// _commands["list"] = 
+	// _commands["names"] =
+	// _commands["kick"] = new Kick();
+	// _commands["nick"] = new Nick();
+	// _commands["user"] = new User();
+	// _commands["pass"] = new Pass();
+	// _commands["mode"] = new Mode();
+}
+
 void	Server::runServer(void) {
-	
-	/* For testing only */
-	char	serv_msg[1024] = "Connection to server successful";
-
-
 	pollfd pfd = {.fd = _socket, .events = POLLIN, .revents = 0};
 	_pfds.push_back(pfd);
 
@@ -82,17 +107,14 @@ void	Server::runServer(void) {
 					_users.push_back(new User(new_fd));
 					pollfd pfd = {.fd = new_fd, .events = POLLIN, .revents = 0};
 					_pfds.push_back(pfd);
-
-					std::cout << "New client has connected to server" << std::endl;
 					
-					/* For testing only */
-					send(new_fd, serv_msg, sizeof(serv_msg), 0);
+					/* For debugging purposes */
+					std::cout << "New client has connected to server" << std::endl;
 				}
 				/* If the event is on a client socket */
 				else if (i > 0) {
 					/* Handle all messaging and commands*/
 					Message* message = _users[i - 1]->read();
-
 				}
 			}
 		}
