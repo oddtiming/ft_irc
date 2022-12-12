@@ -8,16 +8,20 @@
 #include <sys/socket.h>
 #include <fcntl.h>
 #include <poll.h>
+#include <errno.h>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <map>
 
 /* Local Includes */
 #include "User.hpp"
 #include "Channel.hpp"
-#include "Command.hpp"
 #include "Message.hpp"
+
+/* Class Prototypes */
+class Command;
 
 #define MAX_CONNECTIONS 5
 
@@ -43,6 +47,10 @@ class Server {
 		void	initializeServer();
 		void	initializeCommands();
 		void	runServer();
+
+		void	handleConnections();
+		void	handleMessages(User* user);
+
 
 		/* Exceptions */
 		class socketException : public std::exception {

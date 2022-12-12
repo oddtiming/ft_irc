@@ -1,5 +1,4 @@
 #include "Server.hpp"
-#include "Command.hpp"
 #include "commands/Join.hpp"
 
 /* Constructors & Destructor */
@@ -17,16 +16,26 @@ Server::Server(const std::string& hostname, const int port, const std::string& p
 }
 
 Server::~Server() {
-	/* Free serverAddress struct */
+	/* Delete Commands*/
+	std::map<std::string, Command *>::iterator it = _commands.begin();
+	for (; it != _commands.end(); it++)
+		delete it->second;
 
-	/* Shutdown open connections */
+	/* Delete Users */
+	for (size_t i = 0; i < _users.size(); i++)
+		delete (_users[i]);
+	_users.clear();
+	//Ensure socket it closed in destructor for each user
+	
+	/* Delete channels */
+	std::map<std::string, Channel *>::iterator it_ch = _channels.begin();
+	for (; it_ch != _channels.end(); it_ch++)
+		delete (it_ch->second);
+	_channels.clear();
 
-	/* Close open FDs */
+	/* Close server socket */
+	shutdown(_socket, SHUT_RDWR);
 }
-
-/* Operator Overloads */
-
-/* Setters & Getters */
 
 /* Public Member Functions */
 
@@ -60,6 +69,10 @@ void	Server::initializeServer(void) {
 	
 	/* Set Server Status */
 	_status = ONLINE;
+
+	/* Set up pollFDs */
+	pollfd pfd = {.fd = _socket, .events = POLLIN, .revents = 0};
+	_pfds.push_back(pfd);
 }
 
 /* Intialize Commands Map */
@@ -86,37 +99,50 @@ void	Server::initializeCommands(void) {
 	// _commands["mode"] = new Mode();
 }
 
-void	Server::runServer(void) {
-	pollfd pfd = {.fd = _socket, .events = POLLIN, .revents = 0};
+/* Manage Connection Requests from New Clients */
+void	Server::handleConnections()
+{
+	int	new_fd;
+	if ((new_fd = accept(_socket, NULL, NULL)) < 0)
+		throw Server::acceptException();
+	_users.push_back(new User(new_fd));
+	pollfd pfd = {.fd = new_fd, .events = POLLIN, .revents = 0};
 	_pfds.push_back(pfd);
+	std::cout << "New client has connected to server" << std::endl;
+}
 
+/* Read incoming data from client socket & perform actions */
+void	Server::handleMessages(User* user)
+{
+	Message	msg = user->read();
+
+	try{
+		_commands.at(msg.getCommand())->execute(msg);
+	}
+	catch(std::out_of_range &e) {
+		std::cerr << "Command " << msg.getCommand() 
+				  << " was not found." << std::endl;
+	}
+}
+
+void	Server::runServer(void) {
 	/* Run main server code in this loop */
-	while (this->_status == ONLINE) {
+	while (_status == ONLINE) {
 
-		/* Check for error returns from pollfds */
-		if (poll(_pfds.data(), _pfds.size(), -1) == -1)
-			throw	Server::pollException();
-		/* Iterate through pollfds and check for events*/
+		/* Poll open sockets */
+		if (poll(_pfds.data(), _pfds.size(), -1) < 0)
+			throw Server::pollException();
+			
+		/* Iterate through sockets and check for events*/
 		for (size_t i = 0; i < _pfds.size(); i++) {
-			/* If an event is detected */
+			/* If any readable data is available */
 			if (_pfds[i].revents & POLLIN) {
 				/* If the event is on the server socket, check for new connection */
-				if (_pfds[i].fd == _socket) {
-					int	new_fd;
-					if ((new_fd = accept(_socket, NULL, NULL)) < 0)
-						throw Server::acceptException();
-					_users.push_back(new User(new_fd));
-					pollfd pfd = {.fd = new_fd, .events = POLLIN, .revents = 0};
-					_pfds.push_back(pfd);
-					
-					/* For debugging purposes */
-					std::cout << "New client has connected to server" << std::endl;
-				}
-				/* If the event is on a client socket */
-				else if (i > 0) {
-					/* Handle all messaging and commands*/
-					Message* message = _users[i - 1]->read();
-				}
+				if (_pfds[i].fd == _socket)
+					handleConnections();
+				/* If the event is on a client socket, deal with messages */
+				else if (i > 0)
+					handleMessages(_users[i - 1]);
 			}
 		}
 	}

@@ -4,7 +4,7 @@
 NAME			:= ircserv
 
 
-CPP_FILES		:= main.cpp Server.cpp User.cpp
+CPP_FILES		:= main.cpp Server.cpp User.cpp Message.cpp
 
 #---------------------------------------------------------#
 #   Directory information and object directory building   #

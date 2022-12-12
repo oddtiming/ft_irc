@@ -17,12 +17,8 @@ class badArgsException : public std::exception {
 
 int	main(int argc, char **argv)	{
 
-	try {
-		if (argc != 3)
-			throw badArgsException();
-		Server server("ircserv", atoi(argv[1]), argv[2]);
-	}
-	catch(const std::exception& e) {
-		std::cerr << e.what() << std::endl;
-	}	
+	if (argc != 3)
+		std::cerr << "usage: " << argv[0] << " <port> <password>" << std::endl;
+
+	Server server("ircserv", atoi(argv[1]), argv[2]);
 }

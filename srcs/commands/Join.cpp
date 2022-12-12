@@ -14,5 +14,4 @@ Join::~Join() {
 const std::string&	Join::execute(const Message& msg) {
 
 	/* Check permissions for execution of function */
-
 }

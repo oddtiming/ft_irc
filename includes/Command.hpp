@@ -8,6 +8,10 @@
 
 /* Local Includes */
 #include "Message.hpp"
+#include "Server.hpp"
+
+/* Class Prototypes */
+
 
 class Command {
 	public:
@@ -21,6 +25,7 @@ class Command {
 
 		/* Public Member Functions */
 		virtual const std::string&	execute(const Message& msg) = 0;
+		virtual bool				validate(void);
 
 	protected:
 		Command(const std::string& name);
@@ -29,6 +34,9 @@ class Command {
 		bool				_globalOpRequired;
 		int					_replCode;
 
+		Server* 			_server;
 };
+
+
 
 #endif

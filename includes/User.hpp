@@ -38,7 +38,8 @@ class User {
 		bool				checkGlobalModes(const char& mode);
 
 		/* Public Member Functions */
-		Message*	read();
+		Message	read();
+		void	reply(const std::string& msg);
 
 	private:
 		const int						_socket;
@@ -48,6 +49,5 @@ class User {
 		char							_globalModes;		/* Mode flags stored using bitmask */
 		std::map<std::string, char>		_channelModes;		/* Per client channel modes */
 };
-
 
 #endif
