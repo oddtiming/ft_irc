@@ -9,7 +9,7 @@
 
 /* Local Includes */
 
-class User;
+class Client;
 
 class Channel {
 	public:
@@ -25,16 +25,16 @@ class Channel {
 		const	std::string& getTopic();
 		void	setTopic(const std::string name);
 
-		void	setOwner(const User* user);
-		void	changeOwner(const User* user);
+		void	setOwner(const Client* client);
+		void	changeOwner(const Client* client);
 		
-		bool	isOp(const User& user);
-		void	addOp(const User* user);
-		void	removeOp(const User* user);
+		bool	isOp(const Client& client);
+		void	addOp(const Client* client);
+		void	removeOp(const Client* client);
 
-		bool	isMember(const User& user);
-		void	addMember(const User* user);
-		void	removeMember(const User* user);
+		bool	isMember(const Client& client);
+		void	addMember(const Client* client);
+		void	removeMember(const Client* client);
 
 		void	setModes(char modes);
 
@@ -43,8 +43,8 @@ class Channel {
 	private:
 		std::string						_name;			/* Channel name */
 		std::string						_topic;			/* Channel topic */
-		User *							_owner;			/* Channel owner */
-		std::map<std::string, User *>	_members;		/* Channel member list */
+		Client *						_owner;			/* Channel owner */
+		std::map<std::string, Client *>	_members;		/* Channel member list */
 		char							_modes;			/* Channel modes */
 };
 

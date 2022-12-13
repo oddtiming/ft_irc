@@ -1,5 +1,5 @@
-#ifndef JOIN_HPP
-#define JOIN_HPP
+#ifndef ECHO_HPP
+#define ECHO_HPP
 
 #pragma once
 
@@ -9,12 +9,12 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Join : public Command
+class Echo : public Command
 {
     public:
         /* Constructors & Destructor */
-        Join();
-        ~Join();
+        Echo();
+        ~Echo();
 
         /* Public Member Functions */
         bool                validate(const Message& msg);

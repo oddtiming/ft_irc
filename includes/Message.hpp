@@ -9,7 +9,7 @@
 
 /* Local Includes */
 
-class User;
+class Client;
 
 /* Class Prototypes */
 class Command;
@@ -17,7 +17,7 @@ class Command;
 class Message {
 	public:
 		/* Constructors & Destructor */
-		Message(User* user, std::string raw);
+		Message(Client* client, std::string raw);
 		~Message();
 
 		/* Setters & Getters */
@@ -29,7 +29,7 @@ class Message {
 		std::vector<std::string>	_params;
 		std::string					_prefix;
 		std::string					_cmd;	// Represents the command string, in lower case
-		User*						_user;
+		Client*						_client;
 };
 
 #endif

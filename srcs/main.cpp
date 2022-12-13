@@ -4,16 +4,8 @@
 #include <string>
 #include <cstring>
 
-/* User Includes */
+/* Client Includes */
 #include "Server.hpp"
-
-
-class badArgsException : public std::exception {
-	public:
-		const char*	what() const throw() {
-			return("usage: ./ircserv <port> <password>");
-		}
-};
 
 int	main(int argc, char **argv)	{
 

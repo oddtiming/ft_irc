@@ -1,15 +1,15 @@
-#include "User.hpp"
+#include "Client.hpp"
 #include "Server.hpp"
 
 #define MAX_BUFFER_SIZE 512
 //This should be addressed
 
 /* Constructors & Destructor */
-User::User(int sockFD) : _socket(sockFD) {
+Client::Client(int sockFD) : _socket(sockFD) {
 	
 }
 
-User::~User() {
+Client::~Client() {
 	shutdown(_socket, SHUT_RDWR);
 }
 
@@ -20,7 +20,7 @@ User::~User() {
 
 /* Public Member Functions */
 
-Message	User::read(void) {
+Message	Client::read(void) {
 	char	buf[MAX_BUFFER_SIZE];
 	int		nbytes;
 
@@ -35,7 +35,9 @@ Message	User::read(void) {
 	return (Message(this, std::string(buf)));
 }
 
-void	User::reply(const std::string& msg) {
+void	Client::reply(const std::string& msg) {
 	if (send(_socket, msg.c_str(), sizeof(msg), 0) < 0)
 		throw std::runtime_error("Error sending message");
 }
+
+

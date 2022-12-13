@@ -1,5 +1,5 @@
-#ifndef JOIN_HPP
-#define JOIN_HPP
+#ifndef PRIVMSG_HPP
+#define PRIVMSG_HPP
 
 #pragma once
 
@@ -9,12 +9,12 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Join : public Command
+class Privmsg : public Command
 {
     public:
         /* Constructors & Destructor */
-        Join();
-        ~Join();
+        Privmsg();
+        ~Privmsg();
 
         /* Public Member Functions */
         bool                validate(const Message& msg);

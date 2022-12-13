@@ -1,5 +1,5 @@
-#ifndef JOIN_HPP
-#define JOIN_HPP
+#ifndef USER_HPP
+# define USER_HPP
 
 #pragma once
 
@@ -9,12 +9,12 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Join : public Command
+class User : public Command
 {
     public:
         /* Constructors & Destructor */
-        Join();
-        ~Join();
+        User();
+        ~User();
 
         /* Public Member Functions */
         bool                validate(const Message& msg);

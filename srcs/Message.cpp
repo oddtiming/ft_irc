@@ -1,7 +1,7 @@
 #include "Message.hpp"
 Message::~Message() { }
 
-Message::Message(User* user, std::string raw) : _user(user)
+Message::Message(Client* client, std::string raw) : _Client(client)
 {
     __SIZE_TYPE__   pos = 0;
 
