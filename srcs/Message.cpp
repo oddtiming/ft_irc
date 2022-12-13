@@ -16,6 +16,8 @@ Message::Message(User* user, std::string raw) : _user(user)
         _params.push_back(raw.substr(0, pos));
         raw.erase(0, pos + 1);
     }
+	_cmd = getParams()[0];
+	_params.erase(_params.begin());
 }
 
 const	std::string&	Message::getPrefix() const {
