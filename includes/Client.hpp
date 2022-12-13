@@ -1,5 +1,5 @@
-#ifndef USER_HPP
-# define USER_HPP
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
 
 #pragma once
 
@@ -12,11 +12,11 @@
 #include "Channel.hpp"
 #include "Message.hpp"
 
-class User {
+class Client {
 	public:
 		/* Constructors & Destructor */
-		User(int sockFD);
-		~User();
+		Client(int sockFD);
+		~Client();
 
 		/* Operator Overloads */
 
@@ -24,8 +24,8 @@ class User {
 		void				setNickname(const std::string& nickname);
 		const std::string&	getNickname(void);
 
-		void				setUsername(const std::string& nickname);
-		const std::string&	getUsername(void);
+		void				setClientname(const std::string& nickname);
+		const std::string&	getClientname(void);
 
 		void				setPassword(const std::string& nickname);
 		const std::string&	getPassword(void);
@@ -38,16 +38,16 @@ class User {
 		bool				checkGlobalModes(const char& mode);
 
 		/* Public Member Functions */
-		Message*	read();
+		Message	read();
+		void	reply(const std::string& msg);
 
 	private:
 		const int						_socket;
 		std::string						_nickname;
-		std::string						_username;
+		std::string						_Clientname;
 		std::string						_password;
 		char							_globalModes;		/* Mode flags stored using bitmask */
 		std::map<std::string, char>		_channelModes;		/* Per client channel modes */
 };
-
 
 #endif

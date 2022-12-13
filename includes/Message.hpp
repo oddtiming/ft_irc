@@ -5,10 +5,11 @@
 
 /* System Includes */
 #include <string>
+#include <vector>
 
 /* Local Includes */
 
-class User;
+class Client;
 
 /* Class Prototypes */
 class Command;
@@ -16,24 +17,19 @@ class Command;
 class Message {
 	public:
 		/* Constructors & Destructor */
-		Message(User* user);
+		Message(Client* client, std::string raw);
 		~Message();
 
-		/* Operator Overloads */
-
 		/* Setters & Getters */
-
-		/* Public Member Functions */
+		const 	std::string&				getCommand() const;
+		const	std::string&				getPrefix() const;
+		const	std::vector<std::string>&	getParams() const;
 
 	private:
-		Command *	_command;
-		std::string	_raw;
-		std::string _reply;
-		User*		_owner;
-
+		std::vector<std::string>	_params;
+		std::string					_prefix;
+		std::string					_cmd;	// Represents the command string, in lower case
+		Client*						_client;
 };
 
 #endif
-
-
-

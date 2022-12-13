@@ -1,5 +1,5 @@
-#ifndef JOIN_HPP
-#define JOIN_HPP
+#ifndef NICK_HPP
+#define NICK_HPP
 
 #pragma once
 
@@ -9,15 +9,15 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Join : public Command
+class Nick : public Command
 {
     public:
         /* Constructors & Destructor */
-        Join();
-        ~Join();
+        Nick();
+        ~Nick();
 
         /* Public Member Functions */
-        bool                validate(const Message& msg);
+		bool                validate(const Message& msg);
         const std::string&  execute(const Message& msg);
 
     private:

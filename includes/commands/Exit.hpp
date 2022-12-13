@@ -1,5 +1,5 @@
-#ifndef JOIN_HPP
-#define JOIN_HPP
+#ifndef EXIT_HPP
+#define EXIT_HPP
 
 #pragma once
 
@@ -9,12 +9,12 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Join : public Command
+class Exit : public Command
 {
     public:
         /* Constructors & Destructor */
-        Join();
-        ~Join();
+        Exit();
+        ~Exit();
 
         /* Public Member Functions */
         bool                validate(const Message& msg);

@@ -8,18 +8,25 @@
 #include <sys/socket.h>
 #include <fcntl.h>
 #include <poll.h>
+#include <errno.h>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <map>
 
 /* Local Includes */
-#include "User.hpp"
+#include "Client.hpp"
 #include "Channel.hpp"
-#include "Command.hpp"
 #include "Message.hpp"
 
+/* Class Prototypes */
+class Command;
+
 #define MAX_CONNECTIONS 5
+
+// FIXME: set back to 0 before corrections, makes use of the recvmsg() function
+#define DEBUG 1
 
 typedef enum s_serverStatus {
 	OFFLINE = 0,
@@ -43,6 +50,10 @@ class Server {
 		void	initializeServer();
 		void	initializeCommands();
 		void	runServer();
+
+		void	handleConnections();
+		void	handleMessages(Client* client);
+
 
 		/* Exceptions */
 		class socketException : public std::exception {
@@ -92,7 +103,7 @@ class Server {
 		std::vector<pollfd>					_pfds;
 
 		/* IRC Server Data */
-		std::vector<User *>					_users;
+		std::vector<Client *>				_clients;
 		std::map<std::string, Channel *>	_channels;
 		std::map<std::string, Command *>	_commands;
 };
