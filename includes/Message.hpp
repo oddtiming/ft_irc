@@ -25,11 +25,14 @@ class Message {
 		const	std::string&				getPrefix() const;
 		const	std::vector<std::string>&	getParams() const;
 
+		/*Utils*/
+		const	std::string&				getReplies(int code) const;
+
 	private:
-		std::vector<std::string>	_params;
-		std::string					_prefix;
-		std::string					_cmd;	// Represents the command string, in lower case
-		User*						_user;
+		const	std::vector<std::string>	_params;
+		const	std::string					_prefix;
+		const	std::string					_cmd;	// Represents the command string, in lower case
+		const	User*						_user;
 };
 
 #endif
