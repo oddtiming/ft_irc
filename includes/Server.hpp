@@ -25,6 +25,9 @@ class Command;
 
 #define MAX_CONNECTIONS 5
 
+// FIXME: set back to 0 before corrections, makes use of the recvmsg() function
+#define DEBUG 1
+
 typedef enum s_serverStatus {
 	OFFLINE = 0,
 	ONLINE = 1,

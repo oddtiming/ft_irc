@@ -69,14 +69,14 @@ void	Server::initializeServer(void) {
 	fcntl(_socket, F_SETFL, O_NONBLOCK);
 
 	/* Set socket options to reuse addresses */
-	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) < 0)
+	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR | (DEBUG * SO_DEBUG), &yes, sizeof(int)) < 0)
 		throw Server::socketException();
 
 	/* Setup socket address struct */
 	_address.sin_port = htons(_port);
 	_address.sin_family = AF_INET;
 	_address.sin_addr.s_addr = INADDR_ANY;
-	//FIXME - convert to using hints and proper method for address struct
+	//FIXME: convert to using hints and proper method for address struct
 
 	/* Bind Socket */
 	if (bind(_socket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
