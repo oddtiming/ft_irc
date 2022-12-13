@@ -25,7 +25,7 @@ class Command {
 
 		/* Public Member Functions */
 		virtual const std::string&	execute(const Message& msg) = 0;
-		virtual bool				validate(void);
+		virtual bool				validate(const Message& msg);
 
 	protected:
 		Command(const std::string& name);
