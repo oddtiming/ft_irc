@@ -34,4 +34,6 @@ void Nick::execute(const Message &msg) {
 	//(msg._user->getNickname() + "!" + msg._user->getUsername()
 	// + "@" + _server->getName()+ " NICK :" + name + "\n").c_str();
 	msg._user->setNickname(name);
+	return (msg._user->getNickname() + "!" + msg._user->getUsername()
+	 + "@" + _server-> + " NICK :" + name + "\n").c_str();
 }
