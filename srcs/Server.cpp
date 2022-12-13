@@ -44,7 +44,6 @@ Server::~Server() {
 	for (size_t i = 0; i < _clients.size(); i++)
 		delete (_clients[i]);
 	_clients.clear();
-	//Ensure socket it closed in destructor for each Client
 	
 	/* Delete channels */
 	std::map<std::string, Channel *>::iterator it_ch = _channels.begin();
@@ -55,6 +54,7 @@ Server::~Server() {
 	/* Close server socket */
 	shutdown(_socket, SHUT_RDWR);
 }
+
 
 /* Public Member Functions */
 
@@ -76,6 +76,7 @@ void	Server::initializeServer(void) {
 	_address.sin_port = htons(_port);
 	_address.sin_family = AF_INET;
 	_address.sin_addr.s_addr = INADDR_ANY;
+	//FIXME - convert to using hints and proper method for address struct
 
 	/* Bind Socket */
 	if (bind(_socket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
@@ -121,10 +122,11 @@ void	Server::initializeCommands(void) {
 /* Manage Connection Requests from New Clients */
 void	Server::handleConnections()
 {
+	//FIXME - Pass addressinfo struct to get client data for implementing FTP later on
 	int	new_fd;
 	if ((new_fd = accept(_socket, NULL, NULL)) < 0)
 		throw Server::acceptException();
-	_xlients.push_back(new Client(new_fd));
+	_clients.push_back(new Client(new_fd));
 	pollfd pfd = {.fd = new_fd, .events = POLLIN, .revents = 0};
 	_pfds.push_back(pfd);
 	std::cout << "New client has connected to server" << std::endl;
