@@ -16,7 +16,7 @@
 #include <map>
 
 /* Local Includes */
-#include "User.hpp"
+#include "Client.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
 
@@ -24,6 +24,9 @@
 class Command;
 
 #define MAX_CONNECTIONS 5
+
+// FIXME: set back to 0 before corrections, makes use of the recvmsg() function
+#define DEBUG 1
 
 typedef enum s_serverStatus {
 	OFFLINE = 0,
@@ -49,7 +52,7 @@ class Server {
 		void	runServer();
 
 		void	handleConnections();
-		void	handleMessages(User* user);
+		void	handleMessages(Client* client);
 
 
 		/* Exceptions */
@@ -100,7 +103,7 @@ class Server {
 		std::vector<pollfd>					_pfds;
 
 		/* IRC Server Data */
-		std::vector<User *>					_users;
+		std::vector<Client *>				_clients;
 		std::map<std::string, Channel *>	_channels;
 		std::map<std::string, Command *>	_commands;
 };

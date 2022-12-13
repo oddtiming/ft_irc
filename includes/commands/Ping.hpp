@@ -1,5 +1,5 @@
-#ifndef NICK_HPP
-#define NICK_HPP
+#ifndef PING_HPP
+#define PING_HPP
 
 #pragma once
 
@@ -9,15 +9,15 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Nick : public Command
+class Ping : public Command
 {
     public:
         /* Constructors & Destructor */
-        Nick();
-        ~Nick();
+        Ping();
+        ~Ping();
 
         /* Public Member Functions */
-		bool                validate(const Message& msg);
+        bool                validate(const Message& msg);
         const std::string&  execute(const Message& msg);
 
     private:

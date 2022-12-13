@@ -1,5 +1,5 @@
-#ifndef NICK_HPP
-#define NICK_HPP
+#ifndef USER_HPP
+# define USER_HPP
 
 #pragma once
 
@@ -9,15 +9,15 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Nick : public Command
+class User : public Command
 {
     public:
         /* Constructors & Destructor */
-        Nick();
-        ~Nick();
+        User();
+        ~User();
 
         /* Public Member Functions */
-		bool                validate(const Message& msg);
+        bool                validate(const Message& msg);
         const std::string&  execute(const Message& msg);
 
     private:

@@ -33,7 +33,6 @@ class Command {
 		bool				_channelOpRequired;
 		bool				_globalOpRequired;
 		int					_replCode;
-
 		Server* 			_server;
 };
 

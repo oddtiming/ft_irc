@@ -1,5 +1,5 @@
-#ifndef NICK_HPP
-#define NICK_HPP
+#ifndef KICK_HPP
+#define KICK_HPP
 
 #pragma once
 
@@ -9,15 +9,15 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Nick : public Command
+class Kick : public Command
 {
     public:
         /* Constructors & Destructor */
-        Nick();
-        ~Nick();
+        Kick();
+        ~Kick();
 
         /* Public Member Functions */
-		bool                validate(const Message& msg);
+        bool                validate(const Message& msg);
         const std::string&  execute(const Message& msg);
 
     private:

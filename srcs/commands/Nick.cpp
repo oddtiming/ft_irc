@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "../../includes/commands/Nick.hpp"
 #include "../../includes/replies.hpp"
 

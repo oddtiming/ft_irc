@@ -1,5 +1,24 @@
 #include "Server.hpp"
+
+/* Command Includes */
+#include "commands/Ban.hpp"
+#include "commands/Echo.hpp"
+#include "commands/Exit.hpp"
+#include "commands/Help.hpp"
+#include "commands/Info.hpp"
 #include "commands/Join.hpp"
+#include "commands/Kick.hpp"
+#include "commands/List.hpp"
+#include "commands/Mode.hpp"
+#include "commands/Names.hpp"
+#include "commands/Nick.hpp"
+#include "commands/Ope.hpp"
+#include "commands/Part.hpp"
+#include "commands/Pass.hpp"
+#include "commands/Ping.hpp"
+#include "commands/Privmsg.hpp"
+#include "commands/Quit.hpp"
+#include "commands/User.hpp"
 
 /* Constructors & Destructor */
 Server::Server(const std::string& hostname, const int port, const std::string& password) :
@@ -21,11 +40,10 @@ Server::~Server() {
 	for (; it != _commands.end(); it++)
 		delete it->second;
 
-	/* Delete Users */
-	for (size_t i = 0; i < _users.size(); i++)
-		delete (_users[i]);
-	_users.clear();
-	//Ensure socket it closed in destructor for each user
+	/* Delete Clients */
+	for (size_t i = 0; i < _clients.size(); i++)
+		delete (_clients[i]);
+	_clients.clear();
 	
 	/* Delete channels */
 	std::map<std::string, Channel *>::iterator it_ch = _channels.begin();
@@ -36,6 +54,7 @@ Server::~Server() {
 	/* Close server socket */
 	shutdown(_socket, SHUT_RDWR);
 }
+
 
 /* Public Member Functions */
 
@@ -50,15 +69,15 @@ void	Server::initializeServer(void) {
 	fcntl(_socket, F_SETFL, O_NONBLOCK);
 
 	/* Set socket options to reuse addresses */
-	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) < 0)
+	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR | (DEBUG * SO_DEBUG), &yes, sizeof(int)) < 0)
 		throw Server::socketException();
 
 	/* Setup socket address struct */
 	_address.sin_port = htons(_port);
 	_address.sin_family = AF_INET;
 	_address.sin_addr.s_addr = INADDR_ANY;
+	//FIXME: convert to using hints and proper method for address struct
 
-	std::cout << "port: " << _port << std::endl;
 	/* Bind Socket */
 	if (bind(_socket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
 		throw Server::bindException();
@@ -77,44 +96,46 @@ void	Server::initializeServer(void) {
 
 /* Intialize Commands Map */
 void	Server::initializeCommands(void) {
-	// _commands["ping"] = 
-	// _commands["info"] = 
-	// _commands["exit"] = 
-	// _commands["echo"] = 
-	// _commands["help"] = 
-	// _commands["ban"] =
-	// _commands["ope"] =
-	// _commands["quit"] =
+	/* General Commands */
+	_commands["ping"] = new Ping();
+	_commands["info"] = new Info();
+	_commands["exit"] = new Exit();
+	_commands["echo"] = new Echo();
+	_commands["help"] = new Help();
+	_commands["ban"] = new Ban();
+	_commands["ope"] = new Ope();
+	_commands["quit"] = new Quit();
 
-	// // Channel commands
-	// _commands["privmsg"] =
+	/* Channel Commands */
+	_commands["privmsg"] = new Privmsg();
 	_commands["join"] = new Join();
-	// _commands["part"] =
-	// _commands["list"] = 
-	// _commands["names"] =
-	// _commands["kick"] = new Kick();
-	// _commands["nick"] = new Nick();
-	// _commands["user"] = new User();
-	// _commands["pass"] = new Pass();
-	// _commands["mode"] = new Mode();
+	_commands["part"] = new Part();
+	_commands["list"] = new List();
+	_commands["names"] = new Names();
+	_commands["kick"] = new Kick();
+	_commands["nick"] = new Nick();
+	_commands["user"] = new User();
+	_commands["pass"] = new Pass();
+	_commands["mode"] = new Mode();
 }
 
 /* Manage Connection Requests from New Clients */
 void	Server::handleConnections()
 {
+	//FIXME - Pass addressinfo struct to get client data for implementing FTP later on
 	int	new_fd;
 	if ((new_fd = accept(_socket, NULL, NULL)) < 0)
 		throw Server::acceptException();
-	_users.push_back(new User(new_fd));
+	_clients.push_back(new Client(new_fd));
 	pollfd pfd = {.fd = new_fd, .events = POLLIN, .revents = 0};
 	_pfds.push_back(pfd);
 	std::cout << "New client has connected to server" << std::endl;
 }
 
 /* Read incoming data from client socket & perform actions */
-void	Server::handleMessages(User* user)
+void	Server::handleMessages(Client* client)
 {
-	Message	msg = user->read();
+	Message	msg = client->read();
 
 	try{
 		_commands.at(msg.getCommand())->execute(msg);
@@ -142,7 +163,7 @@ void	Server::runServer(void) {
 					handleConnections();
 				/* If the event is on a client socket, deal with messages */
 				else if (i > 0)
-					handleMessages(_users[i - 1]);
+					handleMessages(_clients[i - 1]);
 			}
 		}
 	}
