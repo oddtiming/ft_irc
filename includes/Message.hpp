@@ -9,10 +9,9 @@
 
 /* Local Includes */
 
-class Client;
-
 /* Class Prototypes */
 class Command;
+class Client;
 
 class Message {
 	public:
@@ -25,15 +24,20 @@ class Message {
 		const	std::string&				getPrefix() const;
 		const	std::vector<std::string>&	getParams() const;
 
+		// const	Client*						getClient() const;
+	
+
 		/*Utils*/
 		const	std::string&				getReplies(int code) const;
 
+		/* Public Attributes */
+		Client*						_client;
 	private:
 
 		std::vector<std::string>	_params;
 		std::string					_prefix;
 		std::string					_cmd;	// Represents the command string, in lower case
-		Client*						_client;
+		std::string					_store;	// Represents the remainder of a message, if it contained multipple valid commands separated by "\r\n"
 };
 
 #endif

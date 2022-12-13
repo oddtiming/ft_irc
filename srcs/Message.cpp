@@ -1,10 +1,17 @@
 #include "Message.hpp"
 Message::~Message() { }
 
-Message::Message(Client* client, std::string raw) : _Client(client)
+// TODO: if "\r\n" is present, store it in _store
+Message::Message(Client* client, std::string raw) : _client(client)
 {
     __SIZE_TYPE__   pos = 0;
 
+    size_t   it = raw.find("\r\n");
+    if (it != raw.size() - 2)
+    {
+        _store = raw.substr(it + 2, raw.size() - it - 2);
+        raw = raw.s
+    }
     if (raw[0] == ':')
     {
         pos = raw.find(' ');
@@ -20,6 +27,9 @@ Message::Message(Client* client, std::string raw) : _Client(client)
 	_params.erase(_params.begin());
 }
 
+
+
+/* Setters & Getters */
 const	std::string&	Message::getPrefix() const {
     return (_prefix);
 }
@@ -31,3 +41,9 @@ const 	std::string&	Message::getCommand() const{
 const	std::vector<std::string>&	Message::getParams() const {
     return (_params);
 }
+
+const Client*	Message::getClient() const {
+	return (_client);
+}		
+
+/* Public Member Functions */

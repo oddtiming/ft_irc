@@ -1,3 +1,8 @@
+#include "Command.hpp"
+
+#define ERR_NOSUCHNICK(nickname) nickname + " :No such nickname" //401
+#define ERR_CANNOTSENDTOCHAN(channel) channel + " :Cannot send to channel" //404
+
 #define RPL_WELCOME 001
 #define RPL_YOURHOST 002
 #define RPL_CREATED 003

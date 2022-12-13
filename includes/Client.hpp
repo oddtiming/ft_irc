@@ -15,39 +15,50 @@
 class Client {
 	public:
 		/* Constructors & Destructor */
-		Client(int sockFD);
+		Client(int socket);
 		~Client();
 
 		/* Operator Overloads */
 
 		/* Setters & Getters */
-		void				setNickname(const std::string& nickname);
-		const std::string&	getNickname(void);
+		void				setNickname(const std::string& nickname) { _nickname = nickname; }
+		const std::string&	getNickname(void) const { return (_nickname); }
 
-		void				setClientname(const std::string& nickname);
-		const std::string&	getClientname(void);
+		void				setUsername(const std::string& username) { _username = username; }
+		const std::string&	getUsername(void) const { return (_username); }
 
-		void				setPassword(const std::string& nickname);
-		const std::string&	getPassword(void);
+		void				setPassword(const std::string& password) { _password = password; }
+		const std::string&	getPassword(void) const { return (_password); }
 
 		
-		void				setChannelModes(const char& mode);
-		bool				checkChannelModes(const std::string& channel, const char& mode);
+		void				modifyChannelModes(const std::string& channelName, const char& mode, bool removeMode);
+		bool				checkChannelModes(const std::string& channelName, const char& mode) const;
 
-		void				setGlobalModes(const char& mode);
-		bool				checkGlobalModes(const char& mode);
+		void				modifyGlobalModes(const char& mode, bool removeMode);
+		bool				checkGlobalModes(const char& mode) const;
 
 		/* Public Member Functions */
 		Message	read();
 		void	reply(const std::string& msg);
 
+
+		class notChannelMemberException : public std::exception {
+		public:
+			const char*	what() const throw() {
+				return("notChannelMemberException: Client is not part of this channel");
+			}
+		};
+
 	private:
 		const int						_socket;
 		std::string						_nickname;
-		std::string						_Clientname;
+		std::string						_username;
 		std::string						_password;
 		char							_globalModes;		/* Mode flags stored using bitmask */
 		std::map<std::string, char>		_channelModes;		/* Per client channel modes */
+
+		std::string						_awayMessage;
+		bool							_isAway;
 };
 
 #endif

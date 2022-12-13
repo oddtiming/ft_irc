@@ -10,19 +10,13 @@ Join::~Join() {
 }
 
 /* Public Member Functions */
-
 bool	Join::validate(const Message& msg) {
 
 }
 
 const std::string&	Join::execute(const Message& msg) {
-
-	/* Check permissions for execution of function */
 	if (validate(msg)) {
 		/* Perorm action */
-	}
-	else {
-		/* Reply permissions error */
 	}
 }
 

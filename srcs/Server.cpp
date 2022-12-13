@@ -55,6 +55,8 @@ Server::~Server() {
 	shutdown(_socket, SHUT_RDWR);
 }
 
+/* Setters & Getters */
+
 
 /* Public Member Functions */
 
@@ -117,12 +119,19 @@ void	Server::initializeCommands(void) {
 	_commands["user"] = new User();
 	_commands["pass"] = new Pass();
 	_commands["mode"] = new Mode();
+
+	//_commands["who"] = new Who();
+	//_commands["time"] = new Time();
+	//_commands["invite"] = new Invite();
+	//_commands["motd"] = new Motd();
+	
+
 }
 
 /* Manage Connection Requests from New Clients */
 void	Server::handleConnections()
 {
-	//FIXME - Pass addressinfo struct to get client data for implementing FTP later on
+	//FIXME: Pass addressinfo struct to get client data for implementing FTP later on
 	int	new_fd;
 	if ((new_fd = accept(_socket, NULL, NULL)) < 0)
 		throw Server::acceptException();
@@ -167,4 +176,35 @@ void	Server::runServer(void) {
 			}
 		}
 	}
+}
+
+/* This weird custom functor is to allow embedded find_if() */
+// Reference: https://stackoverflow.com/questions/14437825
+struct nick_equal : std::unary_function<Client *, std::string>
+{
+    nick_equal(const std::string& nick) : _nick(nick) {}
+    bool operator()(const Client * client) const { return client->getNickname() == _nick; }
+
+    const std::string&	_nick;
+};
+
+
+bool	Server::doesNickExist(const std::string nick) const {
+	nick_equal init(nick);
+
+	if(find_if(_clients.begin(), _clients.end(), nick_equal(nick)) == _clients.end())
+		return (false);
+	return (true);
+
+	/* As opposed to */
+	// std::vector<Client *>::const_iterator	it = _clients.begin();
+	// std::vector<Client *>::const_iterator	ite = _clients.end();
+
+	// while (it != ite)
+	// {
+	// 	if (*(it)->getNickname() == nick)
+	// 		return (true);
+	// 	++it;
+	// }
+	// return (false);
 }

@@ -10,7 +10,8 @@
 #include <poll.h>
 #include <errno.h>
 #include <string>
-#include <iostream>
+#include <iostream>		// cout, cerr, endl
+#include <algorithm>	// find_if
 #include <iomanip>
 #include <vector>
 #include <map>
@@ -37,14 +38,17 @@ typedef enum s_serverStatus {
 class Server {
 	public:
 		/* Constructors & Destructors */
-		Server();
 		Server(const std::string& hostname, const int port, const std::string& password);
 		~Server();
 		
 		/* Operator Overloads */
 
 		/* Setters & Getters */
-		const std::string& getServerPassword(void);
+		const std::string& getServerPassword(void) const { return _password; }Í
+		const std::string& getHostname(void) const { return _hostname; }
+
+		// FIXME: not sure if Client * needs to be const. Needs to be implemented anyways
+		const Client * getClient(std::const string& clientName) const;
 
 		/* Public Member Functions */
 		void	initializeServer();
@@ -53,6 +57,12 @@ class Server {
 
 		void	handleConnections();
 		void	handleMessages(Client* client);
+
+		bool	doesUserExist(const std::string user) const;
+		bool	doesNickExist(const std::string nick) const;
+
+		bool	doesChannelExist(const std::string channel) const;
+		bool	isUserChannelMember(const std::string user) const;
 
 
 		/* Exceptions */
