@@ -11,6 +11,11 @@
 #define ERR_NICKNAMEINUSE(nick) (nick) + " :Nickname is already in use" //433
 #define ERR_NEEDMOREPARAMS(cmd) (cmd) + " :Not enough parameters" //461
 #define ERR_ALREADYREGISTRED() ":Unauthorized command (already registered)" //462
+#define	ERR_INVITEONLYCHAN(channel) (channel) + " :Cannot join channel (+i)" //473
+#define	ERR_BANNEDFROMCHAN(channel) (channel) + " :Cannot join channel (+b)" //474
+#define	ERR_BADCHANNELKEY(channel) (channel) + " :Cannot join channel (+k)" //475
+#define ERR_BADCHANMASK(channel) (channel) + " :Bad Channel Mask" //476
+
 /*
 #define RPL_WELCOME 1
 #define RPL_YOURHOST 2
