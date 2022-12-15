@@ -13,7 +13,7 @@ class User : public Command
 {
     public:
         /* Constructors & Destructor */
-        User();
+        User(Server* server);
         ~User();
 
         /* Public Member Functions */

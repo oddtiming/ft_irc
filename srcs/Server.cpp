@@ -21,7 +21,7 @@
 // #include "commands/Ping.hpp"
 // #include "commands/Privmsg.hpp"
 // #include "commands/Quit.hpp"
-// #include "commands/User.hpp"
+#include "commands/User.hpp"
 
 /*****************************/
 /* Constructors & Destructor */
@@ -31,7 +31,7 @@ Server::Server(const std::string& hostname, const int port, const std::string& p
 	_hostname(hostname), _password(password), _port(port) {
 	
 	/* Setup server connection */
-	initializeServer();
+	initializeConnection();
 	
 	/* Initialize commands map */
 	initializeCommands();
@@ -70,7 +70,7 @@ Server::~Server() {
 /* Public Member Functions */
 /***************************/
 
-void	Server::initializeServer(void) {
+void	Server::initializeConnection(void) {
 	int	yes = 1;
 
 	/* Create socket */
@@ -133,7 +133,7 @@ void	Server::initializeCommands(void) {
 	// _commands["names"] = new Names();
 	// _commands["kick"] = new Kick();
 	_commands["nick"] = new Nick(this);
-	// _commands["user"] = new User();
+	_commands["user"] = new User(this);
 	// _commands["pass"] = new Pass();
 	// _commands["mode"] = new Mode();
 
@@ -166,19 +166,22 @@ void	Server::handleMessages(Client* client)
 	/* Client reads entire input string coming from their socket */
 	client->read();
 
-	/* While there are valid commands (Messages) stored in the input string */
+	/* While there are valid commands (Messages) stored in the client's input string */
 	while ((rawMessage = client->retrieveMessage()).empty() == false)
 	{
 		Message	msg(client, rawMessage);
+		executeCommand(msg);
+	}
+}
 
-		try { /* Check if command exists */
-			Command *ptr = _commands.at(msg.getCommand());
-			ptr->execute(msg);
-		}
-		catch(std::out_of_range &e) {
-			std::cerr << "Command " << msg.getCommand() 
-					<< " was not found." << std::endl;
-		}
+void	Server::executeCommand(const Message & msg) {
+	try {
+		/* Check if command exists */
+		_commands.at(msg.getCommand())->execute(msg);
+	}
+	catch(std::out_of_range &e) {
+		std::cerr << "Command '" << msg.getCommand() 
+				<< "' was not found." << std::endl;
 	}
 }
 
@@ -202,38 +205,16 @@ void	Server::runServer(void) {
 
 				/* If the event is on a client socket, deal with messages */
 				else if (i > 0)
-				{
-
-					
 					handleMessages(_clients[i - 1]);
-				}
 			}
 		}
 	}
 }
 
-/* This weird custom functor is to allow embedded find_if() */
-/* ref: https://stackoverflow.com/questions/14437825 */
-struct nick_equal : std::unary_function<Client *, std::string>
-{
-	nick_equal(const std::string& nick) : _nick(nick) {}
-	bool operator()(const Client * client) const { return client->getNickname() == _nick; }
-
-	const std::string&	_nick;
-};
-
-bool	Server::doesNickExist(const std::string nick) {
-
-
-	// nick_equal init(nick);
-
-	// if(find_if(_clients.begin(), _clients.end(), nick_equal(nick)) == _clients.end())
-	// 	return (false);
-	// return (true);
-
-	/* As opposed to */
-	std::vector<Client *>::iterator	it = _clients.begin();
-	std::vector<Client *>::iterator	ite = _clients.end();
+/* Check if specified nickname is already in use on server */
+bool	Server::doesNickExist(const std::string nick) const {
+	std::vector<Client *>::const_iterator	it = _clients.begin();
+	std::vector<Client *>::const_iterator	ite = _clients.end();
 
 	while (it != ite)
 	{
@@ -243,3 +224,32 @@ bool	Server::doesNickExist(const std::string nick) {
 	}
 	return (false);
 }
+
+/*
+bool	Server::doesChannelExist(const std::string channel) const {
+	if (_channels.find(channel) != _channels.end())
+		return (true);
+	return (false);
+}
+*/
+
+/* Create a new channel with given channel name */
+void	Server::createChannel(const std::string channel) {
+	//FIXME: This might be redundant
+	/* Check if channel already exists */
+	if (_channels.find(channel) == _channels.end())
+		return;
+		//Error
+	
+}
+
+/* Destroy channel with given channel name */
+void	Server::destroyChannel(const std::string channel) {
+	/* Find correct channel in map */
+	std::map<std::string, Channel *>::iterator it = _channels.find(channel);
+	Channel* curChannel = it->second;
+
+	/* Call member function for channel to remove member modes */
+	//This can be called in channel destructor
+}
+

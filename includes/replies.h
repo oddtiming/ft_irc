@@ -1,18 +1,22 @@
 #include "Command.hpp"
-
-#define RPL_AWAY(_target, _awayMessage) _target + " :" + _awayMessage //301
-#define ERR_NOSUCHNICK(nickname) nickname + " :No such nickname" //401
-#define ERR_CANNOTSENDTOCHAN(channel) channel + " :Cannot send to channel" //404
-#define ERR_NORECIPIENT(cmd) ":No recipient given (" + cmd + ")" //411
+// ": 001 " + (nick) + " " + : + "Welcome to the Internet Relay Network " + (prefix)
+#define RPL_WELCOME(nick, prefix) "001 " + (nick) + "Welcome to Internet Relay Network " + (prefix) + "\r\n" //001
+#define RPL_AWAY(_target, _awayMessage) (_target) + " :" + (_awayMessage) //301
+#define ERR_NOSUCHNICK(nickname) (nickname) + " :No such nickname" //401
+#define ERR_CANNOTSENDTOCHAN(channel) (channel) + " :Cannot send to channel" //404
+#define ERR_NORECIPIENT(cmd) ":No recipient given (" + (cmd) + ")" //411
 #define ERR_NOTEXTTOSEND() ":No text to send" //412
-#define ERR_NEEDMOREPARAMS(cmd) cmd + " :Not enough parameters"
+#define ERR_NONICKNAMEGIVEN() ":No nickname given" //431
+#define ERR_ERRONEUSNICKNAME(nick) (nick) + " :Erroneous nickname" //432
+#define ERR_NICKNAMEINUSE(nick) (nick) + " :Nickname is already in use" //433
+#define ERR_NEEDMOREPARAMS(cmd) (cmd) + " :Not enough parameters" //461
 #define ERR_ALREADYREGISTRED() ":Unauthorized command (already registered)" //462
 /*
-#define RPL_WELCOME 001
-#define RPL_YOURHOST 002
-#define RPL_CREATED 003
-#define RPL_MYINFO 004
-#define RPL_BOUNCE 005
+#define RPL_WELCOME 1
+#define RPL_YOURHOST 2
+#define RPL_CREATED 3
+#define RPL_MYINFO 4
+#define RPL_BOUNCE 5
 #define RPL_TRACELINK 200
 #define RPL_TRACECONNECTING 201
 #define RPL_TRACEHANDSHAKE 202

@@ -8,25 +8,25 @@ Nick::Nick(Server* server) : Command("nick", server) {
 
 bool Nick::validate(const Message& msg) {
 	std::vector<std::string>	middle = msg.getMiddle();
-	std::string					nick;
+	std::string					nick = middle.at(0);
 
-	if (middle.size() == 0) {
-		// msg.getReplies(ERR_NONICKNAMEGIVEN);
-		// msg._client->reply(this->_buildReply(ERR_NONICKNAMEGIVEN));
+	if (middle.size() == 0)
+	{
+		msg._client->reply(ERR_NONICKNAMEGIVEN());
 		std::cerr << "ERR_NONICKNAMEGIVEN" << std::endl;
 		return false;
 	}
-
-	nick = middle.at(0);
-
-	if (nick.size() > 9) {
-		// msg.getReplies(ERR_ERRONEUSNICKNAME);
+	/* If nickname is too long, return error */
+	else if (nick.size() > 9)
+	{
+		msg._client->reply(ERR_ERRONEUSNICKNAME(nick));
 		std::cerr << "ERR_ERRONEUSNICKNAME" << std::endl;
 		return false;
 	}
-	
-	if (_server->doesNickExist(nick)) {
-		// msg.getReplies(ERR_NICKNAMEINUSE);
+	/* If nickname is already in use, return error */
+	else if (_server->doesNickExist(nick))
+	{
+		msg._client->reply(ERR_NICKNAMEINUSE(nick));
 		std::cerr << "ERR_NICKNAMEINUSE" << std::endl;
 		return false;
 	}
@@ -36,12 +36,8 @@ bool Nick::validate(const Message& msg) {
 void Nick::execute(const Message &msg) {
 	std::string	nick = msg.getMiddle().at(0);
 
-	if (validate(msg)) {
+	if (validate(msg))
 		msg._client->setNickname(nick);
-		// msg._client->reply(_buildPrefix(msg) + " NICK :" + nick + "\n");
-		// NOTE: if valid, NICK needs no reply
-	}
 	//send new nick msg to all relevant user, format:
-	//(msg._user->getNickname() + "!" + msg._user->getUsername()
-	// + "@" + _server->getName()+ " NICK :" + name + "\n").c_str();
+	//_buildPrefix() + " NICK :" + nick + "\n").c_str();
 }

@@ -91,9 +91,17 @@ void	Client::read(void) {
 	}
 }
 
-void	Client::reply(const std::string& msg) {
-	if (send(_socket, msg.c_str(), sizeof(msg), 0) < 0)
+void	Client::reply(const std::string& reply) {
+	size_t sz;
+	
+	// FIXME: debug
+	std::cerr << "Sending reply '" << reply << "' to socket #" << _socket << std::endl;
+	
+	if ((sz = send(_socket, reply.c_str(), reply.size(), 0)) < 0)
 		throw std::runtime_error("Error sending message");
+		
+	// FIXME: debug
+	std::cerr << "return from send: " << sz << std::endl;
 }
 
 /* Check input buffer and return a single message command string */

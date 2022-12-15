@@ -8,14 +8,18 @@ CPP_FILES		:=	main.cpp \
 					Client.cpp \
 					Message.cpp \
 					Server.cpp \
-					commands/Nick.cpp
+					commands/Nick.cpp \
+					commands/User.cpp
 
 
 INC_FILES		:=	defines.h \
 					Client.hpp \
 					Message.hpp \
 					Server.hpp \
-					commands/Nick.hpp
+					replies.h \
+					commands/Nick.hpp \
+					commands/User.hpp
+
 
 
 
@@ -34,10 +38,10 @@ SRCS			= $(addprefix $(SRC_DIR)/, $(CPP_FILES))
 OBJ_DIR			= ./obj
 OBJS			= $(addprefix $(OBJ_DIR)/, $(CPP_FILES:.cpp=.o))
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCS)
 	@mkdir -p $(@D)
 	@echo Compiling $@
-	@$(CC) $(CFLAGS) -o $@ -c $< $(INCS)
+	@$(CC) $(CFLAGS) -o $@ -c $<
 
 #--------------------------------#
 #  Compiler settings and flags   #

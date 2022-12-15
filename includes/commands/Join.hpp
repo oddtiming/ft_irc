@@ -13,7 +13,7 @@ class Join : public Command
 {
     public:
         /* Constructors & Destructor */
-        Join();
+        Join(Server* server);
         ~Join();
 
         /* Public Member Functions */

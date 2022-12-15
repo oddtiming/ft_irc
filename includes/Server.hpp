@@ -48,18 +48,23 @@ class Server {
 		Client* getClientPtr(const std::string& clientName);
 
 		/* Public Member Functions */
-		void	initializeServer();
+		void	initializeConnection();
 		void	initializeCommands();
 		void	runServer();
 
 		void	handleConnections();
 		void	handleMessages(Client* client);
 
-		bool	doesUserExist(const std::string user) const;
-		bool	doesNickExist(const std::string nick);
+		void	executeCommand(const Message & msg);
 
+		bool	doesUserExist(const std::string user) const;
+		bool	doesNickExist(const std::string nick) const;
+
+		/* Channel Functions */
 		bool	doesChannelExist(const std::string channel) const;
 		bool	isUserChannelMember(const std::string user) const;
+		void	createChannel(const std::string channel);
+		void	destroyChannel(const std::string channel);
 
 
 		/* Exceptions */
