@@ -12,6 +12,11 @@ Join::~Join() {
 /* Public Member Functions */
 bool	Join::validate(const Message& msg) {
 
+std::vector<std::string> channels;
+
+
+
+
 }
 
 const std::string&	Join::execute(const Message& msg) {

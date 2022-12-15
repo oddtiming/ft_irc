@@ -4,12 +4,29 @@
 NAME			:= ircserv
 
 
-CPP_FILES		:= main.cpp Server.cpp Client.cpp Message.cpp
+CPP_FILES		:=	main.cpp \
+					Client.cpp \
+					Message.cpp \
+					Server.cpp \
+					commands/Nick.cpp
+
+
+INC_FILES		:=	defines.h \
+					Client.hpp \
+					Message.hpp \
+					Server.hpp \
+					commands/Nick.hpp
+
+
 
 #---------------------------------------------------------#
 #   Directory information and object directory building   #
 #---------------------------------------------------------#
-INC				:= ./includes
+
+
+INC_DIR			:= ./includes
+INCS			= $(addprefix $(INC_DIR)/, $(INC_FILES))
+INCS			:= 
 
 SRC_DIR			= ./srcs
 SRCS			= $(addprefix $(SRC_DIR)/, $(CPP_FILES))
@@ -20,14 +37,14 @@ OBJS			= $(addprefix $(OBJ_DIR)/, $(CPP_FILES:.cpp=.o))
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
 	@echo Compiling $@
-	@$(CC) $(CFLAGS) -o $@ -c $<
+	@$(CC) $(CFLAGS) -o $@ -c $< $(INCS)
 
 #--------------------------------#
 #  Compiler settings and flags   #
 #--------------------------------#
 CC				= c++
 RM				= rm -rf
-CFLAGS			= -Wall -Wextra -Werror -Wshadow -Wno-shadow -std=c++98 -I./includes
+CFLAGS			= -Wall -Wextra -Werror -Wshadow -Wno-shadow -std=c++98 -I$(INC_DIR)
 
 #--------------------------------#
 #   Makefile rules and targets   #

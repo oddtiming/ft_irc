@@ -12,8 +12,8 @@
 class Nick : public Command {
     public:
         /* Constructors & Destructor */
-        Nick();
-        ~Nick();
+        Nick(Server* server);
+        ~Nick() { }
 
         /* Public Member Functions */
 		bool	validate(const Message& msg);

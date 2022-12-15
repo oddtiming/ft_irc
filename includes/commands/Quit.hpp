@@ -11,16 +11,16 @@
 
 class Quit : public Command
 {
-    public:
-        /* Constructors & Destructor */
-        Quit();
-        ~Quit();
+	public:
+		/* Constructors & Destructor */
+		Quit();
+		~Quit();
 
-        /* Public Member Functions */
-        bool                validate(const Message& msg);
-        const std::string&  execute(const Message& msg);
+		/* Public Member Functions */
+		bool                validate(const Message& msg);
+		void                execute(const Message& msg);
 
-    private:
+	private:
 
 };
 

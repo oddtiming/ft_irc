@@ -29,17 +29,21 @@ class Client {
 
 		void				setPassword(const std::string& password) { _password = password; }
 		const std::string&	getPassword(void) const { return (_password); }
+		const int&			getSocket(void) const { return (_socket); }
 
+		// FIXME : add field + setter/getter for realName(set by USER cmd and user by WHOIS/WAS)
 		
-		void				modifyChannelModes(const std::string& channelName, const char& mode, bool removeMode);
+		void				modifyChannelModes(const std::string& channelName, const char& mode, bool removeMode = false);
 		bool				checkChannelModes(const std::string& channelName, const char& mode) const;
 
-		void				modifyGlobalModes(const char& mode, bool removeMode);
+		void				modifyGlobalModes(const char& mode, bool removeMode = false);
 		bool				checkGlobalModes(const char& mode) const;
 
 		/* Public Member Functions */
-		Message	read();
+		void	read();
 		void	reply(const std::string& msg);
+
+		std::string	retrieveMessage();
 
 
 		class notChannelMemberException : public std::exception {
@@ -54,11 +58,14 @@ class Client {
 		std::string						_nickname;
 		std::string						_username;
 		std::string						_password;
-		char							_globalModes;		/* Mode flags stored using bitmask */
-		std::map<std::string, char>		_channelModes;		/* Per client channel modes */
+		char							_globalModes;	/* Mode flags stored using bitmask */
+		std::map<std::string, char>		_channelModes;	/* Per client channel modes */
 
+		std::string						_inputBuffer;	/*  */
 		std::string						_awayMessage;
-		bool							_isAway;
+		// bool							_isAway;
+		
+		/* Private Member Functions */
 };
 
 #endif

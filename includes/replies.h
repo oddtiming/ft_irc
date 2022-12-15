@@ -1,8 +1,13 @@
 #include "Command.hpp"
 
+#define RPL_AWAY(_target, _awayMessage) _target + " :" + _awayMessage //301
 #define ERR_NOSUCHNICK(nickname) nickname + " :No such nickname" //401
 #define ERR_CANNOTSENDTOCHAN(channel) channel + " :Cannot send to channel" //404
-
+#define ERR_NORECIPIENT(cmd) ":No recipient given (" + cmd + ")" //411
+#define ERR_NOTEXTTOSEND() ":No text to send" //412
+#define ERR_NEEDMOREPARAMS(cmd) cmd + " :Not enough parameters"
+#define ERR_ALREADYREGISTRED() ":Unauthorized command (already registered)" //462
+/*
 #define RPL_WELCOME 001
 #define RPL_YOURHOST 002
 #define RPL_CREATED 003
@@ -133,15 +138,4 @@
 #define ERR_NOOPERHOST 491
 #define ERR_UMODEUNKNOWNFLAG 501
 #define ERR_USERSDONTMATCH 502
-
-
-
-
-
-
-
-
-
-
-
-
+*/

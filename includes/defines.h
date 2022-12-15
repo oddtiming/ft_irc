@@ -4,12 +4,16 @@
 #pragma once
 
 
+// FIXME: set back to 0 before corrections, makes use of the recvmsg() function
+#define DEBUG 1
+
 
 /* Global Modes */
 typedef enum e_globalModes {
-	OP = 0x1,
-	AWAY = 0x2
-};
+	OP = 				0x1,
+	AWAY = 				0x2,
+	INVIS = 			0x4
+}	t_globalModes;
 
 
 /* Channel Modes */
@@ -20,15 +24,14 @@ typedef enum e_channelModes {
 	INV_ONLY =			0x8,		/* Channel is invite only */
 	TOPIC_SET_OP =		0x10,		/* Only operators can set topic */
 	NO_MSG_IN = 		0x20		/* Prevent incoming messages to channel */
-};
+}	t_channelModes;
 
 /* Channel Member Modes */
 typedef enum e_memberModes {
-	OP = 				0x1,		/* User is operator on channel */
 	BAN = 				0x2			/* User is banned from channel */
 	//Give owner status to user
 
-};
+}	t_memberModes;
 
 #endif
 

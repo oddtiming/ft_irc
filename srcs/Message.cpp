@@ -1,49 +1,46 @@
 #include "Message.hpp"
-Message::~Message() { }
+#include "defines.h" // for DEBUG
 
-// TODO: if "\r\n" is present, store it in _store
 Message::Message(Client* client, std::string raw) : _client(client)
 {
     __SIZE_TYPE__   pos = 0;
 
-    size_t   it = raw.find("\r\n");
-    if (it != raw.size() - 2)
-    {
-        _store = raw.substr(it + 2, raw.size() - it - 2);
-        raw = raw.s
-    }
-    if (raw[0] == ':')
+	/* Optional IRC prefix is denoted by a leading ':' */
+    if (raw.at(0) == ':')
     {
         pos = raw.find(' ');
         _prefix = raw.substr(1, pos);
         raw.erase(0, pos + 1);
     }
-    while ((pos = raw.find(' ')) != std::string::npos)
+	
+	/* Separate the trailing to keep the entire string as a single parameter */
+    if ((pos = raw.find(" :")) != std::string::npos)
     {
-        _params.push_back(raw.substr(0, pos));
+        _trailing = raw.substr(pos + 1, raw.size());
+        raw = raw.substr(0, pos);
+    }
+	
+	/* Split the rest of the parameters */
+    while ((pos = raw.find(' ')) != std::string::npos || (pos = raw.find("\r\n")) != std::string::npos)
+    {
+        _middle.push_back(raw.substr(0, pos));
         raw.erase(0, pos + 1);
     }
-	_cmd = getParams()[0];
-	_params.erase(_params.begin());
+	
+	/* Transform the command to lowercase, to treat it internally */
+	_cmd = getMiddle().at(0);
+	std::transform(_cmd.begin(), _cmd.end(), _cmd.begin(), ::tolower);
+
+	/* Remove the command from the parameters */
+	_middle.erase(_middle.begin());
+
+    if (DEBUG)
+    {
+        std::cerr << "Message received:" << "\n"
+                  << "_cmd: " << _cmd << "\n"
+                  << "_trailing: " << _trailing << "\n"
+                  << "_middle.size(): " << _middle.size() << std::endl;
+        for (size_t i = 0; i < _middle.size(); ++i)
+            std::cerr << "_middle[" << i << "]: " << _middle.at(i) << std::endl;
+    }
 }
-
-
-
-/* Setters & Getters */
-const	std::string&	Message::getPrefix() const {
-    return (_prefix);
-}
-
-const 	std::string&	Message::getCommand() const{
-    return(_cmd);
-}
-
-const	std::vector<std::string>&	Message::getParams() const {
-    return (_params);
-}
-
-const Client*	Message::getClient() const {
-	return (_client);
-}		
-
-/* Public Member Functions */

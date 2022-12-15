@@ -6,6 +6,8 @@
 /* System Includes */
 #include <string>
 #include <vector>
+#include <iostream>		// FIXME: for std::cerr DEBUG, to remove
+#include <algorithm>
 
 /* Local Includes */
 
@@ -17,27 +19,22 @@ class Message {
 	public:
 		/* Constructors & Destructor */
 		Message(Client* client, std::string raw);
-		~Message();
+		~Message() { }
 
 		/* Setters & Getters */
-		const 	std::string&				getCommand() const;
-		const	std::string&				getPrefix() const;
-		const	std::vector<std::string>&	getParams() const;
-
-		// const	Client*						getClient() const;
-	
-
-		/*Utils*/
-		const	std::string&				getReplies(int code) const;
+		const 	std::string&				getCommand() const { return _cmd; }
+		const	std::string&				getPrefix() const { return _prefix; }
+		const	std::string&				getTrailing() const { return _trailing; }
+		const	std::vector<std::string>&	getMiddle() const { return _middle; }
 
 		/* Public Attributes */
 		Client*						_client;
-	private:
 
-		std::vector<std::string>	_params;
+	private:
+		std::vector<std::string>	_middle;
 		std::string					_prefix;
+		std::string					_trailing;
 		std::string					_cmd;	// Represents the command string, in lower case
-		std::string					_store;	// Represents the remainder of a message, if it contained multipple valid commands separated by "\r\n"
 };
 
 #endif

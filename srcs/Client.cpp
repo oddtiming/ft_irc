@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include "Server.hpp"
+#include "defines.h"
 
 #define MAX_BUFFER_SIZE 512
 //This should be addressed
@@ -22,7 +23,7 @@ Client::~Client() {
 
 /**
  * WARNING: throws a notChannelMemberException if the Client is not part of the Channel
-*/
+ */
 void	Client::modifyChannelModes(const std::string& channelName, const char& mode, bool removeMode) {
 	std::map<std::string, char>::iterator	it;
 
@@ -66,9 +67,10 @@ bool	Client::checkGlobalModes(const char &mode) const {
 	return _globalModes & mode;
 }
 
-Message Client::read(void) {
-    char	buf[MAX_BUFFER_SIZE];
-	int		nbytes;
+void	Client::read(void) {
+    char		buf[MAX_BUFFER_SIZE];
+	int			nbytes;
+	std::string	input;
 
 	/* Read from client socket */
 	nbytes = recv(_socket, buf, MAX_BUFFER_SIZE, 0);
@@ -78,7 +80,15 @@ Message Client::read(void) {
 		std::cerr << "recv() call failed on socket #" << _socket << ".\n"
 				  << "errno : " << errno << std::endl;
 	}
-	return Message(this, std::string(buf));
+	input = buf;
+	if (nbytes == MAX_BUFFER_SIZE)
+		input = input.replace(510, 2, "\r\n");
+	_inputBuffer.append(input);
+	if (DEBUG)
+	{
+		std::cerr << "Client #" << _socket << " received following message: '"
+				<< input << "'." << std::endl;
+	}
 }
 
 void	Client::reply(const std::string& msg) {
@@ -86,4 +96,18 @@ void	Client::reply(const std::string& msg) {
 		throw std::runtime_error("Error sending message");
 }
 
+/* Check input buffer and return a single message command string */
+std::string	Client::retrieveMessage() {
+	size_t			it;
+	std::string		rawMessage;
+	
+    /* If there remains text after the "\r\n", store it. */
+    it = _inputBuffer.find("\r\n");
+    if (it != std::string::npos)
+	{
+        rawMessage = _inputBuffer.substr(0, it + 2);
+        _inputBuffer = _inputBuffer.substr(it + 2, _inputBuffer.size());
+    }
 
+	return rawMessage;
+}

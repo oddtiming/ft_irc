@@ -26,9 +26,6 @@ class Command;
 
 #define MAX_CONNECTIONS 5
 
-// FIXME: set back to 0 before corrections, makes use of the recvmsg() function
-#define DEBUG 1
-
 typedef enum s_serverStatus {
 	OFFLINE = 0,
 	ONLINE = 1,
@@ -44,11 +41,11 @@ class Server {
 		/* Operator Overloads */
 
 		/* Setters & Getters */
-		const std::string& getServerPassword(void) const { return _password; }Í
+		const std::string& getServerPassword(void) const { return _password; }
 		const std::string& getHostname(void) const { return _hostname; }
 
 		// FIXME: not sure if Client * needs to be const. Needs to be implemented anyways
-		const Client * getClient(std::const string& clientName) const;
+		Client* getClientPtr(const std::string& clientName);
 
 		/* Public Member Functions */
 		void	initializeServer();
@@ -59,7 +56,7 @@ class Server {
 		void	handleMessages(Client* client);
 
 		bool	doesUserExist(const std::string user) const;
-		bool	doesNickExist(const std::string nick) const;
+		bool	doesNickExist(const std::string nick);
 
 		bool	doesChannelExist(const std::string channel) const;
 		bool	isUserChannelMember(const std::string user) const;
