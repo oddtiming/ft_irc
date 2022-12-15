@@ -7,6 +7,8 @@
 // FIXME: set back to 0 before corrections, makes use of the recvmsg() function
 #define DEBUG 1
 
+#define MAX_BUFFER_SIZE 512			/* Maximum read size from recv() in bytes */
+
 
 /* Global Modes */
 typedef enum e_globalModes {
@@ -18,22 +20,37 @@ typedef enum e_globalModes {
 
 /* Channel Modes */
 typedef enum e_channelModes {
-	PRIVATE = 			0x1,		/* Channel is private */
-	SECRET = 			0x2,		/* Channe is secred (operator only) */
-	MODERATED =			0x4,		/* Channel is moderated */
-	INV_ONLY =			0x8,		/* Channel is invite only */
-	TOPIC_SET_OP =		0x10,		/* Only operators can set topic */
-	NO_MSG_IN = 		0x20		/* Prevent incoming messages to channel */
+	PRIVATE = 			0x1,		/* -p: private channel (channel cannot be seen unless member, or server op - channel omitted from WHOIS) */
+	SECRET = 			0x2,		/* -s: secret channel (extends private channel functionality, cannot be seen by queries for TOPIC, LIST, NAMES) */
+	MODERATED =			0x4,		/* -m or -M: moderated channel (only users with +qaov can speak) */
+	INV_ONLY =			0x8,		/* -i: invite only (users may only join channel if they have been invited by +qao) */
+	TOPIC_SET_OP =		0x10,		/* -t: topic limit (only +qao can set topic) SET DEFAULT */
+	NO_MSG_IN = 		0x20,		/* -n: no external messages (external messages cannot be seen in channel) SET BY DEFAULT */
+	USER_LIMIT =		0x40,		/* -l: channel limit (limit the amount of users that can join channel) */
+	OP_ONLY = 			0x80		/* -O: operator only channel (only server ops can see/access channel)*/
 }	t_channelModes;
+
 
 /* Channel Member Modes */
 typedef enum e_memberModes {
-	BAN = 				0x2			/* User is banned from channel */
-	//Give owner status to user
+	OWNER =				0x1,		/* q: owner (highest perm level, only one can exist) */
+	ADMIN =				0x2,		/* a: admin (2nd highest perm level) */
+	C_OP =				0x4,		/* o: operator (3rd highest perm level) */
+	VOICE =				0x8,		/* v: voice (allows user to speak in +m and +M channels) */
+	BAN = 				0x10,		/* b: ban (prevent user from joining channel, kick them if they are already in channel) */
+	BAN_EXEMPT = 		0x20,		/* e: ban exception(when users are on ban list, they can still join channel) */
+	INV_EXEMPT= 		0x40		/* I: invite exception (when server is invite-only, user can still join) */
 
 }	t_memberModes;
+//NOTE: All +qao members automatically inherit (VOICE | BAN_EXEMPT | INV_EXEMPT)
+//They cannot be placed on ban list, never need an invite, and can always speak
 
 #endif
+
+
+
+
+
 
 /* Modes List
 

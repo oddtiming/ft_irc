@@ -174,6 +174,7 @@ void	Server::handleMessages(Client* client)
 	}
 }
 
+/* Execute a command from client */
 void	Server::executeCommand(const Message & msg) {
 	try {
 		/* Check if command exists */
@@ -185,6 +186,7 @@ void	Server::executeCommand(const Message & msg) {
 	}
 }
 
+/* Main server loop */
 void	Server::runServer(void) {
 
 	while (_status == ONLINE) {
@@ -225,31 +227,40 @@ bool	Server::doesNickExist(const std::string nick) const {
 	return (false);
 }
 
-/*
-bool	Server::doesChannelExist(const std::string channel) const {
+
+/* Check if a specified channel name already exists */
+bool	Server::doesChannelExist(const std::string& channel) const {
 	if (_channels.find(channel) != _channels.end())
 		return (true);
 	return (false);
 }
-*/
+
 
 /* Create a new channel with given channel name */
-void	Server::createChannel(const std::string channel) {
-	//FIXME: This might be redundant
+void	Server::createChannel(const std::string& channel, const std::string& pass, Client* owner) {
 	/* Check if channel already exists */
 	if (_channels.find(channel) == _channels.end())
 		return;
-		//Error
-	
+	_channels["channel"] = new Channel(channel, pass, owner);
 }
 
 /* Destroy channel with given channel name */
-void	Server::destroyChannel(const std::string channel) {
+void	Server::destroyChannel(const std::string& channel) {
 	/* Find correct channel in map */
 	std::map<std::string, Channel *>::iterator it = _channels.find(channel);
-	Channel* curChannel = it->second;
-
-	/* Call member function for channel to remove member modes */
-	//This can be called in channel destructor
+	if (it == _channels.end())
+		return;
+	delete it->second;
+	_channels.erase(it);
 }
 
+bool	Server::channelCheckPass(const std::string& channel, const std::string& pass) {
+	std::map<std::string, Channel *>::iterator it = _channels.find(channel);
+	/* Check if channel exists */
+	if (it == _channels.end())
+		return (false);
+	/* Check if password match */
+	if (it->second->getPass() == pass)
+		return (true);
+	return (false);
+}

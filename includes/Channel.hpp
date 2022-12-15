@@ -4,49 +4,54 @@
 #pragma once
 
 /* System Includes */
-#include <vector>
+#include <map>
 #include <string>
 
 /* Local Includes */
-
-class Client;
+#include "Client.hpp"
 
 class Channel {
 	public:
-		/* Constructors & Destructor */
-		Channel() { }
-		~Channel() { }
-		/* Operator Overloads */
+		Channel(const std::string& name, const std::string& pass, Client* owner);
+		~Channel();
 
-		/* Setters & Getters */
-		const	std::string& getName();
-		void	setName(const std::string name);
+		void	closeChannel();
 
-		const	std::string& getTopic();
-		void	setTopic(const std::string name);
+		/*************************/
+		/*   Setters & Getters   */
+		/*************************/
+		const	std::string& getName() { return (_name); }
+		const	std::string& getTopic() { return (_topic); }
+		void	setTopic(const std::string topic) { _topic = topic; }
 
-		void	setOwner(const Client* client);
-		void	changeOwner(const Client* client);
-		
-		bool	isOp(const Client& client);
-		void	addOp(const Client* client);
-		void	removeOp(const Client* client);
+		void	setOwner(Client* owner) { _owner = owner; }
+		Client*	getOwner(void) const { return (_owner); }
 
-		bool	isMember(const Client& client);
-		void	addMember(const Client* client);
-		void	removeMember(const Client* client);
+		std::string	getPass() { return (_pass); }
+		void	setPass(const std::string& pass) { _pass = pass; }
 
-		void	setModes(char modes);
+		/*******************************/
+		/*        Mode Management      */
+		/*******************************/
+		void	setModes(char modes, bool isAdd);
+		void	setMemberModes(const std::string& nick, char modes, bool isAdd);
+		bool	checkModes(char modes);
+		bool	checkMemberModes(const std::string& nick, char modes);
 
-		void	removeMemberModes();
-
-		/* Public Member Functions */
+		/***********************************/
+		/*    Channel Member Management    */
+		/***********************************/
+		bool	isMember(const std::string& nick);
+		void	addMember(Client* client);
+		void	removeMember(const std::string& nick);
 
 	private:
-		std::string						_name;			/* Channel name */
+		const std::string				_name;			/* Channel name */
+		std::string						_pass;
 		std::string						_topic;			/* Channel topic */
 		Client *						_owner;			/* Channel owner */
-		std::map<int, Client *>			_members;		/* Channel member list (key is client socket FD)*/
+		std::map<std::string, Client *>	_members;		/* Channel member list */
+		std::map<std::string, char>		_memberModes;	/* Per client channel modes */
 		char							_modes;			/* Channel modes */
 };
 

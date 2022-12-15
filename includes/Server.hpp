@@ -34,37 +34,42 @@ typedef enum s_serverStatus {
 
 class Server {
 	public:
-		/* Constructors & Destructors */
 		Server(const std::string& hostname, const int port, const std::string& password);
 		~Server();
 		
-		/* Operator Overloads */
 
 		/* Setters & Getters */
 		const std::string& getServerPassword(void) const { return _password; }
 		const std::string& getHostname(void) const { return _hostname; }
 
-		// FIXME: not sure if Client * needs to be const. Needs to be implemented anyways
-		Client* getClientPtr(const std::string& clientName);
-
-		/* Public Member Functions */
+	
+		/*************************/
+		/*    Server Operation   */
+		/*************************/
 		void	initializeConnection();
 		void	initializeCommands();
 		void	runServer();
-
 		void	handleConnections();
 		void	handleMessages(Client* client);
-
 		void	executeCommand(const Message & msg);
-
+		
+		/*************************/
+		/*   Client Management   */
+		/*************************/
 		bool	doesUserExist(const std::string user) const;
 		bool	doesNickExist(const std::string nick) const;
+		Client* getClientPtr(const std::string& clientName);
+		// FIXME: not sure if Client * needs to be const. Needs to be implemented anyways
 
-		/* Channel Functions */
-		bool	doesChannelExist(const std::string channel) const;
-		bool	isUserChannelMember(const std::string user) const;
-		void	createChannel(const std::string channel);
-		void	destroyChannel(const std::string channel);
+
+		/************************/
+		/*  Channel Management  */
+		/************************/
+		bool	doesChannelExist(const std::string& channel) const;
+		bool	isUserChannelMember(const std::string& user) const;
+		void	createChannel(const std::string& channel, const std::string& pass, Client* owner);
+		void	destroyChannel(const std::string& channel);
+		bool	channelCheckPass(const std::string& channel, const std::string& pass);
 
 
 		/* Exceptions */

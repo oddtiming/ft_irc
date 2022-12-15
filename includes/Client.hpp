@@ -14,13 +14,12 @@
 
 class Client {
 	public:
-		/* Constructors & Destructor */
 		Client(int socket);
 		~Client();
 
-		/* Operator Overloads */
-
-		/* Setters & Getters */
+		/*************************/
+		/*   Setters & Getters   */
+		/*************************/
 		void				setNickname(const std::string& nickname) { _nickname = nickname; }
 		void				setPassword(const std::string& password) { _password = password; }
 		void				setUsername(const std::string& username) { _username = username; }
@@ -31,29 +30,21 @@ class Client {
 		const std::string&	getUsername(void) const { return (_username); }
 		const std::string&	getRealname(void) const { return (_realname); }
 		const int&			getSocket(void) const { return (_socket); }
-
-		void				removeChannelModes(const std::string& channel);
-		void				modifyChannelModes(const std::string& channelName, const char& mode, bool removeMode = false);
-		bool				checkChannelModes(const std::string& channelName, const char& mode) const;
-
-		void				modifyGlobalModes(const char& mode, bool removeMode = false);
+		
+		/*************************/
+		/*    Mode Management    */
+		/*************************/
+		void				setGlobalModes(const char& mode, bool removeMode = false);
 		bool				checkGlobalModes(const char& mode) const;
 
-		/* Public Member Functions */
-		void	read();
-		void	reply(const std::string& reply);
+		/************************/
+		/*    I/O Management    */
+		/************************/
+		void				read();
+		void				reply(const std::string& reply);
+		void				replyAllChannels(const std::string& reply);
+		std::string			retrieveMessage();
 
-		void	replyAllChannels(const std::string& reply);
-
-		std::string	retrieveMessage();
-
-
-		class notChannelMemberException : public std::exception {
-		public:
-			const char*	what() const throw() {
-				return("notChannelMemberException: Client is not part of this channel");
-			}
-		};
 
 	private:
 		const int						_socket;
@@ -61,10 +52,8 @@ class Client {
 		std::string						_username;
 		std::string						_realname;
 		std::string						_password;
-		char							_globalModes;	/* Mode flags stored using bitmask */
-		std::map<std::string, char>		_channelModes;	/* Per client channel modes */
-
-		std::string						_inputBuffer;	/*  Raw data received from socket reads */
+		char							_globalModes;		/* Mode flags stored using bitmask */
+		std::string						_inputBuffer;		/*  Raw data received from socket reads */
 		std::string						_awayMessage;
 		// bool							_isAway;
 		

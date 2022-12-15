@@ -2,9 +2,6 @@
 #include "Server.hpp"
 #include "defines.h"
 
-#define MAX_BUFFER_SIZE 512
-//This should be addressed
-
 /* Constructors & Destructor */
 Client::Client(int socket) : _socket(socket) {
 	
@@ -15,58 +12,34 @@ Client::~Client() {
 }
 
 
-/* Operator Overloads */
 
-/* Setters & Getters */
+/************************/
+/*    Mode Management   */
+/************************/
 
-/* Public Member Functions */
-
-/**
- * WARNING: throws a notChannelMemberException if the Client is not part of the Channel
- */
-void	Client::modifyChannelModes(const std::string& channelName, const char& mode, bool removeMode) {
-	std::map<std::string, char>::iterator	it;
-
-	/* Check if the Client is a member of the channel */
-	it = _channelModes.find(channelName);
-	if (it == _channelModes.end())
-		throw notChannelMemberException();
+/* Set global server mode flags */
+void	Client::setGlobalModes(const char &modes, bool removeMode) {
 	/* removeMode toggles whether the provided mode(s) need(s) to be added or removed */
 	if (removeMode)
 	{
-		(*it).second &= ~(mode);
+		_globalModes &= ~(modes);
 		return ;
 	}
-	(*it).second |= mode;
+	_globalModes |= modes;
+}
+//FIXME: Check modes in channel and ensure that all of the bitwise operations are correctly implemented
+
+/* Check global server mode flags */
+bool	Client::checkGlobalModes(const char &modes) const {
+	return _globalModes & modes;
 }
 
-/**
- * WARNING: throws a notChannelMemberException if the Client is not part of the Channel
-*/
-bool	Client::checkChannelModes(const std::string& channelName, const char& mode) const {
-	std::map<std::string, char>::const_iterator	it;
 
-	/* Check if the Client is a member of the channel */
-	it = _channelModes.find(channelName);
-	if (it == _channelModes.end())
-		throw notChannelMemberException();
-	return (*it).second & mode;
-}
+/*****************************/
+/*      I/O Management       */
+/*****************************/
 
-void	Client::modifyGlobalModes(const char &mode, bool removeMode) {
-	/* removeMode toggles whether the provided mode(s) need(s) to be added or removed */
-	if (removeMode)
-	{
-		_globalModes &= ~(mode);
-		return ;
-	}
-	_globalModes |= mode;
-}
-
-bool	Client::checkGlobalModes(const char &mode) const {
-	return _globalModes & mode;
-}
-
+/* Read data from socket */
 void	Client::read(void) {
     char		buf[MAX_BUFFER_SIZE];
 	int			nbytes;
@@ -91,6 +64,8 @@ void	Client::read(void) {
 	}
 }
 
+
+/* Send data to client through socket */
 void	Client::reply(const std::string& reply) {
 	size_t sz;
 	
