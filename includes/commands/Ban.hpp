@@ -13,7 +13,7 @@ class Ban : public Command
 {
     public:
         /* Constructors & Destructor */
-        Ban();
+        Ban(Server* server);
         ~Ban();
 
         /* Public Member Functions */

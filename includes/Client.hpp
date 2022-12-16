@@ -42,7 +42,6 @@ class Client {
 		/************************/
 		void				read();
 		void				reply(const std::string& reply);
-		void				replyAllChannels(const std::string& reply);
 		std::string			retrieveMessage();
 
 

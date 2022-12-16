@@ -13,7 +13,7 @@ class Kick : public Command
 {
     public:
         /* Constructors & Destructor */
-        Kick();
+        Kick(Server *server);
         ~Kick();
 
         /* Public Member Functions */

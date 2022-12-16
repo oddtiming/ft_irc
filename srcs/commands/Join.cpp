@@ -12,7 +12,8 @@ Join::~Join() {
 /* Public Member Functions */
 bool	Join::validate(const Message& msg) {
 
-	std::string valideChanName = "#&!+";
+	// FIXME : lower case channel names 
+	std::string valideChanName = "#&";
 	std::vector<std::string> channels;
 	std::vector<std::string> keys; 
 	std::map<std::string, std::string> m;
@@ -22,11 +23,11 @@ bool	Join::validate(const Message& msg) {
 	std::string chan = msg.getMiddle().at(0);
 
 	size_t pos = chan.find(',');
-	if (chan.at(0) == '0')
-		LEAVEALLCHANNEL;
+	/*if (chan.at(0) == '0')
+		LEAVEALLCHANNEL;*/
 	while (pos = chan.find(',') != std::string::npos)
 	{
-		if(!valideChanName.find(chan.at(0)))
+		if(chan.at(0) != '#')
 		{
 			msg._client->reply(ERR_BADCHANMASK(chan.substr(0, pos)));
 			chan.erase(0, pos + 1);
@@ -59,33 +60,37 @@ bool	Join::validate(const Message& msg) {
 	std::map<std::string, std::string>::iterator it = m.begin();
 	for (; it != m.end(); it++)
 	{
-		if (TOOMANYCHANNELREADY){
+		/*if (TOOMANYCHANNELREADY){
 			msg._client->reply(ERR_TOOMANYCHANNELS(it->first));
 			return false;
 		}
-		else if (!_server->doesChannelExist(it->first))
+		else */if (!_server->doesChannelExist(it->first))
 			_server->createChannel(it->first, it->second, msg._client);
-		else if (_server.checkModes('i', it->first) && USERNOTINVITED) {
+		else if (_server->getChannelPtr(it->first)->checkMemberModes(msg._client, 'i') && _server->getChannelPtr(it->first)->checkModes('i')) {
 			msg._client->reply(ERR_INVITEONLYCHAN(it->first));
 			return false;
 		}
-		else if (BADPASSWORD) {
+		else if (!_server->channelCheckPass(it->first, it->second)) {
 			msg._client->reply(ERR_BADCHANNELKEY(it->first));
 			return false;
 		}
-		else if(CHANNELISFULL){
+		/*else if(CHANNELISFULL){
 			msg._client->reply(ERR_CHANNELISFULL(it->first));
 			return false;
-		}
-		else if (BANNEDFROMCHAN){
+		}*/
+		else if (_server->getChannelPtr(it->first)->checkMemberModes(msg._client, 'b')){
 			msg._client->reply(ERR_BANNEDFROMCHAN(it->first));
 			return false;
 		}
+		else if (it->first.size() > 50){
+			msg._client->reply(ERR_BADCHANMASK(it->first));
+			return false;
+		}
 		else{
-			_server->channelAddMember(it->first, it->second);
-			SENDJOINMESSAGE;
-			if (CHANNELHASTOPIC)
-				msg._client->reply(RPL_TOPIC(it->first, _server.getChannelTopic(it->first)));
+			_server->getChannelPtr(it->first)->addMember(_server->getClientPtr(it->first), 0);
+			//SENDJOINMESSAGE;
+			if (_server->getChannelPtr(it->first)->getTopic().size() > 0)
+				msg._client->reply(RPL_TOPIC(it->first, _server->getChannelPtr(it->first)->getTopic()));
 			else
 				msg._client->reply(RPL_NOTOPIC(it->first));
 		}

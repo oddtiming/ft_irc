@@ -13,7 +13,7 @@ class Mode : public Command
 {
     public:
         /* Constructors & Destructor */
-        Mode();
+        Mode(Server* server);
         ~Mode();
 
         /* Public Member Functions */

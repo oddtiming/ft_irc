@@ -26,27 +26,21 @@ typedef enum e_channelModes {
 	INV_ONLY =			0x8,		/* -i: invite only (users may only join channel if they have been invited by +qao) */
 	TOPIC_SET_OP =		0x10,		/* -t: topic limit (only +qao can set topic) SET DEFAULT */
 	NO_MSG_IN = 		0x20,		/* -n: no external messages (external messages cannot be seen in channel) SET BY DEFAULT */
-	USER_LIMIT =		0x40,		/* -l: channel limit (limit the amount of users that can join channel) */
-	OP_ONLY = 			0x80		/* -O: operator only channel (only server ops can see/access channel)*/
 }	t_channelModes;
 
 
 /* Channel Member Modes */
 typedef enum e_memberModes {
-	OWNER =				0x1,		/* q: owner (highest perm level, only one can exist) */
-	ADMIN =				0x2,		/* a: admin (2nd highest perm level) */
+	BAN = 				0x1,		/* b: ban (prevent user from joining channel, kick them if they are already in channel) */
+	VOICE =				0x2,		/* v: voice (allows user to speak in +m and +M channels) */
 	C_OP =				0x4,		/* o: operator (3rd highest perm level) */
-	VOICE =				0x8,		/* v: voice (allows user to speak in +m and +M channels) */
-	BAN = 				0x10,		/* b: ban (prevent user from joining channel, kick them if they are already in channel) */
-	BAN_EXEMPT = 		0x20,		/* e: ban exception(when users are on ban list, they can still join channel) */
-	INV_EXEMPT= 		0x40		/* I: invite exception (when server is invite-only, user can still join) */
-
+	OWNER =				0x8			/* q: owner (highest perm level, only one can exist) */
 }	t_memberModes;
+
 //NOTE: All +qao members automatically inherit (VOICE | BAN_EXEMPT | INV_EXEMPT)
 //They cannot be placed on ban list, never need an invite, and can always speak
 
 #endif
-
 
 
 

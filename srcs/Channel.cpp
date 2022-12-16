@@ -8,13 +8,10 @@
 Channel::Channel(const std::string& name, const std::string& pass, Client* owner) : _name(name), _owner(owner) {
 
 	/* Set default channel modes */
-	setModes(TOPIC_SET_OP | NO_MSG_IN, true);
-
-	/* Add channel creator to member list */
-	_members[owner->getNickname()] = owner;
-
-	/* Assign member modes to channel creator */
-	setMemberModes(owner->getNickname(), OWNER, true);
+	setModes(TOPIC_SET_OP | NO_MSG_IN);
+	
+	/* Add channel creator to member list, add OWNER to its modes */
+	addMember(owner, OWNER);
 }
 
 Channel::~Channel() {
@@ -26,49 +23,59 @@ void	closeChannel() {
 	//FIXME: Ensure all channel members receive proper notification
 }
 
-
 /*******************************/
 /*        Mode Management      */
 /*******************************/
 
 /* Set channel wide mode flags */
-void	Channel::setModes(char modes, bool isAdd) {
-	if (isAdd) {
-		_modes = (_modes | modes);
+void	Channel::setModes(char modes, bool removeMode) {
+	if (removeMode) {
+		_modes &= ~(modes);
+		return ;
 	}
-	else {
-		_modes = (_modes ^ modes);
-		//FIXME: Ensure use of XOR is correct to remove flags from mask
-	}
+	_modes |= modes;
 }
 
 /* Set member mode flags for a specified client */
-void	Channel::setMemberModes(const std::string& nick, char modes, bool isAdd) {
-	std::map<std::string, char>::iterator it = _memberModes.find(nick);
-	/* Return without doing anything if user not found in list */
-	if (it == _memberModes.end())
-		return;
-	if (isAdd) {
-		it->second = (it->second | modes);
+void	Channel::setMemberModes(Client* client, char modes, bool removeMode) {
+	MemberMap::iterator it = _members.find(client);
+	
+	if (it == _members.end())
+	{
+		/* If user not found in members, check whether their status is stored */
+		it = _notMembers.find(client);
+		if (it == _notMembers.end())
+			return;
 	}
-	else {
-		it->second = (it->second ^ modes);
-		//FIXME: Ensure use of XOR is correct to remove flags from mask
+	if (removeMode) {
+		it->second &= ~(modes);
+		if (modes & BAN) {
+			_notMembers.erase(it);
+		}
+		return ;
 	}
+	it->second |= modes;
+	
+	// After member mode is set run KICK command on banned user.
+	// TODO: MODE command will remove the client if the provided mode has "+b"
 }
 
 /* Check channel wide mode flags */
-bool	Channel::checkModes(char modes){
-	return (_modes == (_modes & modes));
+bool	Channel::checkModes(char modes) {
+	return (_modes & modes) == modes;
 }
 
 /* Check member mode flags for specified client */
-bool	Channel::checkMemberModes(const std::string& nick, char modes) {
-	std::map<std::string, char>::iterator it = _memberModes.find(nick);
+bool	Channel::checkMemberModes(Client* client, char modes) {
+	MemberMap::iterator it = _members.find(client);
+	
 	/* Return without doing anything if user not found in list */
-	if (it == _memberModes.end())
-		return;
-	return (it->second == (it->second & modes));
+	if (it == _members.end()) {
+		it = _notMembers.find(client);
+		if (it == _notMembers.end())
+			return;
+	}
+	return (it->second & modes) == modes;
 }
 
 
@@ -77,32 +84,48 @@ bool	Channel::checkMemberModes(const std::string& nick, char modes) {
 /***********************************/
 
 /* Check if specified client is a member of channel */
-bool	Channel::isMember(const std::string& nick) {
-	std::map<std::string, Client*>::iterator it = _members.find(nick);
-	if (it == _members.end())
-		return(false);
-	return (true); 
+bool	Channel::isMember(Client* client) {
+	return (_members.find(client) != _members.end());
 }
 
 /* Add a new member to channel */
-void	Channel::addMember(Client* client) { 
-	_members[client->getNickname()] = client;
+void	Channel::addMember(Client* client, int modes) {
+	/* Add member and set default member modes */
+	_members[client] = modes; 
 }
 
 /* Remove a member from channel */
-void	Channel::removeMember(const std::string& nick) {
-	std::map<std::string, Client*>::iterator it = _members.find(nick);
+void	Channel::removeMember(Client* client) {
+	bool wasOpe = false;
+	MemberMap::iterator it = _members.find(client);
+
+	/* Return is member not found in channel */
 	if (it == _members.end())
 		return;
 
-	/* Check if member is owner */
-	// if (it->second->getNickname() == _owner->getNickname())
-		//Set new owner
-	//FIXME: Decide how to choose new owner
-	/* Remove member */
+	/* Check if member was owner */
+	if (checkMemberModes(client, C_OP))
+		wasOpe = true;
+
+	/* If member is banned keep track of them*/
+	if (checkMemberModes(client, BAN))
+		_notMembers[it->first] = it->second;
 	_members.erase(it);
-	/* Remove member modes */
-	std::map<std::string, char>::iterator modeIt = _memberModes.find(nick);
-	_memberModes.erase(modeIt);
+	
+	if (wasOpe)
+		ensureOperator();
 }
 
+/* Make sure there is at least one OP in channel*/
+void	Channel::ensureOperator(void) {
+	MemberMap::iterator	it = _members.begin();
+
+	/* Check if there is another OP in channel */
+	for (; it != _members.end(); ++it) {
+		if (checkMemberModes(it->first, C_OP))
+			return;
+	}
+	/* If no OP found, assign OP for first member in channel */
+	it = _members.begin();
+	setMemberModes(it->first, C_OP);
+}

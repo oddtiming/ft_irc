@@ -24,7 +24,7 @@
 /* Class Prototypes */
 class Command;
 
-#define MAX_CONNECTIONS 5
+#define MAX_CONNECTIONS 10
 
 typedef enum s_serverStatus {
 	OFFLINE = 0,
@@ -59,6 +59,7 @@ class Server {
 		bool	doesUserExist(const std::string user) const;
 		bool	doesNickExist(const std::string nick) const;
 		Client* getClientPtr(const std::string& clientName);
+		Channel*getChannelPtr(const std::string& serverName);
 		// FIXME: not sure if Client * needs to be const. Needs to be implemented anyways
 
 

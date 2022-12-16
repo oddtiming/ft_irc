@@ -27,7 +27,6 @@ void	Client::setGlobalModes(const char &modes, bool removeMode) {
 	}
 	_globalModes |= modes;
 }
-//FIXME: Check modes in channel and ensure that all of the bitwise operations are correctly implemented
 
 /* Check global server mode flags */
 bool	Client::checkGlobalModes(const char &modes) const {
