@@ -13,12 +13,12 @@ class User : public Command
 {
     public:
         /* Constructors & Destructor */
-        User();
+        User(Server* server);
         ~User();
 
         /* Public Member Functions */
-        bool                validate(const Message& msg);
-        const std::string&  execute(const Message& msg);
+        bool		validate(const Message& msg);
+        void		execute(const Message& msg);
 
     private:
 

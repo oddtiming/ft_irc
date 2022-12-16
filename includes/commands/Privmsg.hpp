@@ -17,10 +17,12 @@ class Privmsg : public Command
         ~Privmsg();
 
         /* Public Member Functions */
-        bool                validate(const Message& msg);
-        const std::string&  execute(const Message& msg);
+        bool				validate(const Message& msg);
+        void				execute(const Message& msg);
 
     private:
+        std::string _target;
+        bool        _targetIsChannel;
 
 };
 

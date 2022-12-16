@@ -6,34 +6,35 @@
 /* System Includes */
 #include <string>
 #include <vector>
+#include <iostream>		// FIXME: for std::cerr DEBUG, to remove
+#include <algorithm>
 
 /* Local Includes */
 
-class Client;
-
 /* Class Prototypes */
 class Command;
+class Client;
 
 class Message {
 	public:
 		/* Constructors & Destructor */
 		Message(Client* client, std::string raw);
-		~Message();
+		~Message() { }
 
 		/* Setters & Getters */
-		const 	std::string&				getCommand() const;
-		const	std::string&				getPrefix() const;
-		const	std::vector<std::string>&	getParams() const;
+		const 	std::string&				getCommand() const { return _cmd; }
+		const	std::string&				getPrefix() const { return _prefix; }
+		const	std::string&				getTrailing() const { return _trailing; }
+		const	std::vector<std::string>&	getMiddle() const { return _middle; }
 
-		/*Utils*/
-		const	std::string&				getReplies(int code) const;
+		/* Public Attributes */
+		Client*						_client;
 
 	private:
-
-		std::vector<std::string>	_params;
+		std::vector<std::string>	_middle;
 		std::string					_prefix;
+		std::string					_trailing;
 		std::string					_cmd;	// Represents the command string, in lower case
-		Client*						_client;
 };
 
 #endif

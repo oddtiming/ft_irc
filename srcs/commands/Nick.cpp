@@ -1,40 +1,43 @@
-<<<<<<< HEAD
-#include "../../includes/commands/Nick.hpp"
-#include "../../includes/replies.hpp"
+#include "commands/Nick.hpp"
+#include "Server.hpp"
 
-Nick::Nick()
-{
-	_name = "nick";
+Nick::Nick(Server* server) : Command("nick", server) {
 	_channelOpRequired = false;
 	_globalOpRequired = false;
 }
 
 bool Nick::validate(const Message& msg) {
-	std::vector<std::string> name = msg.getParams();
-	if (name.size() == 0)
+	std::vector<std::string>	middle = msg.getMiddle();
+	std::string					nick = middle.at(0);
+
+	if (middle.size() == 0)
 	{
-		msg.getReplies(ERR_NONICKNAMEGIVEN);
-		return (false);
+		msg._client->reply(ERR_NONICKNAMEGIVEN());
+		std::cerr << "ERR_NONICKNAMEGIVEN" << std::endl;
+		return false;
 	}
-	else if (name[0].size() > 9)
+	/* If nickname is too long, return error */
+	else if (nick.size() > 9)
 	{
-		msg.getReplies(ERR_ERRONEUSNICKNAME);
-		return (false);
+		msg._client->reply(ERR_ERRONEUSNICKNAME(nick));
+		std::cerr << "ERR_ERRONEUSNICKNAME" << std::endl;
+		return false;
 	}
-	if (find(_server->_users.begin(), _server->_users.end(), name)
+	/* If nickname is already in use, return error */
+	else if (_server->doesNickExist(nick))
 	{
-		msg.getReplies(ERR_NICKNAMEINUSE);
-		return (false);
+		msg._client->reply(ERR_NICKNAMEINUSE(nick));
+		std::cerr << "ERR_NICKNAMEINUSE" << std::endl;
+		return false;
 	}
-	return (true);
+	return true;
 }
 
 void Nick::execute(const Message &msg) {
-	std::string	name = msg.getParams()[0];
+	std::string	nick = msg.getMiddle().at(0);
+
+	if (validate(msg))
+		msg._client->setNickname(nick);
 	//send new nick msg to all relevant user, format:
-	//(msg._user->getNickname() + "!" + msg._user->getUsername()
-	// + "@" + _server->getName()+ " NICK :" + name + "\n").c_str();
-	msg._user->setNickname(name);
-	return (msg._user->getNickname() + "!" + msg._user->getUsername()
-	 + "@" + _server-> + " NICK :" + name + "\n").c_str();
+	//_buildPrefix() + " NICK :" + nick + "\n").c_str();
 }

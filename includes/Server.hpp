@@ -10,7 +10,8 @@
 #include <poll.h>
 #include <errno.h>
 #include <string>
-#include <iostream>
+#include <iostream>		// cout, cerr, endl
+#include <algorithm>	// find_if
 #include <iomanip>
 #include <vector>
 #include <map>
@@ -25,9 +26,6 @@ class Command;
 
 #define MAX_CONNECTIONS 5
 
-// FIXME: set back to 0 before corrections, makes use of the recvmsg() function
-#define DEBUG 1
-
 typedef enum s_serverStatus {
 	OFFLINE = 0,
 	ONLINE = 1,
@@ -36,23 +34,42 @@ typedef enum s_serverStatus {
 
 class Server {
 	public:
-		/* Constructors & Destructors */
-		Server();
 		Server(const std::string& hostname, const int port, const std::string& password);
 		~Server();
 		
-		/* Operator Overloads */
 
 		/* Setters & Getters */
-		const std::string& getServerPassword(void);
+		const std::string& getServerPassword(void) const { return _password; }
+		const std::string& getHostname(void) const { return _hostname; }
 
-		/* Public Member Functions */
-		void	initializeServer();
+	
+		/*************************/
+		/*    Server Operation   */
+		/*************************/
+		void	initializeConnection();
 		void	initializeCommands();
 		void	runServer();
-
 		void	handleConnections();
 		void	handleMessages(Client* client);
+		void	executeCommand(const Message & msg);
+		
+		/*************************/
+		/*   Client Management   */
+		/*************************/
+		bool	doesUserExist(const std::string user) const;
+		bool	doesNickExist(const std::string nick) const;
+		Client* getClientPtr(const std::string& clientName);
+		// FIXME: not sure if Client * needs to be const. Needs to be implemented anyways
+
+
+		/************************/
+		/*  Channel Management  */
+		/************************/
+		bool	doesChannelExist(const std::string& channel) const;
+		bool	isUserChannelMember(const std::string& user) const;
+		void	createChannel(const std::string& channel, const std::string& pass, Client* owner);
+		void	destroyChannel(const std::string& channel);
+		bool	channelCheckPass(const std::string& channel, const std::string& pass);
 
 
 		/* Exceptions */

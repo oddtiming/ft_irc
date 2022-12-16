@@ -18,7 +18,7 @@ class Names : public Command
 
         /* Public Member Functions */
         bool                validate(const Message& msg);
-        const std::string&  execute(const Message& msg);
+        void                execute(const Message& msg);
 
     private:
 

@@ -14,40 +14,50 @@
 
 class Client {
 	public:
-		/* Constructors & Destructor */
-		Client(int sockFD);
+		Client(int socket);
 		~Client();
 
-		/* Operator Overloads */
+		/*************************/
+		/*   Setters & Getters   */
+		/*************************/
+		void				setNickname(const std::string& nickname) { _nickname = nickname; }
+		void				setPassword(const std::string& password) { _password = password; }
+		void				setUsername(const std::string& username) { _username = username; }
+		void				setRealname(const std::string& realname) { _realname = realname; }
 
-		/* Setters & Getters */
-		void				setNickname(const std::string& nickname);
-		const std::string&	getNickname(void);
-
-		void				setClientname(const std::string& nickname);
-		const std::string&	getClientname(void);
-
-		void				setPassword(const std::string& nickname);
-		const std::string&	getPassword(void);
-
+		const std::string&	getNickname(void) const { return (_nickname); }
+		const std::string&	getPassword(void) const { return (_password); }
+		const std::string&	getUsername(void) const { return (_username); }
+		const std::string&	getRealname(void) const { return (_realname); }
+		const int&			getSocket(void) const { return (_socket); }
 		
-		void				setChannelModes(const char& mode);
-		bool				checkChannelModes(const std::string& channel, const char& mode);
+		/*************************/
+		/*    Mode Management    */
+		/*************************/
+		void				setGlobalModes(const char& mode, bool removeMode = false);
+		bool				checkGlobalModes(const char& mode) const;
 
-		void				setGlobalModes(const char& mode);
-		bool				checkGlobalModes(const char& mode);
+		/************************/
+		/*    I/O Management    */
+		/************************/
+		void				read();
+		void				reply(const std::string& reply);
+		void				replyAllChannels(const std::string& reply);
+		std::string			retrieveMessage();
 
-		/* Public Member Functions */
-		Message	read();
-		void	reply(const std::string& msg);
 
 	private:
 		const int						_socket;
 		std::string						_nickname;
-		std::string						_Clientname;
+		std::string						_username;
+		std::string						_realname;
 		std::string						_password;
 		char							_globalModes;		/* Mode flags stored using bitmask */
-		std::map<std::string, char>		_channelModes;		/* Per client channel modes */
+		std::string						_inputBuffer;		/*  Raw data received from socket reads */
+		std::string						_awayMessage;
+		// bool							_isAway;
+		
+		/* Private Member Functions */
 };
 
 #endif
