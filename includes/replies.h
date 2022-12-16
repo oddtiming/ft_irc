@@ -2,15 +2,26 @@
 // ": 001 " + (nick) + " " + : + "Welcome to the Internet Relay Network " + (prefix)
 #define RPL_WELCOME(nick, prefix) "001 " + (nick) + "Welcome to Internet Relay Network " + (prefix) + "\r\n" //001
 #define RPL_AWAY(_target, _awayMessage) (_target) + " :" + (_awayMessage) //301
+#define	RPL_NOTOPIC(channel) (channel) + " :No topic is set" //331
+#define	RPL_TOPIC(channel, topic) (channel) + " :" + (topic) //332
 #define ERR_NOSUCHNICK(nickname) (nickname) + " :No such nickname" //401
+#define ERR_NOSUCHCHANNEL(channel) (channel) + " :No such channel" //403
 #define ERR_CANNOTSENDTOCHAN(channel) (channel) + " :Cannot send to channel" //404
+#define	ERR_TOOMANYCHANNELS(channel) (channel) + " :You have joined too many channels" //405
 #define ERR_NORECIPIENT(cmd) ":No recipient given (" + (cmd) + ")" //411
 #define ERR_NOTEXTTOSEND() ":No text to send" //412
 #define ERR_NONICKNAMEGIVEN() ":No nickname given" //431
 #define ERR_ERRONEUSNICKNAME(nick) (nick) + " :Erroneous nickname" //432
 #define ERR_NICKNAMEINUSE(nick) (nick) + " :Nickname is already in use" //433
+#define ERR_NOTONCHANNEL(channel) (channel) + " :You're not on that channel"
 #define ERR_NEEDMOREPARAMS(cmd) (cmd) + " :Not enough parameters" //461
 #define ERR_ALREADYREGISTRED() ":Unauthorized command (already registered)" //462
+#define	ERR_CHANNELISFULL(channel) (channel) + " :Cannot join channel (+l)" //471
+#define	ERR_INVITEONLYCHAN(channel) (channel) + " :Cannot join channel (+i)" //473
+#define	ERR_BANNEDFROMCHAN(channel) (channel) + " :Cannot join channel (+b)" //474
+#define	ERR_BADCHANNELKEY(channel) (channel) + " :Cannot join channel (+k)" //475
+#define ERR_BADCHANMASK(channel) (channel) + " :Bad Channel Mask" //476
+
 /*
 #define RPL_WELCOME 1
 #define RPL_YOURHOST 2
