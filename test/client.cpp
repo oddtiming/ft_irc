@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <netinet/in.h>
 
-#define PORT 6667
+#define PORT 6697
  
 
 

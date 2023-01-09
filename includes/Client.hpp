@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 #include <sys/socket.h>
+#include <netinet/in.h>
 
 /* Local Includes */
 #include "Channel.hpp"
@@ -24,6 +25,7 @@ class Client {
 		void				setPassword(const std::string& password) { _password = password; }
 		void				setUsername(const std::string& username) { _username = username; }
 		void				setRealname(const std::string& realname) { _realname = realname; }
+		void				setAddress(const struct sockaddr_in address) { _address = address; }
 
 		const std::string&	getNickname(void) const { return (_nickname); }
 		const std::string&	getPassword(void) const { return (_password); }
@@ -55,6 +57,8 @@ class Client {
 		std::string						_inputBuffer;		/*  Raw data received from socket reads */
 		std::string						_awayMessage;
 		// bool							_isAway;
+
+		struct sockaddr_in				_address;
 		
 		/* Private Member Functions */
 };
