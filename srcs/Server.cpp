@@ -33,6 +33,9 @@ Server::Server(const std::string& hostname, const int port, const std::string& p
 	/* Setup server connection */
 	initializeConnection();
 	
+	std::cout << "	port: " << port << std::endl;
+	std::cout << "	pass: " << password << std::endl;
+	
 	/* Initialize commands map */
 	initializeCommands();
 
@@ -111,6 +114,9 @@ void	Server::initializeConnection(void) {
 	/* Set up pollFDs */
 	pollfd pfd = {.fd = _socket, .events = POLLIN, .revents = 0};
 	_pfds.push_back(pfd);
+
+	/* Print status */
+	std::cout << "Server initialization successful" << std::endl;
 }
 
 /* Intialize Commands Map */
@@ -142,20 +148,33 @@ void	Server::initializeCommands(void) {
 	//_commands["invite"] = new Invite();
 	//_commands["motd"] = new Motd();
 	
-
+	/* Print status */
+	std::cout << "Command initialization successful" << std::endl;
 }
 
 /* Manage Connection Requests from New Clients */
 void	Server::handleConnections()
 {
+	std::cout << "Incoming connection request" << std::endl;
+
 	//FIXME: Pass addressinfo struct to get client data for implementing FTP later on
 	int	new_fd;
+	int	addressLen;
+	struct sockaddr_in clientAddress;
 
-	if ((new_fd = accept(_socket, NULL, NULL)) < 0)
+	addressLen = sizeof(clientAddress);
+	if ((new_fd = accept(_socket, (struct sockaddr *)&clientAddress, (socklen_t *)&addressLen)) < 0)
 		throw Server::acceptException();
 	_clients.push_back(new Client(new_fd));
+	_clients.back()->setAddress(clientAddress);
 	pollfd pfd = {.fd = new_fd, .events = POLLIN, .revents = 0};
 	_pfds.push_back(pfd);
+
+	
+	/* Print new client data */
+	std::cout << "New client connected successfully" << std::endl;
+	std::cout << "	address: " << inet_ntoa(clientAddress.sin_addr) <<  std::endl;
+
 }
 
 /* Read incoming data from client socket & perform actions */
@@ -189,6 +208,8 @@ void	Server::executeCommand(const Message & msg) {
 /* Main server loop */
 void	Server::runServer(void) {
 
+	/* Print status */
+	std::cout << "Starting server run loop" << std::endl;
 	while (_status == ONLINE) {
 
 		if (poll(_pfds.data(), _pfds.size(), -1) < 0)

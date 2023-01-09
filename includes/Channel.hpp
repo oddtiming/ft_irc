@@ -10,7 +10,7 @@
 #include <string>
 
 /* Local Includes */
-#include "Client.hpp"
+class Client;
 
 class Channel {
 	

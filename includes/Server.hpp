@@ -6,6 +6,7 @@
 /* System Includes */
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <fcntl.h>
 #include <poll.h>
 #include <errno.h>

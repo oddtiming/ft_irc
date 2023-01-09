@@ -3,6 +3,8 @@
 #include "Channel.hpp"
 #include "defines.h"
 
+class Client;
+
 
 /* Constructors & Destructor */
 Channel::Channel(const std::string& name, const std::string& pass, Client* owner) : _name(name), _owner(owner) {
@@ -12,6 +14,9 @@ Channel::Channel(const std::string& name, const std::string& pass, Client* owner
 	
 	/* Add channel creator to member list, add OWNER to its modes */
 	addMember(owner, OWNER);
+
+	/* Set channel password */
+	_pass = pass;
 }
 
 Channel::~Channel() {
@@ -73,7 +78,7 @@ bool	Channel::checkMemberModes(Client* client, char modes) {
 	if (it == _members.end()) {
 		it = _notMembers.find(client);
 		if (it == _notMembers.end())
-			return;
+			return (false);
 	}
 	return (it->second & modes) == modes;
 }

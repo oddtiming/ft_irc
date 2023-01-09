@@ -5,6 +5,7 @@ NAME			:= ircserv
 
 
 CPP_FILES		:=	main.cpp \
+					Channel.cpp \
 					Client.cpp \
 					Message.cpp \
 					Server.cpp \
@@ -13,6 +14,7 @@ CPP_FILES		:=	main.cpp \
 
 
 INC_FILES		:=	defines.h \
+					Channel.hpp \
 					Client.hpp \
 					Message.hpp \
 					Server.hpp \
