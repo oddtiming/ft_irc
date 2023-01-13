@@ -1,6 +1,6 @@
 #include "Command.hpp"
 // ": 001 " + (nick) + " " + : + "Welcome to the Internet Relay Network " + (prefix)
-#define RPL_WELCOME(nick, prefix) "001 " + (nick) + "Welcome to Internet Relay Network " + (prefix) + "\r\n" //001
+#define RPL_WELCOME(nick, prefix) "001 " + (nick) + " Welcome to Internet Relay Network " + (prefix) + "\r\n" //001
 #define RPL_AWAY(_target, _awayMessage) (_target) + " :" + (_awayMessage) //301
 #define	RPL_NOTOPIC(channel) (channel) + " :No topic is set" //331
 #define	RPL_TOPIC(channel, topic) (channel) + " :" + (topic) //332
