@@ -52,14 +52,18 @@ void	Client::read(void) {
 		std::cerr << "recv() call failed on socket #" << _socket << ".\n"
 				  << "errno : " << errno << std::endl;
 	}
+	//Testing fix for weird chars being read (null terminate before attempting to convert to std::string)
+	buf[nbytes] = '\0';
 	input = buf;
 	if (nbytes == MAX_BUFFER_SIZE)
 		input = input.replace(510, 2, "\r\n");
 	_inputBuffer.append(input);
+
+	/* Print received messages from client */
 	if (DEBUG)
 	{
-		std::cerr << "Client #" << _socket << " received following message: '"
-				<< input << "'." << std::endl;
+		std::cerr << RED"Message received from client on socket #" << _socket << CLEAR << std::endl <<
+				"	" << input << std::endl;
 	}
 }
 
@@ -68,14 +72,15 @@ void	Client::read(void) {
 void	Client::reply(const std::string& reply) {
 	size_t sz;
 	
-	// FIXME: debug
-	std::cerr << "Sending reply '" << reply << "' to socket #" << _socket << std::endl;
+	if (DEBUG)
+		std::cerr << RED"Sending reply to client on socket #" << _socket << CLEAR << std::endl <<
+			"	" << reply << std::endl;
 	
 	if ((sz = send(_socket, reply.c_str(), reply.size(), 0)) < 0)
 		throw std::runtime_error("Error sending message");
 		
-	// FIXME: debug
-	std::cerr << "return from send: " << sz << std::endl;
+	if (DEBUG)
+		std::cerr << RED"Return value from send: " CLEAR << sz << std::endl << std::endl;
 }
 
 /* Check input buffer and return a single message command string */

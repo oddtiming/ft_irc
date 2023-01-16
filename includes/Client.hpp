@@ -54,7 +54,7 @@ class Client {
 		std::string						_realname;
 		std::string						_password;
 		char							_globalModes;		/* Mode flags stored using bitmask */
-		std::string						_inputBuffer;		/*  Raw data received from socket reads */
+		std::string						_inputBuffer;		/* Raw data received from socket reads */
 		std::string						_awayMessage;
 		// bool							_isAway;
 

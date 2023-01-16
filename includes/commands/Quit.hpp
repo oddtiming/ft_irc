@@ -13,7 +13,7 @@ class Quit : public Command
 {
 	public:
 		/* Constructors & Destructor */
-		Quit();
+		Quit(Server* server);
 		~Quit();
 
 		/* Public Member Functions */

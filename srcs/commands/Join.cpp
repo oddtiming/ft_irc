@@ -12,21 +12,82 @@ Join::~Join() {
 /* Public Member Functions */
 bool	Join::validate(const Message& msg) {
 
+	/* Multiple channels can be joined at once, seperated by commas */
+	/* Channel name does not need to start with #, but # will be prepended to given name*/
+	/* Channel names do not need to be lower case */
+	/* Channel names cannot contain spaces or commas, maximum 200 chars long, no non-printable chars */
+
+	/* When multiple channels are given, multiple keys can be given */
+	/* Error message if not enough information received to execute command */
+	if (msg.getMiddle().empty())
+	{
+		msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
+		return (false);
+	}
+	else if (msg.getMiddle().at)
+	else
+	{
+		std::string raw = msg.getMiddle().at(0);
+		size_t pos;
+
+		/* Loop through buffer until all channels checked */
+		while ((pos = raw.find(',')) != std::string::npos)
+		{
+			
+		}
+		std::string buf = raw.substr(0, pos);
+
+		/* Check if channel name is valid */
+
+		/* Remove from raw string */
+
+
+
+		std::string chan = msg.getMiddle().at(0);
+
+	size_t pos = chan.find(',')
+
+
+			if(chan.at(0) != '#')
+		{
+			msg._client->reply(ERR_BADCHANMASK(chan.substr(0, pos)));
+			chan.erase(0, pos + 1);
+			continue;
+		}
+		channels.push_back(chan.substr(0, pos));
+		chan.erase(0, pos + 1);
+	}
+
+	
+
+
+	/* Step 1: Get list of all channels asking to be join/created */
+
+	/* Step 2: Verify that names are valid */
+
+	/* Step 3: */
+
+
 	// FIXME : lower case channel names 
-	std::string valideChanName = "#&";
-	std::vector<std::string> channels;
+	// std::string valideChanName = "#&";
+	// std::vector<std::string> channels;
 	std::vector<std::string> keys; 
 	std::map<std::string, std::string> m;
 
-	if (msg.getMiddle().size() < 1)
-		msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
+	
+
+
+
 	std::string chan = msg.getMiddle().at(0);
 
 	size_t pos = chan.find(',');
 	/*if (chan.at(0) == '0')
 		LEAVEALLCHANNEL;*/
+
+	/* Create a list of all channels that client is asking to join */
 	while (pos = chan.find(',') != std::string::npos)
 	{
+		/* If channel has invalid first character, return error */
 		if(chan.at(0) != '#')
 		{
 			msg._client->reply(ERR_BADCHANMASK(chan.substr(0, pos)));
@@ -37,6 +98,7 @@ bool	Join::validate(const Message& msg) {
 		chan.erase(0, pos + 1);
 	} 
 
+	/* If at least one valid channel was found, add to list of channels to join */
 	if (chan.size() > 0)
 		channels.push_back(chan);
 
@@ -64,7 +126,10 @@ bool	Join::validate(const Message& msg) {
 			msg._client->reply(ERR_TOOMANYCHANNELS(it->first));
 			return false;
 		}
-		else */if (!_server->doesChannelExist(it->first))
+		else */
+		
+		
+		if (!_server->doesChannelExist(it->first))
 			_server->createChannel(it->first, it->second, msg._client);
 		else if (_server->getChannelPtr(it->first)->checkMemberModes(msg._client, 'i') && _server->getChannelPtr(it->first)->checkModes('i')) {
 			msg._client->reply(ERR_INVITEONLYCHAN(it->first));
@@ -98,6 +163,7 @@ bool	Join::validate(const Message& msg) {
 }
 
 void	Join::execute(const Message& msg) {
+
 	if (validate(msg))
 	{
 		/* Check if channel exists */

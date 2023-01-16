@@ -5,6 +5,7 @@
 
 /* System Includes */
 #include <string>
+#include <vector>
 
 /* Local Includes */
 #include "Command.hpp"
@@ -21,6 +22,7 @@ class Join : public Command
         void                execute(const Message& msg);
 
     private:
+        std::vector<std::string>    _channels;
 
 };
 

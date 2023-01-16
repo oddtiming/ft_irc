@@ -10,7 +10,8 @@ CPP_FILES		:=	main.cpp \
 					Message.cpp \
 					Server.cpp \
 					commands/Nick.cpp \
-					commands/User.cpp
+					commands/User.cpp \
+					commands/Quit.cpp
 
 
 INC_FILES		:=	defines.h \
@@ -20,7 +21,8 @@ INC_FILES		:=	defines.h \
 					Server.hpp \
 					replies.h \
 					commands/Nick.hpp \
-					commands/User.hpp
+					commands/User.hpp \
+					commnds/Quit.hpp
 
 
 

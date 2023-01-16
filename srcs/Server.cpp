@@ -1,5 +1,5 @@
 #include "Server.hpp"
-
+#include "defines.h"
 /********************/
 /* Command Includes */
 /********************/
@@ -20,7 +20,7 @@
 // #include "commands/Pass.hpp"
 // #include "commands/Ping.hpp"
 // #include "commands/Privmsg.hpp"
-// #include "commands/Quit.hpp"
+#include "commands/Quit.hpp"
 #include "commands/User.hpp"
 
 /*****************************/
@@ -32,14 +32,25 @@ Server::Server(const std::string& hostname, const int port, const std::string& p
 	
 	/* Setup server connection */
 	initializeConnection();
-	
-	std::cout << "	port: " << port << std::endl;
-	std::cout << "	pass: " << password << std::endl;
+	if (DEBUG)
+	{
+		std::cout << RED"Server initialization successful" CLEAR << std::endl;
+		std::cout << "	port: " << port << std::endl;
+		std::cout << "	pass: " << password << std::endl;
+	}
 	
 	/* Initialize commands map */
 	initializeCommands();
-
+	if (DEBUG)
+	{
+		std::cout << RED "Command initialization successful" CLEAR<< std::endl;
+	}
 	/* Start Server Loop */
+	if (DEBUG)
+	{
+		std::cout << RED"Server status: " CLEAR << GREEN"ONLINE" CLEAR << std::endl;
+		std::cout << "_______________________________________" << std::endl << std::endl;
+	}
 	runServer();
 }
 
@@ -114,9 +125,6 @@ void	Server::initializeConnection(void) {
 	/* Set up pollFDs */
 	pollfd pfd = {.fd = _socket, .events = POLLIN, .revents = 0};
 	_pfds.push_back(pfd);
-
-	/* Print status */
-	std::cout << "Server initialization successful" << std::endl;
 }
 
 /* Intialize Commands Map */
@@ -129,7 +137,7 @@ void	Server::initializeCommands(void) {
 	// _commands["help"] = new Help();
 	// _commands["ban"] = new Ban();
 	// _commands["ope"] = new Ope();
-	// _commands["quit"] = new Quit();
+	_commands["quit"] = new Quit(this);
 
 	/* Channel Commands */
 	// _commands["privmsg"] = new Privmsg();
@@ -148,14 +156,13 @@ void	Server::initializeCommands(void) {
 	//_commands["invite"] = new Invite();
 	//_commands["motd"] = new Motd();
 	
-	/* Print status */
-	std::cout << "Command initialization successful" << std::endl;
 }
 
 /* Manage Connection Requests from New Clients */
 void	Server::handleConnections()
 {
-	std::cout << "Incoming connection request" << std::endl;
+	if (DEBUG)
+		std::cout << RED"Incoming connection request" CLEAR<< std::endl;
 
 	//FIXME: Pass addressinfo struct to get client data for implementing FTP later on
 	int	new_fd;
@@ -172,8 +179,11 @@ void	Server::handleConnections()
 
 	
 	/* Print new client data */
-	std::cout << "New client connected successfully" << std::endl;
-	std::cout << "	address: " << inet_ntoa(clientAddress.sin_addr) <<  std::endl;
+	if (DEBUG)
+	{
+		std::cout << "New client connected successfully" << std::endl;
+		std::cout << "	address: " << inet_ntoa(clientAddress.sin_addr) <<  std::endl << std::endl;
+	}
 
 }
 
@@ -185,11 +195,22 @@ void	Server::handleMessages(Client* client)
 	/* Client reads entire input string coming from their socket */
 	client->read();
 
-	/* While there are valid commands (Messages) stored in the client's input string */
-	while ((rawMessage = client->retrieveMessage()).empty() == false)
+	/* Handle forcefully disconnected clients */
+	if ((rawMessage = client->retrieveMessage()).empty() == true)
 	{
-		Message	msg(client, rawMessage);
-		executeCommand(msg);
+		if (DEBUG)
+			std::cout << RED"Removing disconnected client: " CLEAR << client->getUsername() << std::endl;
+		removeClient(client);
+	}
+	else
+	{
+		/* While there are valid commands (Messages) stored in the client's input string */
+		while (rawMessage.empty() == false)
+		{
+			Message	msg(client, rawMessage);
+			executeCommand(msg);
+			rawMessage = client->retrieveMessage();
+		}
 	}
 }
 
@@ -207,9 +228,6 @@ void	Server::executeCommand(const Message & msg) {
 
 /* Main server loop */
 void	Server::runServer(void) {
-
-	/* Print status */
-	std::cout << "Starting server run loop" << std::endl;
 	while (_status == ONLINE) {
 
 		if (poll(_pfds.data(), _pfds.size(), -1) < 0)
@@ -234,6 +252,34 @@ void	Server::runServer(void) {
 	}
 }
 
+/* Remove a client from the server */
+void	Server::removeClient(Client* client) {
+	/* Remove client from all channels */
+	std::map<std::string, Channel *>::iterator it = _channels.begin();
+	for (; it != _channels.end(); ++it)
+		it->second->removeMember(client);
+
+	/* Remove client socket from pollFD vector */
+	std::vector<pollfd>::iterator it2 = _pfds.begin();
+	for (; it2 != _pfds.end(); ++it2)
+	{
+
+		if (it2->fd == client->getSocket())
+		{
+			_pfds.erase(it2);
+			break;
+		}
+	}
+
+	/* Shutdown socket & delete client */
+	std::vector<Client *>::iterator it3 = find(_clients.begin(), _clients.end(), client);
+	if (it3 != _clients.end())
+	{
+		shutdown(client->getSocket(), SHUT_RDWR);
+		_clients.erase(it3);
+	}
+}
+
 /* Check if specified nickname is already in use on server */
 bool	Server::doesNickExist(const std::string nick) const {
 	std::vector<Client *>::const_iterator	it = _clients.begin();
@@ -248,14 +294,12 @@ bool	Server::doesNickExist(const std::string nick) const {
 	return (false);
 }
 
-
 /* Check if a specified channel name already exists */
 bool	Server::doesChannelExist(const std::string& channel) const {
 	if (_channels.find(channel) != _channels.end())
 		return (true);
 	return (false);
 }
-
 
 /* Create a new channel with given channel name */
 void	Server::createChannel(const std::string& channel, const std::string& pass, Client* owner) {

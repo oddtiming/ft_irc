@@ -63,6 +63,8 @@ class Server {
 		Channel*getChannelPtr(const std::string& serverName);
 		// FIXME: not sure if Client * needs to be const. Needs to be implemented anyways
 
+		void	removeClient(Client* client);
+
 
 		/************************/
 		/*  Channel Management  */
