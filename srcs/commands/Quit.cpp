@@ -18,7 +18,12 @@ bool	Quit::validate(const Message& msg) {
 void	Quit::execute(const Message& msg) {
 	/* Check permissions for execution of function */
 	//FIXME: check for proper response to quit
-	std::string	message = "QUIT :";
+	std::string message = "QUIT ";
+
+	if (!msg.getTrailing().empty())
+	{
+		message += msg.getTrailing();
+	}
 	msg._client->reply(message);
 	_server->removeClient(msg._client);
 }

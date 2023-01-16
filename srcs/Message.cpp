@@ -19,7 +19,7 @@ Message::Message(Client* client, std::string raw) : _client(client)
     //This is affecting this entire function, and propogates further as QUIT is not sent as the command name going onwards
     if ((pos = raw.find(" :")) != std::string::npos)
     {
-        _trailing = raw.substr(pos + 1, raw.size());
+        _trailing = raw.substr(pos + 2, raw.size());
         raw = raw.substr(0, pos);
     }
 
