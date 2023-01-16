@@ -36,8 +36,9 @@ bool Nick::validate(const Message& msg) {
 void Nick::execute(const Message &msg) {
 	std::string	nick = msg.getMiddle().at(0);
 
-	if (validate(msg))
+	if (validate(msg)) {
 		msg._client->setNickname(nick);
+	}
 	//send new nick msg to all relevant user, format:
 	//_buildPrefix() + " NICK :" + nick + "\n").c_str();
 }

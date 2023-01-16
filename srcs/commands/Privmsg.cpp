@@ -14,7 +14,7 @@ bool Privmsg::validate(const Message& msg) {
 
     if(args.size() == 0)
     {
-        buildReply(ERR_NORECIPIENT(msg.getCommand()));
+        buildReply(ERR_NORECIPIENT()(msg.getCommand()));
         return false;
     }
     if (args.size() == 1)
