@@ -17,7 +17,7 @@
 #include "commands/Nick.hpp"
 // #include "commands/Ope.hpp"
 // #include "commands/Part.hpp"
-// #include "commands/Pass.hpp"
+ #include "commands/Pass.hpp"
 // #include "commands/Ping.hpp"
 // #include "commands/Privmsg.hpp"
 #include "commands/Quit.hpp"
@@ -148,7 +148,7 @@ void	Server::initializeCommands(void) {
 	// _commands["kick"] = new Kick();
 	_commands["nick"] = new Nick(this);
 	_commands["user"] = new User(this);
-	// _commands["pass"] = new Pass();
+	_commands["pass"] = new Pass(this);
 	// _commands["mode"] = new Mode();
 
 	//_commands["who"] = new Who();

@@ -13,7 +13,7 @@ class Pass : public Command
 {
     public:
         /* Constructors & Destructor */
-        Pass();
+        Pass(Server *server);
         ~Pass();
 
         /* Public Member Functions */

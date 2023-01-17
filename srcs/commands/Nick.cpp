@@ -20,7 +20,6 @@ bool Nick::validate(const Message& msg) {
 	else if (nick.size() > 9)
 	{
 		msg._client->reply(ERR_ERRONEUSNICKNAME(nick));
-		std::cerr << "ERR_ERRONEUSNICKNAME" << std::endl;
 		return false;
 	}
 	/* If nickname is already in use, return error */
@@ -37,6 +36,8 @@ void Nick::execute(const Message &msg) {
 	std::string	nick = msg.getMiddle().at(0);
 
 	if (validate(msg)) {
+		msg._client->reply("001 "  + nick + _buildPrefix(msg) + " NICK " + nick + + "\r\n");
+		//msg._client->reply(RPL_WELCOME(msg._client->getNickname(), _buildPrefix(msg)));
 		msg._client->setNickname(nick);
 	}
 	//send new nick msg to all relevant user, format:
