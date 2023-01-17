@@ -14,6 +14,7 @@ bool	Mode::validate(const Message& msg) {
 
 
 	/*check if there's a target for the command*/
+	//fixme: when receiving "MODE #channelName", reply with channel modes
 	if (middle.size() < 2)
 	{
 		/*msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
