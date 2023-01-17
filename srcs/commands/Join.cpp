@@ -83,13 +83,9 @@ bool	Join::validate(const Message& msg) {
 		{
 				_server->createChannel(name, client);
 				/* Send reply messages */
-				client->reply(":jgoad!jgoad@127.0.0.1 JOIN :#new\r\n");
-				client->reply(":localhost 353 jgoad = #new :@jgoad\r\n");
-				client->reply(":localhost 366 jgoad #new :End of /NAMES list.\r\n");
-
-				// client->reply(CMD_JOIN(_buildPrefix(msg), name));
-				// client->reply(":ircserv 353 jgoad = #new1 :@jgoad\r\n");
-				// client->reply(RPL_ENDOFNAMES(_server->getHostname(), client->getNickname(), name));
+				client->reply(CMD_JOIN(_buildPrefix(msg), name));
+				client->reply(RPL_NAMREPLY(name, "@" + client->getNickname()));
+				client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), name));
 				if (DEBUG)
 					std::cout << BLUE"New channel created: " CLEAR << name << std::endl;
 		/*
@@ -128,6 +124,8 @@ bool	Join::validate(const Message& msg) {
 					channel->addMember(client);
 					/* Send reply messages */
 					client->reply(CMD_JOIN(_buildPrefix(msg), name));
+					client->reply(RPL_NAMREPLY(channel->getName(), channel->getMemberList()));
+					client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), name));
 					//TMP namereply to test
 					client->reply(":ircserv 353 jgoad = #new1 :@jgoad\r\n");
 					// :penguin.omega.example.org 353 Jon__ = #new :@Jon Jon_ Jon__
