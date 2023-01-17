@@ -5,6 +5,9 @@
 /* Reply Messages */
 #define RPL_WELCOME(nick, prefix) "001 " + (nick) + " Welcome to Internet Relay Network " + (prefix) + "\r\n" //001
 #define RPL_AWAY(_target, _awayMessage) (_target) + " :" + (_awayMessage) //301
+#define RPL_UNAWAY()  "305 * :You are no longer marked as being away \r\n" //305
+#define RPL_NOWAWAY() "306 * :You have been marked as being away \r\n" //306
+
 #define	RPL_NOTOPIC(channel) (channel) + " :No topic is set" //331
 #define	RPL_TOPIC(channel, topic) (channel) + " :" + (topic) //332
 #define RPL_NAMREPLY(channel, users) "353 * =" + (channel) + " :" + users +  "\r\n" //353
@@ -29,6 +32,7 @@
 #define ERR_NEEDMOREPARAMS(cmd) "461 * " + (cmd) + " :Not enough parameters" + "\r\n" //461
 #define ERR_ALREADYREGISTRED() ":Unauthorized command (already registered) \r\n" //462
 #define	ERR_CHANNELISFULL(channel) (channel) + " :Cannot join channel (+l)" //471
+#define ERR_UNKNOWNMODE(mode, channel) "472 * " + (mode) + " :is unknown mode char to me for " + (channel) + "\r\n" //472
 #define	ERR_INVITEONLYCHAN(channel) (channel) + " :Cannot join channel (+i)" //473
 #define	ERR_BANNEDFROMCHAN(channel) (channel) + " :Cannot join channel (+b)" //474
 #define	ERR_BADCHANNELKEY(channel) (channel) + " :Cannot join channel (+k)" //475

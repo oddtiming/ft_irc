@@ -4,6 +4,7 @@
 /* Command Includes */
 /********************/
 
+#include "commands/Away.hpp"
 // #include "commands/Ban.hpp"
 // #include "commands/Echo.hpp"
 // #include "commands/Exit.hpp"
@@ -12,7 +13,7 @@
 #include "commands/Join.hpp"
 // #include "commands/Kick.hpp"
 // #include "commands/List.hpp"
-// #include "commands/Mode.hpp"
+#include "commands/Mode.hpp"
 // #include "commands/Names.hpp"
 #include "commands/Nick.hpp"
 // #include "commands/Ope.hpp"
@@ -139,6 +140,8 @@ void	Server::initializeCommands(void) {
 	// _commands["ban"] = new Ban();
 	// _commands["ope"] = new Ope();
 	_commands["quit"] = new Quit(this);
+	_commands["mode"] = new Mode(this);
+	_commands["away"] = new Away(this);
 
 	/* Channel Commands */
 	// _commands["privmsg"] = new Privmsg();

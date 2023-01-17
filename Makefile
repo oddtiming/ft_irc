@@ -13,7 +13,9 @@ CPP_FILES		:=	main.cpp \
 					commands/User.cpp \
 					commands/Quit.cpp \
 					commands/Join.cpp \
-					commands/Pass.cpp
+					commands/Pass.cpp \
+					commands/Mode.cpp \
+					commands/Away.cpp
 
 
 INC_FILES		:=	defines.h \
@@ -26,7 +28,9 @@ INC_FILES		:=	defines.h \
 					commands/User.hpp \
 					commands/Quit.hpp \
                     commands/Pass.hpp \
-					commands/Join.hpp
+					commands/Join.hpp \
+                    commands/Mode.hpp \
+                    commans/Away.hpp
 
 
 

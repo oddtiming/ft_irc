@@ -7,7 +7,7 @@
 #include <string>
 
 /* Local Includes */
-#include "Command.hpp"
+#include "../Command.hpp"
 
 class Mode : public Command
 {
