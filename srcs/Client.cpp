@@ -4,7 +4,7 @@
 
 /* Constructors & Destructor */
 Client::Client(int socket) : _socket(socket) {
-	
+	_isRegistered = false;
 }
 
 Client::~Client() {
@@ -62,7 +62,7 @@ void	Client::read(void) {
 	/* Print received messages from client */
 	if (DEBUG)
 	{
-		std::cerr << RED"Message received from client on socket #" << _socket << CLEAR << std::endl <<
+		std::cerr << BLUE"Message received from client on socket #" << _socket << CLEAR << std::endl <<
 				"	" << input << std::endl;
 	}
 }

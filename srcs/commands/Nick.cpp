@@ -8,24 +8,32 @@ Nick::Nick(Server* server) : Command("nick", server) {
 
 bool Nick::validate(const Message& msg) {
 	std::vector<std::string>	middle = msg.getMiddle();
-	std::string					nick = middle.at(0);
+	Client*						client = msg._client;	
 
-	if (middle.size() == 0)
+	/* Check if a nickname was given */
+	if (middle.empty())
 	{
-		msg._client->reply(ERR_NONICKNAMEGIVEN());
+		client->reply(ERR_NONICKNAMEGIVEN());
 		std::cerr << "ERR_NONICKNAMEGIVEN" << std::endl;
 		return false;
 	}
+	std::string	nick = middle.at(0);
 	/* If nickname is too long, return error */
-	else if (nick.size() > 9)
+	if (nick.size() > 9)
 	{
-		msg._client->reply(ERR_ERRONEUSNICKNAME(nick));
+		client->reply(ERR_ERRONEUSNICKNAME(nick));
 		return false;
 	}
 	/* If nickname is already in use, return error */
-	else if (_server->doesNickExist(nick))
+	if (_server->doesNickExist(nick))
 	{
-		msg._client->reply(ERR_NICKNAMEINUSE(nick));
+		//FIXME: Should be using this reply when nickname is in use upon connection, ERR_NICKNAMEINUSE is used when existing user attempts to change nickname
+		//NICK can never fail on connection, the server will simply provide a new nickname (Nick + _)
+		/*
+		ERR_NICKCOLLISION
+		<nick> :Nickname collision KILL from <user>@<host>
+		*/
+		client->reply(ERR_NICKNAMEINUSE(nick));
 		std::cerr << "ERR_NICKNAMEINUSE" << std::endl;
 		return false;
 	}
@@ -33,13 +41,20 @@ bool Nick::validate(const Message& msg) {
 }
 
 void Nick::execute(const Message &msg) {
-	std::string	nick = msg.getMiddle().at(0);
-
+	
+	//FIXME: move data to Nick class to remove redundant actions
 	if (validate(msg)) {
-		msg._client->reply("001 "  + nick + _buildPrefix(msg) + " NICK " + nick + + "\r\n");
-		//msg._client->reply(RPL_WELCOME(msg._client->getNickname(), _buildPrefix(msg)));
+		std::string	nick = msg.getMiddle().at(0);
 		msg._client->setNickname(nick);
 	}
-	//send new nick msg to all relevant user, format:
-	//_buildPrefix() + " NICK :" + nick + "\n").c_str();
+
 }
+
+/*                        
+
+Response for changing a nickname
+:WiZ!jto@tolsun.oulu.fi NICK Kilroy
+                           ; Server telling that WiZ changed his
+                           nickname to Kilroy.
+
+*/

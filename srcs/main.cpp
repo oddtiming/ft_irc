@@ -11,6 +11,6 @@ int	main(int argc, char **argv)	{
 
 	if (argc != 3)
 		std::cerr << "usage: " << argv[0] << " <port> <password>" << std::endl;
-
-	Server server("ircserv", atoi(argv[1]), argv[2]);
+	else
+		Server server("ircserv", atoi(argv[1]), argv[2]);
 }

@@ -6,6 +6,8 @@
 /* System Includes */
 #include <string>
 #include <vector>
+#include <map>
+#include <utility>
 
 /* Local Includes */
 #include "Command.hpp"
@@ -24,8 +26,10 @@ class Join : public Command
         bool                checkInvalidChars(const std::string& string);
 
     private:
-        std::vector<std::string>    _channels;
-        std::vector<std::string>    _passwords;
+        // std::vector<std::string>    _channels;
+        // std::vector<std::string>    _passwords;
+        std::vector<std::pair<std::string, std::string> > _channels;
+        // std::map<std::string, std::string> _channels;
 
 };
 

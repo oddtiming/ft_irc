@@ -57,6 +57,7 @@ class Client {
 		std::string						_inputBuffer;		/* Raw data received from socket reads */
 		std::string						_awayMessage;
 		// bool							_isAway;
+		bool							_isRegistered;
 
 		struct sockaddr_in				_address;
 		
