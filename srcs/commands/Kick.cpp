@@ -29,14 +29,15 @@ bool	Kick::validate(const Message& msg) {
 		return false;
 	}
 	/*check if user is on the channel*/
-	if (!_server->getChannelPtr(channel)->isMember(_client->getNickname())){
+	//fixme add a way to get client ptr to see if target user is on target channel
+	if (!_server->getChannelPtr(channel)->isMember(msg._client)){
 		msg._client->reply(ERR_NOTONCHANNEL(channel));
 		std::cerr << "ERR_NOTONCHANNEL" << std::endl;
 		return false;
 	}
 	/*check if target is a member of the channel*/
-	if (!_server->getChannelPtr(channel)->isMember(nick)){
-		msg._client->reply(ERR_NOSUCHNICK(nick));
+	if (!_server->getChannelPtr(channel)->isMember()){
+		msg._client->reply(ERR_NOSUCHNICK(user));
 		std::cerr << "ERR_NOSUCHNICK" << std::endl;
 		return false;
 	}
@@ -46,14 +47,14 @@ bool	Kick::validate(const Message& msg) {
 
 void	Kick::execute(const Message& msg) {
 	if (validate(msg)) {
-		std::string					channel = middle.at(0);
-		std::string					user = middle.at(1);
-		std::string	message = "KICK " + chan->getName() + " " + msg.getParams()[1] + " :";
+		std::string					channel = msg.getMiddle().at(0);
+		std::string					user = msg.getMiddle().at(1);
+		std::string	message = "KICK " + channel + " " + user + " :";
 
-		if (msg.getMiddle().size() > 2)
-			message += msg.getParams()[2];
+		if (!msg.getTrailing().empty())
+			message += msg.getTrailing();
 		else
-			message += _user.getNickname();
+			message += msg._client->getNickname();
 		msg._client->reply(message);
 		//TODO: add code to kick user from channel
 	}
