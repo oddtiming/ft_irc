@@ -54,8 +54,10 @@ class Channel {
 		void	removeMember(Client* client);
 		void	ensureOperator(void);
 		std::string getMemberList(void);
+		std::vector<std::string> getMemberVector(void);
 
-	private:
+
+private:
 		const std::string				_name;			/* Channel name */
 		std::string						_pass;
 		std::string						_topic;			/* Channel topic */

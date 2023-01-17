@@ -134,12 +134,27 @@ std::string Channel::getMemberList(void) {
 	/*loops through the MemberMap and build a space-separated list of every nickname
 	 * on this channel, adding a '@' in front of the nick of owner/ops */
 	for (; it != _members.end(); ++it) {
-		if (it != _members.begin())
-			list.append(" ");
 		if (it->second == C_OP || it->second == OWNER)
 			list.append("@" + it->first->getNickname());
 		else
 			list.append(it->first->getNickname());
+		list.append(" ");
+	}
+	return list;
+}
+
+std::vector<std::string> Channel::getMemberVector(void) {
+	MemberMap::iterator it = _members.begin();
+	std::vector<std::string> list;
+
+	//fixme either do vector+sort to have owner+ops at the top of list or sort them that way while adding them
+	/*loops through the MemberMap and build a space-separated list of every nickname
+	 * on this channel, adding a '@' in front of the nick of owner/ops */
+	for (; it != _members.end(); ++it) {
+		if (it->second == C_OP || it->second == OWNER)
+			list.push_back("@" + it->first->getNickname());
+		else
+			list.push_back(it->first->getNickname());
 	}
 	return list;
 }

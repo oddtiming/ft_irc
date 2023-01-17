@@ -16,8 +16,8 @@ bool	Mode::validate(const Message& msg) {
 	/*check if there's a target for the command*/
 	if (middle.size() < 2)
 	{
-		msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
-		std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
+		/*msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
+		std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;*/
 		return false;
 	}
 	std::string					target = middle.at(0);
