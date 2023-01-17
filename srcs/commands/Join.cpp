@@ -84,10 +84,8 @@ bool	Join::validate(const Message& msg) {
 				_server->createChannel(name, client);
 				/* Send reply messages */
 				client->reply(CMD_JOIN(_buildPrefix(msg), name));
-				client->reply(RPL_NAMREPLY(name, "@" + client->getNickname()));
+				client->reply(RPL_NAMREPLY(_server->getHostname(), client->getNickname(), name, "@" + client->getNickname()));
 				client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), name));
-				if (DEBUG)
-					std::cout << BLUE"New channel created: " CLEAR << name << std::endl;
 		/*
 		Tue Jan 17 2023 12:51:03 USERINPUT: C[422AAAAAA] I JOIN #new
 		Tue Jan 17 2023 12:51:03 USEROUTPUT: C[422AAAAAA] O :jgoad!jgoad@127.0.0.1 JOIN :#new
@@ -122,14 +120,10 @@ bool	Join::validate(const Message& msg) {
 				else
 				{
 					channel->addMember(client);
+
 					/* Send reply messages */
 					client->reply(CMD_JOIN(_buildPrefix(msg), name));
-					client->reply(RPL_NAMREPLY(channel->getName(), channel->getMemberList()));
-					client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), name));
-					//TMP namereply to test
-					client->reply(":ircserv 353 jgoad = #new1 :@jgoad\r\n");
-					// :penguin.omega.example.org 353 Jon__ = #new :@Jon Jon_ Jon__
-					// msg._client->reply(RPL_NAMREPLY());
+					client->reply(RPL_NAMREPLY(_server->getHostname(), client->getNickname(), channel->getName(), channel->getMemberList()));
 					client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), name));
 					if (channel->getTopic().size() > 0)
 						client->reply(RPL_TOPIC(name, channel->getTopic()));
@@ -171,8 +165,3 @@ bool	Join::checkInvalidChars(const std::string& string) {
 	}
 	return (true);
 }
-/*
-NICK jgoad
-USER jgoad 0 * jgoad
-:penguin.omega.example.org 001 jgoad :Welcome to the Omega IRC Network jgoad!jgoad@127.0.0.1
-*/

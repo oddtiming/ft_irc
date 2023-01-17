@@ -10,8 +10,7 @@
 
 #define	RPL_NOTOPIC(channel) (channel) + " :No topic is set" //331
 #define	RPL_TOPIC(channel, topic) (channel) + " :" + (topic) //332
-#define RPL_NAMREPLY(channel, users) "353 * =" + (channel) + " :" + users +  "\r\n" //353
-
+#define RPL_NAMREPLY(hostname, nick, channel, users) ":" + (hostname) + " 353 " + (nick) + " = " + (channel) + " :" + users +  "\r\n" //353
 #define RPL_ENDOFNAMES(host, nick, channel) ":" + (host) + " 366 " + (nick) + " " + (channel) + " :End of /NAMES list.\r\n" //366
 
 /* Command Success Messages */

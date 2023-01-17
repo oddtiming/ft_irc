@@ -97,7 +97,9 @@ bool	Channel::isMember(Client* client) {
 /* Add a new member to channel */
 void	Channel::addMember(Client* client, int modes) {
 	/* Add member and set default member modes */
-	_members[client] = modes; 
+	_members.insert(std::pair<Client*, Mode>(client, modes));
+	if (DEBUG)
+		std::cout << GREEN "New member: " CLEAR << client->getNickname() << GREEN " joined channel: " CLEAR << this->getName() << std::endl << std::endl;
 }
 
 /* Remove a member from channel */

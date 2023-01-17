@@ -50,6 +50,7 @@ Server::Server(const std::string& hostname, const int port, const std::string& p
 	/* Start Server Loop */
 	if (DEBUG)
 	{
+		std::cout << "_______________________________________" << std::endl << std::endl;
 		std::cout << RED"Server status: " CLEAR << GREEN"ONLINE" CLEAR << std::endl;
 		std::cout << "_______________________________________" << std::endl << std::endl;
 	}
@@ -308,8 +309,10 @@ bool	Server::doesChannelExist(const std::string& channel) const {
 /* Create a new channel with given channel name */
 void	Server::createChannel(const std::string& channel, Client* owner) {
 	/* Check if channel already exists */
-	if (_channels.find(channel) == _channels.end())
+	if (!_channels.empty() && (_channels.find(channel) == _channels.end()))
 		return;
+	if (DEBUG)
+		std::cout << GREEN"New channel created: " CLEAR << channel << std::endl << std::endl;
 	_channels[channel] = new Channel(channel, owner);
 }
 
