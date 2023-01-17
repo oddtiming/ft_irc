@@ -1,7 +1,7 @@
-#include "commands/Privmsg.hpp"
+#include "../../includes/commands/Privmsg.hpp"
 
 /* Constructors & Destructor */
-Privmsg::Privmsg() : Command("privmsg") {    
+Privmsg::Privmsg(Server* server) : Command("privmsg", server) {
 }
 
 Privmsg::~Privmsg() {
@@ -15,13 +15,13 @@ bool Privmsg::validate(const Message& msg) {
 	/*make sure there's a target for the message*/
     if(args.size() == 0)
     {
-        buildReply(ERR_NORECIPIENT()(msg.getCommand()));
+        msg._client->reply(ERR_NORECIPIENT(msg.getCommand()));
         return false;
     }
 	/*and a message to send*/
     if (args.size() == 1)
     {
-        buildReply(ERR_NOTEXTTOSEND());
+		msg._client->reply(ERR_NOTEXTTOSEND());
         return false;
     }
     _target = args.at(0);
@@ -31,23 +31,23 @@ bool Privmsg::validate(const Message& msg) {
         _targetIsChannel = true;
         if(!(_server->doesChannelExist(_target)) ||
             !(_server->isUserChannelMember(msg._client->getNickname()) ||
-            !(msg._client->checkChannelModes(_target, BAN | INV_ONLY))))
+            !(_server->getChannelPtr(_target)->checkMemberModes(msg._client, BAN | INV_ONLY))))
         {
-            buildReply(ERR_CANNOTSENDTOCHAN(_target));
+			msg._client->reply(ERR_CANNOTSENDTOCHAN(_target));
             return false;
         }
     }
     else
     {
         _targetIsChannel = false;
-        if (msg._client->checkGlobalMode(AWAY))
+        if (_server->getClientPtr(_target)->checkGlobalModes(AWAY))
         {
-            buildReply(RPL_AWAY(_target, _server->getClient(target)->_awayMessage));  //return(_nickname + " :" + _awayMessage) 
+			msg._client->reply(RPL_AWAY(_target, _server->getClientPtr(_target)->getAwayMessage()));  //return(_nickname + " :" + _awayMessage)
             return false;
         }
-        if (!(_server.doesNickExist(_target)))
+        if (!(_server->doesNickExist(_target)))
         {
-            buildReply(ERR_NOSUCHNICK(msg._client.getNickname()));
+			msg._client->reply(ERR_NOSUCHNICK(_target));
             return false;
         }
     }

@@ -20,7 +20,7 @@
 // #include "commands/Part.hpp"
  #include "commands/Pass.hpp"
 // #include "commands/Ping.hpp"
-// #include "commands/Privmsg.hpp"
+#include "commands/Privmsg.hpp"
 #include "commands/Quit.hpp"
 #include "commands/User.hpp"
 #include "Client.hpp"
@@ -144,7 +144,7 @@ void	Server::initializeCommands(void) {
 	_commands["away"] = new Away(this);
 
 	/* Channel Commands */
-	// _commands["privmsg"] = new Privmsg();
+	_commands["privmsg"] = new Privmsg(this);
 	_commands["join"] = new Join(this);
 	// _commands["part"] = new Part();
 	// _commands["list"] = new List();
