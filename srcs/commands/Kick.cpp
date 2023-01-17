@@ -13,6 +13,7 @@ Kick::~Kick() {
 bool	Kick::validate(const Message& msg) {
 	std::vector<std::string>	middle = msg.getMiddle();
 
+	/*check if there's a target for the command*/
 	if (middle.empty())
 	{
 		msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));

@@ -12,11 +12,13 @@ Privmsg::~Privmsg() {
 bool Privmsg::validate(const Message& msg) {
     std::vector<std::string>  args = msg.getMiddle();
 
+	/*make sure there's a target for the message*/
     if(args.size() == 0)
     {
         buildReply(ERR_NORECIPIENT()(msg.getCommand()));
         return false;
     }
+	/*and a message to send*/
     if (args.size() == 1)
     {
         buildReply(ERR_NOTEXTTOSEND());

@@ -1,6 +1,7 @@
 
 /* Local Includes */
 #include "Channel.hpp"
+#include "Client.hpp"
 #include "defines.h"
 
 class Client;
@@ -123,6 +124,24 @@ void	Channel::removeMember(Client* client) {
 	/* If member was operator, make sure there is at least one operator in channel */
 	if (wasOpe)
 		ensureOperator();
+}
+
+std::string Channel::getMemberList(void) {
+	MemberMap::iterator it = _members.begin();
+	std::string list;
+
+	//fixme either do vector+sort to have owner+ops at the top of list or sort them that way while adding them
+	/*loops through the MemberMap and build a space-separated list of every nickname
+	 * on this channel, adding a '@' in front of the nick of owner/ops */
+	for (; it != _members.end(); ++it) {
+		if (it != _members.begin())
+			list.append(" ");
+		if (it->second == C_OP || it->second == OWNER)
+			list.append("@" + it->first->getNickname());
+		else
+			list.append(it->first->getNickname());
+	}
+	return list;
 }
 
 /* Make sure there is at least one OP in channel*/

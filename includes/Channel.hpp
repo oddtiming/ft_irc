@@ -53,6 +53,7 @@ class Channel {
 		void	addMember(Client* client, int modes = 0);
 		void	removeMember(Client* client);
 		void	ensureOperator(void);
+		std::string getMemberList(void);
 
 	private:
 		const std::string				_name;			/* Channel name */
