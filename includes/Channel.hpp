@@ -20,7 +20,7 @@ class Channel {
 		typedef uint32_t						Mode;
 		typedef std::map<Client *, Mode>		MemberMap;
 
-		Channel(const std::string& name, const std::string& pass, Client* owner);
+		Channel(const std::string& name, Client* owner);
 		~Channel();
 
 		void	closeChannel();

@@ -57,10 +57,10 @@ class Server {
 		/*************************/
 		/*   Client Management   */
 		/*************************/
-		bool	doesUserExist(const std::string user) const;
-		bool	doesNickExist(const std::string nick) const;
-		Client* getClientPtr(const std::string& clientName);
-		Channel*getChannelPtr(const std::string& serverName);
+		bool		doesUserExist(const std::string user) const;
+		bool		doesNickExist(const std::string nick) const;
+		Client* 	getClientPtr(const std::string& client);
+		Channel*	getChannelPtr(const std::string& channel);
 		// FIXME: not sure if Client * needs to be const. Needs to be implemented anyways
 
 		void	removeClient(Client* client);
@@ -71,7 +71,7 @@ class Server {
 		/************************/
 		bool	doesChannelExist(const std::string& channel) const;
 		bool	isUserChannelMember(const std::string& user) const;
-		void	createChannel(const std::string& channel, const std::string& pass, Client* owner);
+		void	createChannel(const std::string& channel, Client* owner);
 		void	destroyChannel(const std::string& channel);
 		bool	channelCheckPass(const std::string& channel, const std::string& pass);
 

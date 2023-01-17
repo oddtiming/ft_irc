@@ -11,162 +11,114 @@ Join::~Join() {
 
 /* Public Member Functions */
 bool	Join::validate(const Message& msg) {
-
-	/* Multiple channels can be joined at once, seperated by commas */
-	/* Channel name does not need to start with #, but # will be prepended to given name*/
-	/* Channel names do not need to be lower case */
-	/* Channel names cannot contain spaces or commas, maximum 200 chars long, no non-printable chars */
-
-	/* When multiple channels are given, multiple keys can be given */
 	/* Error message if not enough information received to execute command */
 	if (msg.getMiddle().empty())
 	{
 		msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
 		return (false);
 	}
-	else if (msg.getMiddle().at)
 	else
 	{
-		std::string raw = msg.getMiddle().at(0);
-		size_t pos;
-
-		/* Loop through buffer until all channels checked */
-		while ((pos = raw.find(',')) != std::string::npos)
+		/* Split all requested channels into _channels vector */
+		std::string rawChannels = msg.getMiddle().at(0);
+		size_t posChannels = rawChannels.find(',');
+		while ((posChannels = rawChannels.find(',')) != std::string::npos)
 		{
-			
+			_channels.push_back(rawChannels.substr(0, posChannels));
+			rawChannels.erase(0, posChannels + 1);
 		}
-		std::string buf = raw.substr(0, pos);
+		_channels.push_back(rawChannels);
 
-		/* Check if channel name is valid */
-
-		/* Remove from raw string */
-
-
-
-		std::string chan = msg.getMiddle().at(0);
-
-	size_t pos = chan.find(',')
-
-
-			if(chan.at(0) != '#')
+		/* If more than one parameter, split all passwords into _passwords vector */
+		if (msg.getMiddle().size() > 1)
 		{
-			msg._client->reply(ERR_BADCHANMASK(chan.substr(0, pos)));
-			chan.erase(0, pos + 1);
-			continue;
+			std::string rawPasswords = msg.getMiddle().at(1);
+			size_t posPasswords = rawPasswords.find(',');
+			while ((posPasswords = rawPasswords.find(',')) != std::string::npos)
+			{
+				_passwords.push_back(rawPasswords.substr(0, posPasswords));
+				rawPasswords.erase(0, posPasswords + 1);
+			}
+			_passwords.push_back(rawPasswords);
 		}
-		channels.push_back(chan.substr(0, pos));
-		chan.erase(0, pos + 1);
 	}
+	//FIXME: Not sure if we want to implement max channels per client
+	//FIXME: Not sure if we want to implement max members per channel
+	//FIXME: Need to check /names response on join
+	//FIXME: Implement +k for channel password mode
+
+
+	/* Iterate through channels and check each one */
+	std::vector<std::string>::iterator itChannels = _channels.begin();
+	std::vector<std::string>::iterator itPasswords = _passwords.begin();
 
 	
 
-
-	/* Step 1: Get list of all channels asking to be join/created */
-
-	/* Step 2: Verify that names are valid */
-
-	/* Step 3: */
-
-
-	// FIXME : lower case channel names 
-	// std::string valideChanName = "#&";
-	// std::vector<std::string> channels;
-	std::vector<std::string> keys; 
-	std::map<std::string, std::string> m;
-
-	
-
-
-
-	std::string chan = msg.getMiddle().at(0);
-
-	size_t pos = chan.find(',');
-	/*if (chan.at(0) == '0')
-		LEAVEALLCHANNEL;*/
-
-	/* Create a list of all channels that client is asking to join */
-	while (pos = chan.find(',') != std::string::npos)
+	for (; itChannels != _channels.end(); ++ itChannels)
 	{
-		/* If channel has invalid first character, return error */
-		if(chan.at(0) != '#')
+		/* Check if first character is valid */
+		if (itChannels->size() > 0 && itChannels->at(0) != '#')
+			msg._client->reply(ERR_BADCHANMASK(*itChannels));
+		/* Check if name contains non-printable characters or is longer than 200 chars*/
+		else if (itChannels->size() > 200 || !checkInvalidChars(*itChannels))
+			msg._client->reply(ERR_NOSUCHCHANNEL(*itChannels));
+		/* If channel does not exist, then create it*/
+		else if (!_server->doesChannelExist(*itChannels))
 		{
-			msg._client->reply(ERR_BADCHANMASK(chan.substr(0, pos)));
-			chan.erase(0, pos + 1);
-			continue;
+				_server->createChannel(*itChannels,msg._client);
+				std::cout << BLUE"Channel Created" CLEAR << std::endl;
 		}
-		channels.push_back(chan.substr(0, pos));
-		chan.erase(0, pos + 1);
-	} 
-
-	/* If at least one valid channel was found, add to list of channels to join */
-	if (chan.size() > 0)
-		channels.push_back(chan);
-
-	if (msg.getMiddle().size() > 1) {
-		std::string k = msg.getMiddle().at(1);
-		while (pos = k.find(',') != std::string::npos)
-		{
-			keys.push_back(k.substr(0, pos));
-			k.erase(0, pos + 1);
-		}
-		if (k.size() > 0)
-			keys.push_back(k);
-	}
-	for (int i = 0; i < channels.size(); i++) {
-		if (i < keys.size())
-			m[channels.at(i)] = keys.at(i);
+		/* If channel does exist attempt to join */
 		else
-			m[channels.at(i)] = "";
+		{
+			Channel* channel = _server->getChannelPtr(*itChannels);
+			/* If user is already a member of channel then do nothing */
+			if (channel->isMember(msg._client))
+			{
+				if (itPasswords != _passwords.end())
+					itPasswords++;
+				continue;
+			}
+			/* Check if channel is invite only & user is not invited */
+			else if (channel->checkModes(INV_ONLY) && !channel->checkMemberModes(msg._client, INV))
+				msg._client->reply(ERR_INVITEONLYCHAN(*itChannels));
+			/* Check if client is banned from channel */
+			else if (channel->checkMemberModes(msg._client, BAN))
+				msg._client->reply(ERR_BANNEDFROMCHAN(*itChannels));
+			else
+			{
+				/* If channel is password protected */
+				if (channel->checkModes(PASS_REQ) && (itPasswords == _passwords.end() || (itPasswords != _passwords.end()  && channel->getPass() != *itPasswords)))
+					msg._client->reply(ERR_BADCHANNELKEY(*itChannels));
+				else
+				{
+					channel->addMember(msg._client);
+					msg._client->reply(CMD_JOIN(_buildPrefix(msg), *itChannels));
+					if (channel->getTopic().size() > 0)
+						msg._client->reply(RPL_TOPIC(*itChannels, channel->getTopic()));
+					else
+						msg._client->reply(RPL_NOTOPIC(*itChannels));
+				}
+			}
+		}
+		if (itPasswords != _passwords.end())
+			itPasswords++;
+		
 	}
 
-	std::map<std::string, std::string>::iterator it = m.begin();
-	for (; it != m.end(); it++)
-	{
-		/*if (TOOMANYCHANNELREADY){
-			msg._client->reply(ERR_TOOMANYCHANNELS(it->first));
-			return false;
-		}
-		else */
+	
 		
-		
-		if (!_server->doesChannelExist(it->first))
-			_server->createChannel(it->first, it->second, msg._client);
-		else if (_server->getChannelPtr(it->first)->checkMemberModes(msg._client, 'i') && _server->getChannelPtr(it->first)->checkModes('i')) {
-			msg._client->reply(ERR_INVITEONLYCHAN(it->first));
-			return false;
-		}
-		else if (!_server->channelCheckPass(it->first, it->second)) {
-			msg._client->reply(ERR_BADCHANNELKEY(it->first));
-			return false;
-		}
-		/*else if(CHANNELISFULL){
-			msg._client->reply(ERR_CHANNELISFULL(it->first));
-			return false;
-		}*/
-		else if (_server->getChannelPtr(it->first)->checkMemberModes(msg._client, 'b')){
-			msg._client->reply(ERR_BANNEDFROMCHAN(it->first));
-			return false;
-		}
-		else if (it->first.size() > 50){
-			msg._client->reply(ERR_BADCHANMASK(it->first));
-			return false;
-		}
-		else{
-			_server->getChannelPtr(it->first)->addMember(_server->getClientPtr(it->first), 0);
-			//SENDJOINMESSAGE;
-			if (_server->getChannelPtr(it->first)->getTopic().size() > 0)
-				msg._client->reply(RPL_TOPIC(it->first, _server->getChannelPtr(it->first)->getTopic()));
-			else
-				msg._client->reply(RPL_NOTOPIC(it->first));
-		}
-	}
+	return (true);
 }
 
 void	Join::execute(const Message& msg) {
 
 	if (validate(msg))
 	{
-		/* Check if channel exists */
+		return;
+		/* Iterate through channels and passwords */
+
+		/* Check if channel exists and */
 		
 		/* If channel doesn't exist, set create and set user as admin */
 
@@ -174,3 +126,13 @@ void	Join::execute(const Message& msg) {
 	}
 }
 
+bool	Join::checkInvalidChars(const std::string& string) {
+	std::string::const_iterator it = string.begin();
+
+	for (; it != string.end(); ++it)
+	{
+		if (!isprint(*it))
+			return (false);
+	}
+	return (true);
+}

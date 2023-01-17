@@ -12,6 +12,7 @@ CPP_FILES		:=	main.cpp \
 					commands/Nick.cpp \
 					commands/User.cpp \
 					commands/Quit.cpp \
+					commands/Join.cpp \
 					commands/Pass.cpp
 
 
@@ -23,8 +24,9 @@ INC_FILES		:=	defines.h \
 					replies.h \
 					commands/Nick.hpp \
 					commands/User.hpp \
-					commnds/Quit.hpp \
-                    commands/Pass.hpp
+					commands/Quit.hpp \
+                    commands/Pass.hpp \
+					commands/Join.hpp
 
 
 

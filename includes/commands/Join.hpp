@@ -21,8 +21,11 @@ class Join : public Command
         bool                validate(const Message& msg);
         void                execute(const Message& msg);
 
+        bool                checkInvalidChars(const std::string& string);
+
     private:
         std::vector<std::string>    _channels;
+        std::vector<std::string>    _passwords;
 
 };
 

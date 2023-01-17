@@ -7,7 +7,7 @@ class Client;
 
 
 /* Constructors & Destructor */
-Channel::Channel(const std::string& name, const std::string& pass, Client* owner) : _name(name), _owner(owner) {
+Channel::Channel(const std::string& name, Client* owner) : _name(name), _owner(owner) {
 
 	/* Set default channel modes */
 	setModes(TOPIC_SET_OP | NO_MSG_IN);
@@ -16,7 +16,7 @@ Channel::Channel(const std::string& name, const std::string& pass, Client* owner
 	addMember(owner, OWNER);
 
 	/* Set channel password */
-	_pass = pass;
+	//FIXME: Need to set +k flag is password provided. Might want to change so password can only be assigned after channel creation
 }
 
 Channel::~Channel() {

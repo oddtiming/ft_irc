@@ -17,7 +17,7 @@
 #include "commands/Nick.hpp"
 // #include "commands/Ope.hpp"
 // #include "commands/Part.hpp"
- #include "commands/Pass.hpp"
+// #include "commands/Pass.hpp"
 // #include "commands/Ping.hpp"
 // #include "commands/Privmsg.hpp"
 #include "commands/Quit.hpp"
@@ -148,7 +148,7 @@ void	Server::initializeCommands(void) {
 	// _commands["kick"] = new Kick();
 	_commands["nick"] = new Nick(this);
 	_commands["user"] = new User(this);
-	_commands["pass"] = new Pass(this);
+	// _commands["pass"] = new Pass();
 	// _commands["mode"] = new Mode();
 
 	//_commands["who"] = new Who();
@@ -302,11 +302,11 @@ bool	Server::doesChannelExist(const std::string& channel) const {
 }
 
 /* Create a new channel with given channel name */
-void	Server::createChannel(const std::string& channel, Client* owner) {
+void	Server::Clientl(const std::string& channel, Client* owner) {
 	/* Check if channel already exists */
 	if (_channels.find(channel) == _channels.end())
 		return;
-	_channels[channel] = new Channel(channel, owner);
+	_channels["channel"] = new Channel(channel, owner);
 }
 
 /* Destroy channel with given channel name */

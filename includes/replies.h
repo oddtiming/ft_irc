@@ -24,7 +24,17 @@
 #define	ERR_BADCHANNELKEY(channel) (channel) + " :Cannot join channel (+k)" //475
 #define ERR_BADCHANMASK(channel) (channel) + " :Bad Channel Mask" //476
 
+
+/* Command Success Messages */
+#define CMD_JOIN(prefix, channel) ":" + (prefix) + " JOIN :" + (channel)
+
+
 /*
+
+RPL_JOIN
+:Jon!jgoad@127.0.0.1 JOIN :#new
+
+
 #define RPL_WELCOME 1
 #define RPL_YOURHOST 2
 #define RPL_CREATED 3
