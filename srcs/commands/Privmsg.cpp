@@ -31,15 +31,16 @@ bool Privmsg::validate(const Message& msg) {
         _targetIsChannel = true;
         if(!_server->doesChannelExist(_target))
 			return false;
-         if (!_server->getChannelPtr(_target)->isMember(msg._client))
-		 {
+		if (!_server->getChannelPtr(_target)->isMember(msg._client))
+		{
 			 msg._client->reply(ERR_CANNOTSENDTOCHAN(_target));
 			 return false;
-		 }         if (!_server->getChannelPtr(_target)->checkMemberModes(msg._client, BAN | INV_ONLY))
+		}
+		/*if (!_server->getChannelPtr(_target)->checkMemberModes(msg._client, BAN | INV_ONLY))
         {
 			msg._client->reply(ERR_CANNOTSENDTOCHAN(_target));
             return false;
-        }
+        }*/
     }
     else
     {
