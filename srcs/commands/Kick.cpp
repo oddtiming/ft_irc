@@ -28,15 +28,14 @@ bool	Kick::validate(const Message& msg) {
 		std::cerr << "ERR_NOSUCHCHANNEL" << std::endl;
 		return false;
 	}
-	/*check if user is on the channel*/
-	//fixme add a way to get client ptr to see if target user is on target channel
+	/*check if target user is on the channel*/
 	if (!_server->getChannelPtr(channel)->isMember(msg._client)){
 		msg._client->reply(ERR_NOTONCHANNEL(channel));
 		std::cerr << "ERR_NOTONCHANNEL" << std::endl;
 		return false;
 	}
 	/*check if target is a member of the channel*/
-	if (!_server->getChannelPtr(channel)->isMember()){
+	if (!_server->getChannelPtr(channel)->isMember(_server->getClientPtr(user))){
 		msg._client->reply(ERR_NOSUCHNICK(user));
 		std::cerr << "ERR_NOSUCHNICK" << std::endl;
 		return false;

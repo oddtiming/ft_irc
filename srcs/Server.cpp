@@ -22,6 +22,7 @@
 // #include "commands/Privmsg.hpp"
 #include "commands/Quit.hpp"
 #include "commands/User.hpp"
+#include "Client.hpp"
 
 /*****************************/
 /* Constructors & Destructor */
@@ -336,4 +337,14 @@ Channel*	Server::getChannelPtr(const std::string& channel) {
 	std::map<std::string, Channel*>::iterator it = _channels.find(channel);
 	//FIXME: Might need to add protection here if channel not found
 	return(it->second);
+}
+
+Client* Server::getClientPtr(const std::string &client) {
+	std::vector<Client*>::iterator it = _clients.begin();
+	for (; it != _clients.end(); ++it)
+	{
+		if ((*it)->getNickname() == client)
+			break;
+	}
+	return *it;
 }
