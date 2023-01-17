@@ -26,6 +26,7 @@ class Client {
 		void				setUsername(const std::string& username) { _username = username; }
 		void				setRealname(const std::string& realname) { _realname = realname; }
 		void				setAddress(const struct sockaddr_in address) { _address = address; }
+		void				setRegistration(const bool& registration) { _isRegistered = registration; }
 		void 				setAwayMessage(const std::string& awayMessage) {_awayMessage = awayMessage;}
 
 		const std::string&	getNickname(void) const { return (_nickname); }
@@ -34,6 +35,7 @@ class Client {
 		const std::string&	getRealname(void) const { return (_realname); }
 		const std::string&	getAwayMessage(void) const { return (_awayMessage); }
 		const int&			getSocket(void) const { return (_socket); }
+		bool				getRegistration(void) { return (_isRegistered); }
 		
 		/*************************/
 		/*    Mode Management    */

@@ -5,6 +5,7 @@
 /* Constructors & Destructor */
 Client::Client(int socket) : _socket(socket) {
 	_isRegistered = false;
+	_globalModes = 0;
 }
 
 Client::~Client() {

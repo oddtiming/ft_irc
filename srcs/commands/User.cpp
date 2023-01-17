@@ -46,10 +46,19 @@ bool    User::validate(const Message& msg) {
 }
 
 void    User::execute(const Message& msg) {
+    Client* client = msg._client;
+    
+    /* Attempt to validate username*/
     if (validate(msg))
+        client->setUsername(msg.getMiddle().at(0));
+
+    /* If username and nickname have been successfully added, register user*/
+    if (!client->getUsername().empty() && !client->getNickname().empty() && !client->getRegistration())
     {
-        msg._client->setUsername(msg.getMiddle().at(0));
-        msg._client->reply(RPL_WELCOME(msg._client->getNickname(), _buildPrefix(msg)));
+        client->setRegistration(true);
+        client->reply(RPL_WELCOME(msg._client->getNickname(), _buildPrefix(msg)));
+        if (DEBUG)
+            std::cout << GREEN "New user successfully registered: " CLEAR << client->getNickname() << std::endl << std::endl;
     }
     /*if (msg.getMiddle().size() > 1 && msg.getMiddle().at(1).isdigit()) // FIXME: make sure only +i / +w can be passed
         msg._client->modifyGlobalModes(stoi(msg.getMiddle().at(1)), 0); // FIXME: call mode cmd */

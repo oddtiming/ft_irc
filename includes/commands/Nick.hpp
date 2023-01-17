@@ -20,6 +20,8 @@ class Nick : public Command {
         void    execute(const Message& msg);
 
     private:
+        std::string _nick;
+        Client*		_client;
 
 };
 

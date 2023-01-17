@@ -8,53 +8,54 @@ Nick::Nick(Server* server) : Command("nick", server) {
 
 bool Nick::validate(const Message& msg) {
 	std::vector<std::string>	middle = msg.getMiddle();
-	Client*						client = msg._client;	
 
 	/* Check if a nickname was given */
 	if (middle.empty())
 	{
-		client->reply(ERR_NONICKNAMEGIVEN());
-		std::cerr << "ERR_NONICKNAMEGIVEN" << std::endl;
-		return false;
+		_client->reply(ERR_NONICKNAMEGIVEN());
+		return (false);
 	}
-	std::string	nick = middle.at(0);
+	_nick = middle.at(0);
 	/* If nickname is too long, return error */
-	if (nick.size() > 9)
+	if (_nick.size() > 9)
 	{
-		client->reply(ERR_ERRONEUSNICKNAME(nick));
+		_client->reply(ERR_ERRONEUSNICKNAME(_nick));
 		return false;
 	}
+	/* If provided nickname is the same as current nickname, do nothing */
+	if (_client->getNickname() == _nick)
+		return (false);
 	/* If nickname is already in use, return error */
-	if (_server->doesNickExist(nick))
+	if (_server->doesNickExist(_nick))
 	{
-		//FIXME: Should be using this reply when nickname is in use upon connection, ERR_NICKNAMEINUSE is used when existing user attempts to change nickname
-		//NICK can never fail on connection, the server will simply provide a new nickname (Nick + _)
-		/*
-		ERR_NICKCOLLISION
-		<nick> :Nickname collision KILL from <user>@<host>
-		*/
-		client->reply(ERR_NICKNAMEINUSE(nick));
-		std::cerr << "ERR_NICKNAMEINUSE" << std::endl;
-		return false;
+		_client->reply(ERR_NICKNAMEINUSE(_nick));
+		return (false);
 	}
 	return true;
 }
 
 void Nick::execute(const Message &msg) {
-	
-	//FIXME: move data to Nick class to remove redundant actions
+	_client = msg._client;
+
+	/* Attempt to validate nickname */
 	if (validate(msg)) {
-		std::string	nick = msg.getMiddle().at(0);
-		msg._client->setNickname(nick);
+		if (_server->doesNickExist(_nick))
+			_client->reply(ERR_NICKNAMEINUSE(_nick));
+		else
+		{
+			/* If client already registered, send notification of nickname change */
+			if (_client->getRegistration())
+				_client->reply(CMD_NICK(_buildPrefix(msg), _nick));
+			_client->setNickname(_nick);
+		}
 	}
+	 /* If username and nickname have been successfully added, register user*/
+    if (!_client->getUsername().empty() && !_client->getNickname().empty() && !_client->getRegistration())
+    {
+        _client->setRegistration(true);
+        _client->reply(RPL_WELCOME(_client->getNickname(), _buildPrefix(msg)));
+		if (DEBUG)
+        	std::cout << GREEN "New user successfully registered: " CLEAR << _client->getNickname() << std::endl << std::endl;
+    }
 
 }
-
-/*                        
-
-Response for changing a nickname
-:WiZ!jto@tolsun.oulu.fi NICK Kilroy
-                           ; Server telling that WiZ changed his
-                           nickname to Kilroy.
-
-*/
