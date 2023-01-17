@@ -29,9 +29,13 @@ bool Privmsg::validate(const Message& msg) {
     if(_target.at(0) == '#')
     {
         _targetIsChannel = true;
-        if(!(_server->doesChannelExist(_target)) ||
-            !(_server->isUserChannelMember(msg._client->getNickname()) ||
-            !(_server->getChannelPtr(_target)->checkMemberModes(msg._client, BAN | INV_ONLY))))
+        if(!_server->doesChannelExist(_target))
+			return false;
+         if (!_server->getChannelPtr(_target)->isMember(msg._client))
+		 {
+			 msg._client->reply(ERR_CANNOTSENDTOCHAN(_target));
+			 return false;
+		 }         if (!_server->getChannelPtr(_target)->checkMemberModes(msg._client, BAN | INV_ONLY))
         {
 			msg._client->reply(ERR_CANNOTSENDTOCHAN(_target));
             return false;
@@ -57,9 +61,9 @@ bool Privmsg::validate(const Message& msg) {
 void	Privmsg::execute(const Message& msg) {
 	if (validate(msg)) {
 		if (_targetIsChannel)
-            //FIXME: sendto function to be added in order to message user/channel
+			_server->getClientPtr(_target)->reply(msg.getMiddle().at(1));
         else
-            //send to target
+			_server->getClientPtr(_target)->reply(msg.getMiddle().at(1));
 	}
 }
 /*
