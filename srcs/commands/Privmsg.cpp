@@ -60,14 +60,18 @@ bool Privmsg::validate(const Message& msg) {
 
 void	Privmsg::execute(const Message& msg) {
 	if (validate(msg)) {
+		std::string message;
+		std::vector<std::string>::const_iterator ite = msg.getMiddle().begin();
+		for (; ite != msg.getMiddle().end(); ++ite)
+			message.append(*ite + " ");
 		if (_targetIsChannel) {
 			std::vector<std::string> target = _server->getChannelPtr(_target)->getMemberVector();
 			std::vector<std::string>::iterator it = target.begin();
 			for (; it != target.end(); ++it)
-				_server->getClientPtr(*it)->reply(msg.getMiddle().at(1));
+				_server->getClientPtr(*it)->reply(message);
 		}
         else
-			_server->getClientPtr(_target)->reply(msg.getMiddle().at(1));
+			_server->getClientPtr(_target)->reply(message);
 		//fixme: add channel messaging
 	}
 }
