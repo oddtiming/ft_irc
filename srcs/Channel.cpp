@@ -174,3 +174,14 @@ void	Channel::ensureOperator(void) {
 	it = _members.begin();
 	setMemberModes(it->first, C_OP);
 }
+
+/* Send message to all members of channel */
+void	Channel::replyToAll(const std::string& reply, Client* sender) {
+	MemberMap::iterator it = _members.begin();
+
+	for (; it != _members.end(); it++)
+	{
+		if (it->first != sender)
+			it->first->reply(reply);
+	}
+}

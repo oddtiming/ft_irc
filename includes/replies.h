@@ -16,6 +16,8 @@
 /* Command Success Messages */
 #define CMD_JOIN(prefix, channel) ":" + (prefix) + " JOIN :" + (channel) + "\r\n"
 #define CMD_NICK(prefix, nick) ":" + (prefix) + " NICK :" + (nick) + "\r\n"
+#define CMD_PRIVMSG(prefix, channel, message) ":" + (prefix) + " PRIVMSG " + (channel) + " :" + (message) + "\r\n"
+
 /* Error Messages */
 #define ERR_NOSUCHNICK(nickname) "401 * " + (nickname) + " :No such nickname" + "\r\n" //401
 #define ERR_NOSUCHCHANNEL(channel) "403 * " +(channel) + " :No such channel" + "\r\n" //403

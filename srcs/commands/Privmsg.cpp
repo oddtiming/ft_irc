@@ -12,6 +12,21 @@ Privmsg::~Privmsg() {
 bool Privmsg::validate(const Message& msg) {
     std::vector<std::string>  args = msg.getMiddle();
 
+
+    /* DEBUG */
+    std::cout << "Prefix" << std::endl;
+    std::cout << YELLOW << msg.getPrefix() << CLEAR << std::endl;
+    std::cout << "Middle" << std::endl;
+
+    std::vector<std::string>::const_iterator it = msg.getMiddle().begin();
+    for (; it != msg.getMiddle().end(); ++it)
+        std::cout << YELLOW << *it << CLEAR << std::endl;
+
+    std::cout << "Prefix" << std::endl;
+    std::cout << YELLOW << msg.getPrefix() << CLEAR << std::endl;
+
+    //FIXME: TRAILING CAN BE MULTIPLE WORDS
+
 	/*make sure there's a target for the message*/
     if(args.size() == 0)
     {
@@ -61,16 +76,25 @@ bool Privmsg::validate(const Message& msg) {
 
 void	Privmsg::execute(const Message& msg) {
 	if (validate(msg)) {
+        //FIXME: Structure for single word and multiple word messages is different
+        /*
+        Single word:
+            PRIVMSG #new hello
+        Multiple word:
+            PRIVMSG #new :hello hello
+        */
+
 		std::string message;
-		std::vector<std::string>::const_iterator ite = msg.getMiddle().begin();
-		for (; ite != msg.getMiddle().end(); ++ite)
-			message.append(*ite + " ");
+		std::vector<std::string>::const_iterator it = msg.getMiddle().begin();
+		for (; it != msg.getMiddle().end(); ++it)
+			std::cout << YELLOW << *it << CLEAR << std::endl;
+        /* If target of a message is a channel */
 		if (_targetIsChannel) {
-			std::vector<std::string> target = _server->getChannelPtr(_target)->getMemberVector();
-			std::vector<std::string>::iterator it = target.begin();
-			for (; it != target.end(); ++it)
-				_server->getClientPtr(*it)->reply(message);
+            std::cout << YELLOW << "this" << CLEAR << std::endl;
+
+
 		}
+        /* If target is another user */
         else
 			_server->getClientPtr(_target)->reply(message);
 		//fixme: add channel messaging

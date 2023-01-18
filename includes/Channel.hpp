@@ -56,6 +56,10 @@ class Channel {
 		std::string getMemberList(void);
 		std::vector<std::string> getMemberVector(void);
 
+		/* Channel Messaging */
+
+		void	replyToAll(const std::string& reply, Client* sender);
+
 
 private:
 		const std::string				_name;			/* Channel name */
