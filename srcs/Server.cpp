@@ -150,7 +150,7 @@ void	Server::initializeCommands(void) {
 	_commands["privmsg"] = new Privmsg(this);
 	_commands["join"] = new Join(this);
 	// _commands["part"] = new Part();
-	//  _commands["list"] = new List(this);
+	 _commands["list"] = new List(this);
 	// _commands["names"] = new Names();
 	// _commands["kick"] = new Kick();
 	_commands["nick"] = new Nick(this);

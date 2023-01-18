@@ -7,8 +7,9 @@
 #define RPL_AWAY(_target, _awayMessage) (_target) + " :" + (_awayMessage) //301
 #define RPL_UNAWAY()  "305 * :You are no longer marked as being away \r\n" //305
 #define RPL_NOWAWAY() "306 * :You have been marked as being away \r\n" //306
-#define RPL_LIST(hostname,channel,nbUsers,topic) ":" + (hostname) + " " + (channel) + " " + (nbUsers) + " : " + (topic) +  "\r\n" //322 
+#define RPL_LIST(hostname,channel,nbUsers,topic) ":" + (hostname) + " " + (channel) + " " + (nbUsers) + " : " + (topic) +  "\r\n" //322
 #define RPL_ENDOFNAMES(host, nick, channel) ":" + (host) + " 366 " + (nick) + " " + (channel) + " :End of /NAMES list.\r\n" //366
+#define RPL_LISTEND(host, nick) ":" + (host) + " 323 " + (nick) + " :End of channel list.\r\n" //323
 #define	RPL_NOTOPIC(channel) (channel) + " :No topic is set" //331
 #define	RPL_TOPIC(channel, topic) (channel) + " :" + (topic) //332
 #define RPL_NAMREPLY(hostname, nick, channel, users) ":" + (hostname) + " 353 " + (nick) + " = " + (channel) + " :" + users +  "\r\n" //353
