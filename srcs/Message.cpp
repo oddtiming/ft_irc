@@ -20,7 +20,7 @@ Message::Message(Client* client, std::string raw) : _client(client)
     if ((pos = raw.find(" :")) != std::string::npos)
     {
         _trailing = raw.substr(pos + 2, raw.size());
-        raw = raw.substr(0, pos);
+        raw = raw.substr(0, pos + 2);
     }
 
 
@@ -42,13 +42,14 @@ Message::Message(Client* client, std::string raw) : _client(client)
     if (getMiddle().empty() == false)
 	    _middle.erase(_middle.begin());
 
-    // if (DEBUG)
-    // {
-    //     std::cerr << "Message received:" << "\n"
-    //               << "_cmd: " << _cmd << "\n"
-    //               << "_trailing: " << _trailing << "\n"
-    //               << "_middle.size(): " << _middle.size() << std::endl;
-    //     for (size_t i = 0; i < _middle.size(); ++i)
-    //         std::cerr << "_middle[" << i << "]: " << _middle.at(i) << std::endl;
-    // }
+     if (DEBUG)
+     {
+         std::cerr << "Message received:" << "\n"
+		 			<< "_prefix :" << _prefix << "\n"
+                   << "_cmd: " << _cmd << "\n"
+                   << "_trailing: " << _trailing << "\n"
+                   << "_middle.size(): " << _middle.size() << std::endl;
+         for (size_t i = 0; i < _middle.size(); ++i)
+            std::cerr << "_middle[" << i << "]: " << _middle.at(i) << std::endl;
+     }
 }

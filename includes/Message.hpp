@@ -26,13 +26,16 @@ class Message {
 		const	std::string&				getPrefix() const { return _prefix; }
 		const	std::string&				getTrailing() const { return _trailing; }
 		const	std::vector<std::string>&	getMiddle() const { return _middle; }
+		const	std::string&				getRaw() const { return _raw; }
 
-		/* Public Attributes */
+
+	/* Public Attributes */
 		Client*						_client;
 
 	private:
 		std::vector<std::string>	_middle;
 		std::string					_prefix;
+		std::string 				_raw;
 		std::string					_trailing;
 		std::string					_cmd;	// Represents the command string, in lower case
 };

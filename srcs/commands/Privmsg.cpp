@@ -34,11 +34,11 @@ bool Privmsg::validate(const Message& msg) {
         return false;
     }
 	/*and a message to send*/
-    if (args.size() == 1)
+   /* if (args.size() == 1)
     {
 		msg._client->reply(ERR_NOTEXTTOSEND());
         return false;
-    }
+    }*/
     _target = args.at(0);
     args.erase(args.begin());
     if(_target.at(0) == '#')
@@ -84,20 +84,20 @@ void	Privmsg::execute(const Message& msg) {
             PRIVMSG #new :hello hello
         */
 
-		std::string message;
+		std::string message = ":"+_buildPrefix(msg) + " " + msg.getCommand() + " " + _target + " :" + msg.getTrailing();
 		std::vector<std::string>::const_iterator it = msg.getMiddle().begin();
 		for (; it != msg.getMiddle().end(); ++it)
 			std::cout << YELLOW << *it << CLEAR << std::endl;
         /* If target of a message is a channel */
 		if (_targetIsChannel) {
             std::cout << YELLOW << "this" << CLEAR << std::endl;
+			_server->getChannelPtr(_target)->replyToAll(message, msg._client);
 
 
 		}
         /* If target is another user */
         else
 			_server->getClientPtr(_target)->reply(message);
-		//fixme: add channel messaging
 	}
 }
 /*

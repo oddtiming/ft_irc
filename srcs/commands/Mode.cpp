@@ -35,6 +35,8 @@ bool	Mode::validate(const Message& msg) {
 	}
 	if (mode.c_str()[1] == 'o')
 		msg._client->setGlobalModes(C_OP, removeMode);
+	else if (mode.c_str()[1] == 'i')
+			msg._client->setGlobalModes(INV_ONLY, removeMode);
 	else
 	{
 		msg._client->reply(ERR_UNKNOWNMODE(mode, target));
