@@ -79,9 +79,7 @@ void	Client::reply(const std::string& reply) {
 	
 	if ((sz = send(_socket, reply.c_str(), reply.size(), 0)) < 0)
 		throw std::runtime_error("Error sending message");
-		
-	if (DEBUG)
-		std::cerr << RED"Return value from send: " CLEAR << sz << std::endl << std::endl;
+
 }
 
 /* Check input buffer and return a single message command string */

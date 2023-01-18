@@ -14,16 +14,16 @@ bool Privmsg::validate(const Message& msg) {
 
 
     /* DEBUG */
-    std::cout << "Prefix" << std::endl;
-    std::cout << YELLOW << msg.getPrefix() << CLEAR << std::endl;
-    std::cout << "Middle" << std::endl;
+    // std::cout << "Prefix" << std::endl;
+    // std::cout << YELLOW << msg.getPrefix() << CLEAR << std::endl;
+    // std::cout << "Middle" << std::endl;
 
-    std::vector<std::string>::const_iterator it = msg.getMiddle().begin();
-    for (; it != msg.getMiddle().end(); ++it)
-        std::cout << YELLOW << *it << CLEAR << std::endl;
+    // std::vector<std::string>::const_iterator it = msg.getMiddle().begin();
+    // for (; it != msg.getMiddle().end(); ++it)
+    //     std::cout << YELLOW << *it << CLEAR << std::endl;
 
-    std::cout << "Prefix" << std::endl;
-    std::cout << YELLOW << msg.getPrefix() << CLEAR << std::endl;
+    // std::cout << "Prefix" << std::endl;
+    // std::cout << YELLOW << msg.getPrefix() << CLEAR << std::endl;
 
     //FIXME: TRAILING CAN BE MULTIPLE WORDS
 
@@ -84,16 +84,16 @@ void	Privmsg::execute(const Message& msg) {
             PRIVMSG #new :hello hello
         */
 
-		std::string message = ":"+_buildPrefix(msg) + " " + msg.getCommand() + " " + _target + " :" + msg.getTrailing();
+       //FIXME: temporarily commented out to see if capitalization fixed the channel error
+		// std::string message = ":"+_buildPrefix(msg) + " " + msg.getCommand() + " " + _target + " :" + msg.getTrailing();
+		std::string message = ":"+_buildPrefix(msg) + " PRIVMSG " + _target + " :" + msg.getTrailing();
 		std::vector<std::string>::const_iterator it = msg.getMiddle().begin();
 		for (; it != msg.getMiddle().end(); ++it)
 			std::cout << YELLOW << *it << CLEAR << std::endl;
         /* If target of a message is a channel */
 		if (_targetIsChannel) {
             std::cout << YELLOW << "this" << CLEAR << std::endl;
-			_server->getChannelPtr(_target)->replyToAll(message, msg._client);
-
-
+			_server->getChannelPtr(_target)->sendToOthers(message, msg._client);
 		}
         /* If target is another user */
         else

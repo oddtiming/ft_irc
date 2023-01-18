@@ -50,7 +50,7 @@ class Channel {
 		/*    Channel Member Management    */
 		/***********************************/
 		bool	isMember(Client* client);
-		void	addMember(Client* client, int modes = 0);
+		void	addMember(Client* client, const std::string& reply, int modes = 0);
 		void	removeMember(Client* client);
 		void	ensureOperator(void);
 		std::string getMemberList(void);
@@ -58,7 +58,9 @@ class Channel {
 
 		/* Channel Messaging */
 
-		void	replyToAll(const std::string& reply, Client* sender);
+		void	sendToAll(const std::string& reply);
+		void	sendToOthers(const std::string& reply, Client* sender);
+
 
 
 private:

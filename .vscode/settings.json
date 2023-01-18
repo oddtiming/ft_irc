@@ -63,6 +63,14 @@
         "utility": "cpp",
         "vector": "cpp",
         "iomanip": "cpp",
-        "__functional_03": "cpp"
+        "__functional_03": "cpp",
+        "csignal": "cpp",
+        "deque": "cpp",
+        "fstream": "cpp",
+        "list": "cpp",
+        "regex": "cpp",
+        "set": "cpp",
+        "stack": "cpp",
+        "filesystem": "cpp"
     }
 }

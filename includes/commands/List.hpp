@@ -7,13 +7,13 @@
 #include <string>
 
 /* Local Includes */
-#include "Command.hpp"
+#include "../Command.hpp"
 
 class List : public Command
 {
     public:
         /* Constructors & Destructor */
-        List();
+        List(Server *server);
         ~List();
 
         /* Public Member Functions */

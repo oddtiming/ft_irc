@@ -74,6 +74,7 @@ class Server {
 		void	createChannel(const std::string& channel, Client* owner);
 		void	destroyChannel(const std::string& channel);
 		bool	channelCheckPass(const std::string& channel, const std::string& pass);
+		std::map<std::string, Channel *> getChannelList() { return _channels};
 
 
 		/* Exceptions */

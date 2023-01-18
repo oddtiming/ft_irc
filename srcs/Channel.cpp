@@ -1,4 +1,3 @@
-
 /* Local Includes */
 #include "Channel.hpp"
 #include "Client.hpp"
@@ -12,9 +11,6 @@ Channel::Channel(const std::string& name, Client* owner) : _name(name), _owner(o
 
 	/* Set default channel modes */
 	setModes(TOPIC_SET_OP | NO_MSG_IN);
-	
-	/* Add channel creator to member list, add OWNER to its modes */
-	addMember(owner, OWNER);
 
 	/* Set channel password */
 	//FIXME: Need to set +k flag is password provided. Might want to change so password can only be assigned after channel creation
@@ -95,16 +91,17 @@ bool	Channel::isMember(Client* client) {
 }
 
 /* Add a new member to channel */
-void	Channel::addMember(Client* client, int modes) {
+void	Channel::addMember(Client* client, const std::string& reply, int modes) {
 	/* Add member and set default member modes */
 	_members.insert(std::pair<Client*, Mode>(client, modes));
+	sendToAll(reply);
 	if (DEBUG)
 		std::cout << GREEN "New member: " CLEAR << client->getNickname() << GREEN " joined channel: " CLEAR << this->getName() << std::endl << std::endl;
 }
 
 /* Remove a member from channel */
 void	Channel::removeMember(Client* client) {
-	bool wasOpe = false;
+	bool				wasOpe = false;
 	MemberMap::iterator it = _members.find(client);
 
 	/* Return is member not found in channel */
@@ -176,7 +173,7 @@ void	Channel::ensureOperator(void) {
 }
 
 /* Send message to all members of channel */
-void	Channel::replyToAll(const std::string& reply, Client* sender) {
+void	Channel::sendToOthers(const std::string& reply, Client* sender) {
 	MemberMap::iterator it = _members.begin();
 
 	for (; it != _members.end(); it++)
@@ -184,4 +181,10 @@ void	Channel::replyToAll(const std::string& reply, Client* sender) {
 		if (it->first != sender)
 			it->first->reply(reply);
 	}
+}
+
+void	Channel::sendToAll(const std::string& reply) {
+	MemberMap::iterator it = _members.begin();
+	for (; it != _members.end(); it++)
+			it->first->reply(reply);
 }

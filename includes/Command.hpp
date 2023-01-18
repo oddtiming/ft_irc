@@ -27,7 +27,6 @@ class Command {
 
 		/* Public Member Functions */
 		virtual void	execute(const Message& msg) = 0;
-		virtual bool	validate(const Message& msg) = 0;
 
 	protected:
 		Command(const std::string& name, Server * server) : _name(name), _server(server) { }
@@ -42,6 +41,7 @@ class Command {
 			return msg._client->getNickname() + "!"
 				 + msg._client->getUsername() + "@"
 				 + _server->getHostname();
+				 //FIXME: DO NOT FORGET TO CHANGE THIS, hardcoded for testing
 		}
 };
 

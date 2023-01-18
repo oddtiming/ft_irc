@@ -12,7 +12,7 @@
 // #include "commands/Info.hpp"
 #include "commands/Join.hpp"
 // #include "commands/Kick.hpp"
-// #include "commands/List.hpp"
+ #include "commands/List.hpp"
 #include "commands/Mode.hpp"
 // #include "commands/Names.hpp"
 #include "commands/Nick.hpp"
@@ -148,7 +148,7 @@ void	Server::initializeCommands(void) {
 	_commands["privmsg"] = new Privmsg(this);
 	_commands["join"] = new Join(this);
 	// _commands["part"] = new Part();
-	// _commands["list"] = new List();
+	//  _commands["list"] = new List(this);
 	// _commands["names"] = new Names();
 	// _commands["kick"] = new Kick();
 	_commands["nick"] = new Nick(this);
