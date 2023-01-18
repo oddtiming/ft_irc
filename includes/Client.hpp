@@ -28,7 +28,6 @@ class Client {
 		void				setAddress(const struct sockaddr_in address) { _address = address; }
 		void				setRegistration(const bool& registration) { _isRegistered = registration; }
 		void 				setAwayMessage(const std::string& awayMessage) {_awayMessage = awayMessage;}
-		void				setRegistration(const bool& registration) { _isRegistered = registration; }
 
 		const std::string&	getNickname(void) const { return (_nickname); }
 		const std::string&	getPassword(void) const { return (_password); }

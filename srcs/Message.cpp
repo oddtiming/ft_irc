@@ -42,14 +42,14 @@ Message::Message(Client* client, std::string raw) : _client(client)
     if (getMiddle().empty() == false)
 	    _middle.erase(_middle.begin());
 
-     if (DEBUG)
-     {
-         std::cerr << "Message received:" << "\n"
-		 			<< "_prefix :" << _prefix << "\n"
-                   << "_cmd: " << _cmd << "\n"
-                   << "_trailing: " << _trailing << "\n"
-                   << "_middle.size(): " << _middle.size() << std::endl;
-         for (size_t i = 0; i < _middle.size(); ++i)
-            std::cerr << "_middle[" << i << "]: " << _middle.at(i) << std::endl;
-     }
+    //  if (DEBUG)
+    //  {
+    //      std::cerr << "Message received:" << "\n"
+	// 	 			<< "_prefix :" << _prefix << "\n"
+    //                << "_cmd: " << _cmd << "\n"
+    //                << "_trailing: " << _trailing << "\n"
+    //                << "_middle.size(): " << _middle.size() << std::endl;
+    //      for (size_t i = 0; i < _middle.size(); ++i)
+    //         std::cerr << "_middle[" << i << "]: " << _middle.at(i) << std::endl;
+    //  }
 }

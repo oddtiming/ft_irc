@@ -36,7 +36,7 @@ Server::Server(const std::string& hostname, const int port, const std::string& p
 	initializeConnection();
 	if (DEBUG)
 	{
-		std::cout << RED"Server initialization successful" CLEAR << std::endl;
+		std::cout << RED "Server initialization successful" CLEAR << std::endl;
 		std::cout << "	port: " << port << std::endl;
 		std::cout << "	pass: " << password << std::endl;
 	}
@@ -51,7 +51,7 @@ Server::Server(const std::string& hostname, const int port, const std::string& p
 	if (DEBUG)
 	{
 		std::cout << "_______________________________________" << std::endl << std::endl;
-		std::cout << RED"Server status: " CLEAR << GREEN"ONLINE" CLEAR << std::endl;
+		std::cout << RED "Server status: " CLEAR << GREEN"ONLINE" CLEAR << std::endl;
 		std::cout << "_______________________________________" << std::endl << std::endl;
 	}
 	runServer();
@@ -186,7 +186,7 @@ void	Server::handleConnections()
 	/* Print new client data */
 	if (DEBUG)
 	{
-		std::cout << "New client connected successfully" << std::endl;
+		std::cout << GREEN "New client connected successfully" CLEAR << std::endl;
 		std::cout << "	address: " << inet_ntoa(clientAddress.sin_addr) <<  std::endl << std::endl;
 	}
 
@@ -204,7 +204,7 @@ void	Server::handleMessages(Client* client)
 	if ((rawMessage = client->retrieveMessage()).empty() == true)
 	{
 		if (DEBUG)
-			std::cout << RED"Removing disconnected client: " CLEAR << client->getUsername() << std::endl;
+			std::cout << RED "Removing disconnected client: " CLEAR << client->getUsername() << std::endl;
 		removeClient(client);
 	}
 	else

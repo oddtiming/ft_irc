@@ -36,3 +36,4 @@ obj/*
 # Misc
 .DS_Store
 .vscode
+inspircd
