@@ -8,36 +8,54 @@ Nick::Nick(Server* server) : Command("nick", server) {
 
 bool Nick::validate(const Message& msg) {
 	std::vector<std::string>	middle = msg.getMiddle();
-	std::string					nick = middle.at(0);
 
-	if (middle.size() == 0)
+	/* Check if a nickname was given */
+	if (middle.empty())
 	{
-		msg._client->reply(ERR_NONICKNAMEGIVEN());
-		std::cerr << "ERR_NONICKNAMEGIVEN" << std::endl;
-		return false;
+		_client->reply(ERR_NONICKNAMEGIVEN());
+		return (false);
 	}
+	_nick = middle.at(0);
 	/* If nickname is too long, return error */
-	else if (nick.size() > 9)
+	if (_nick.size() > 9)
 	{
-		msg._client->reply(ERR_ERRONEUSNICKNAME(nick));
-		std::cerr << "ERR_ERRONEUSNICKNAME" << std::endl;
+		_client->reply(ERR_ERRONEUSNICKNAME(_nick));
 		return false;
 	}
+	/* If provided nickname is the same as current nickname, do nothing */
+	if (_client->getNickname() == _nick)
+		return (false);
 	/* If nickname is already in use, return error */
-	else if (_server->doesNickExist(nick))
+	if (_server->doesNickExist(_nick))
 	{
-		msg._client->reply(ERR_NICKNAMEINUSE(nick));
-		std::cerr << "ERR_NICKNAMEINUSE" << std::endl;
-		return false;
+		_client->reply(ERR_NICKNAMEINUSE(_nick));
+		return (false);
 	}
 	return true;
 }
 
 void Nick::execute(const Message &msg) {
-	std::string	nick = msg.getMiddle().at(0);
+	_client = msg._client;
 
-	if (validate(msg))
-		msg._client->setNickname(nick);
-	//send new nick msg to all relevant user, format:
-	//_buildPrefix() + " NICK :" + nick + "\n").c_str();
+	/* Attempt to validate nickname */
+	if (validate(msg)) {
+		if (_server->doesNickExist(_nick))
+			_client->reply(ERR_NICKNAMEINUSE(_nick));
+		else
+		{
+			/* If client already registered, send notification of nickname change */
+			if (_client->getRegistration())
+				_client->reply(CMD_NICK(_buildPrefix(msg), _nick));
+			_client->setNickname(_nick);
+		}
+	}
+	 /* If username and nickname have been successfully added, register user*/
+    if (!_client->getUsername().empty() && !_client->getNickname().empty() && !_client->getRegistration())
+    {
+        _client->setRegistration(true);
+        _client->reply(RPL_WELCOME(_client->getNickname(), _buildPrefix(msg)));
+		if (DEBUG)
+        	std::cout << GREEN "New user successfully registered: " CLEAR << _client->getNickname() << std::endl << std::endl;
+    }
+
 }

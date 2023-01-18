@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <netinet/in.h>
 
-#define PORT 6667
+#define PORT 6697
  
 
 
@@ -32,14 +32,13 @@ int main(void)
 	if ((connect_status = connect(client_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr))) < 0) //Cast addr struct to correct type
 		printf("Unable to connect to server\n");
 	
-
 	//Read from server
 	char	buffer[1024];
-	recv(client_fd, &buffer, sizeof(buffer), 0);
+	while (1) {
+		recv(client_fd, &buffer, sizeof(buffer), 0);
+		printf("Received from server: %s\n", buffer);
+	}
 
-	printf("Received from server: %s\n", buffer);
 
 	close(client_fd);
-
-
 }

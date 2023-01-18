@@ -36,7 +36,7 @@ bool	Part::validate(const Message& msg) {
 			msg._client->reply(ERR_NOSUCHCHANNEL(*it));
         else
         {
-            REMOVEFROMCHANNEL;
+            //TODO: add code to remove user from channel
             if (leaveMsg.size() > 0)
                 msg._client->reply("User" + msg._client->getNickname() + " leaving channel" + *it + " with the message \"" + leaveMsg + "\"");
             else

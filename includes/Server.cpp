@@ -4,7 +4,6 @@
 /* Command Includes */
 /********************/
 
-#include "commands/Away.hpp"
 // #include "commands/Ban.hpp"
 // #include "commands/Echo.hpp"
 // #include "commands/Exit.hpp"
@@ -13,17 +12,16 @@
 #include "commands/Join.hpp"
 // #include "commands/Kick.hpp"
 // #include "commands/List.hpp"
-#include "commands/Mode.hpp"
+// #include "commands/Mode.hpp"
 // #include "commands/Names.hpp"
 #include "commands/Nick.hpp"
 // #include "commands/Ope.hpp"
 // #include "commands/Part.hpp"
- #include "commands/Pass.hpp"
+// #include "commands/Pass.hpp"
 // #include "commands/Ping.hpp"
-#include "commands/Privmsg.hpp"
+ #include "commands/Privmsg.hpp"
 #include "commands/Quit.hpp"
 #include "commands/User.hpp"
-#include "Client.hpp"
 
 /*****************************/
 /* Constructors & Destructor */
@@ -50,7 +48,6 @@ Server::Server(const std::string& hostname, const int port, const std::string& p
 	/* Start Server Loop */
 	if (DEBUG)
 	{
-		std::cout << "_______________________________________" << std::endl << std::endl;
 		std::cout << RED"Server status: " CLEAR << GREEN"ONLINE" CLEAR << std::endl;
 		std::cout << "_______________________________________" << std::endl << std::endl;
 	}
@@ -141,11 +138,9 @@ void	Server::initializeCommands(void) {
 	// _commands["ban"] = new Ban();
 	// _commands["ope"] = new Ope();
 	_commands["quit"] = new Quit(this);
-	_commands["mode"] = new Mode(this);
-	_commands["away"] = new Away(this);
 
 	/* Channel Commands */
-	_commands["privmsg"] = new Privmsg(this);
+	 _commands["privmsg"] = new Privmsg();
 	_commands["join"] = new Join(this);
 	// _commands["part"] = new Part();
 	// _commands["list"] = new List();
@@ -153,7 +148,7 @@ void	Server::initializeCommands(void) {
 	// _commands["kick"] = new Kick();
 	_commands["nick"] = new Nick(this);
 	_commands["user"] = new User(this);
-	_commands["pass"] = new Pass(this);
+	// _commands["pass"] = new Pass();
 	// _commands["mode"] = new Mode();
 
 	//_commands["who"] = new Who();
@@ -307,13 +302,11 @@ bool	Server::doesChannelExist(const std::string& channel) const {
 }
 
 /* Create a new channel with given channel name */
-void	Server::createChannel(const std::string& channel, Client* owner) {
+void	Server::Clientl(const std::string& channel, Client* owner) {
 	/* Check if channel already exists */
-	if (!_channels.empty() && (_channels.find(channel) == _channels.end()))
+	if (_channels.find(channel) == _channels.end())
 		return;
-	if (DEBUG)
-		std::cout << GREEN"New channel created: " CLEAR << channel << std::endl << std::endl;
-	_channels[channel] = new Channel(channel, owner);
+	_channels["channel"] = new Channel(channel, owner);
 }
 
 /* Destroy channel with given channel name */
@@ -343,14 +336,4 @@ Channel*	Server::getChannelPtr(const std::string& channel) {
 	std::map<std::string, Channel*>::iterator it = _channels.find(channel);
 	//FIXME: Might need to add protection here if channel not found
 	return(it->second);
-}
-
-Client* Server::getClientPtr(const std::string &client) {
-	std::vector<Client*>::iterator it = _clients.begin();
-	for (; it != _clients.end(); ++it)
-	{
-		if ((*it)->getNickname() == client)
-			break;
-	}
-	return *it;
 }

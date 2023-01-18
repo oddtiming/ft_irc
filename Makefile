@@ -5,20 +5,34 @@ NAME			:= ircserv
 
 
 CPP_FILES		:=	main.cpp \
+					Channel.cpp \
 					Client.cpp \
 					Message.cpp \
 					Server.cpp \
 					commands/Nick.cpp \
-					commands/User.cpp
+					commands/User.cpp \
+					commands/Quit.cpp \
+					commands/Join.cpp \
+					commands/Pass.cpp \
+					commands/Mode.cpp \
+					commands/Away.cpp \
+					commands/Privmsg.cpp
 
 
 INC_FILES		:=	defines.h \
+					Channel.hpp \
 					Client.hpp \
 					Message.hpp \
 					Server.hpp \
 					replies.h \
 					commands/Nick.hpp \
-					commands/User.hpp
+					commands/User.hpp \
+					commands/Quit.hpp \
+                    commands/Pass.hpp \
+					commands/Join.hpp \
+                    commands/Mode.hpp \
+                    commands/Away.hpp \
+                    commands/Privmsg.hpp
 
 
 

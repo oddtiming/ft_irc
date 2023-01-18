@@ -1,17 +1,23 @@
 
 /* Local Includes */
 #include "Channel.hpp"
+#include "Client.hpp"
 #include "defines.h"
+
+class Client;
 
 
 /* Constructors & Destructor */
-Channel::Channel(const std::string& name, const std::string& pass, Client* owner) : _name(name), _owner(owner) {
+Channel::Channel(const std::string& name, Client* owner) : _name(name), _owner(owner) {
 
 	/* Set default channel modes */
 	setModes(TOPIC_SET_OP | NO_MSG_IN);
 	
 	/* Add channel creator to member list, add OWNER to its modes */
 	addMember(owner, OWNER);
+
+	/* Set channel password */
+	//FIXME: Need to set +k flag is password provided. Might want to change so password can only be assigned after channel creation
 }
 
 Channel::~Channel() {
@@ -73,7 +79,7 @@ bool	Channel::checkMemberModes(Client* client, char modes) {
 	if (it == _members.end()) {
 		it = _notMembers.find(client);
 		if (it == _notMembers.end())
-			return;
+			return (false);
 	}
 	return (it->second & modes) == modes;
 }
@@ -91,7 +97,9 @@ bool	Channel::isMember(Client* client) {
 /* Add a new member to channel */
 void	Channel::addMember(Client* client, int modes) {
 	/* Add member and set default member modes */
-	_members[client] = modes; 
+	_members.insert(std::pair<Client*, Mode>(client, modes));
+	if (DEBUG)
+		std::cout << GREEN "New member: " CLEAR << client->getNickname() << GREEN " joined channel: " CLEAR << this->getName() << std::endl << std::endl;
 }
 
 /* Remove a member from channel */
@@ -110,10 +118,47 @@ void	Channel::removeMember(Client* client) {
 	/* If member is banned keep track of them*/
 	if (checkMemberModes(client, BAN))
 		_notMembers[it->first] = it->second;
+		//FIXME: Ensure that deleting from memberModes right after will not remove this
+
+	/* Erase member from channel */
 	_members.erase(it);
 	
+	/* If member was operator, make sure there is at least one operator in channel */
 	if (wasOpe)
 		ensureOperator();
+}
+
+std::string Channel::getMemberList(void) {
+	MemberMap::iterator it = _members.begin();
+	std::string list;
+
+	//fixme either do vector+sort to have owner+ops at the top of list or sort them that way while adding them
+	/*loops through the MemberMap and build a space-separated list of every nickname
+	 * on this channel, adding a '@' in front of the nick of owner/ops */
+	for (; it != _members.end(); ++it) {
+		if (it->second == C_OP || it->second == OWNER)
+			list.append("@" + it->first->getNickname());
+		else
+			list.append(it->first->getNickname());
+		list.append(" ");
+	}
+	return list;
+}
+
+std::vector<std::string> Channel::getMemberVector(void) {
+	MemberMap::iterator it = _members.begin();
+	std::vector<std::string> list;
+
+	//fixme either do vector+sort to have owner+ops at the top of list or sort them that way while adding them
+	/*loops through the MemberMap and build a space-separated list of every nickname
+	 * on this channel, adding a '@' in front of the nick of owner/ops */
+	for (; it != _members.end(); ++it) {
+		if (it->second == C_OP || it->second == OWNER)
+			list.push_back("@" + it->first->getNickname());
+		else
+			list.push_back(it->first->getNickname());
+	}
+	return list;
 }
 
 /* Make sure there is at least one OP in channel*/
@@ -128,4 +173,15 @@ void	Channel::ensureOperator(void) {
 	/* If no OP found, assign OP for first member in channel */
 	it = _members.begin();
 	setMemberModes(it->first, C_OP);
+}
+
+/* Send message to all members of channel */
+void	Channel::replyToAll(const std::string& reply, Client* sender) {
+	MemberMap::iterator it = _members.begin();
+
+	for (; it != _members.end(); it++)
+	{
+		if (it->first != sender)
+			it->first->reply(reply);
+	}
 }

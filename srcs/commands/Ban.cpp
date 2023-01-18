@@ -12,3 +12,13 @@ Ban::~Ban() {
 bool	Ban::validate(const Message& msg) {
 
 }
+
+void	Ban::execute(const Message& msg) {
+
+	if (validate(msg))
+	{
+		/* Check permissions for execution of function */
+
+	}
+
+}

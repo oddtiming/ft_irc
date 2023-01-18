@@ -7,13 +7,13 @@
 #include <string>
 
 /* Local Includes */
-#include "Command.hpp"
+#include "../Command.hpp"
 
 class Privmsg : public Command
 {
     public:
         /* Constructors & Destructor */
-        Privmsg();
+        Privmsg(Server* server);
         ~Privmsg();
 
         /* Public Member Functions */

@@ -10,7 +10,7 @@
 #include <string>
 
 /* Local Includes */
-#include "Client.hpp"
+class Client;
 
 class Channel {
 	
@@ -20,7 +20,7 @@ class Channel {
 		typedef uint32_t						Mode;
 		typedef std::map<Client *, Mode>		MemberMap;
 
-		Channel(const std::string& name, const std::string& pass, Client* owner);
+		Channel(const std::string& name, Client* owner);
 		~Channel();
 
 		void	closeChannel();
@@ -53,8 +53,15 @@ class Channel {
 		void	addMember(Client* client, int modes = 0);
 		void	removeMember(Client* client);
 		void	ensureOperator(void);
+		std::string getMemberList(void);
+		std::vector<std::string> getMemberVector(void);
 
-	private:
+		/* Channel Messaging */
+
+		void	replyToAll(const std::string& reply, Client* sender);
+
+
+private:
 		const std::string				_name;			/* Channel name */
 		std::string						_pass;
 		std::string						_topic;			/* Channel topic */

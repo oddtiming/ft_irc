@@ -5,6 +5,9 @@
 
 /* System Includes */
 #include <string>
+#include <vector>
+#include <map>
+#include <utility>
 
 /* Local Includes */
 #include "Command.hpp"
@@ -20,7 +23,10 @@ class Join : public Command
         bool                validate(const Message& msg);
         void                execute(const Message& msg);
 
+        bool                checkInvalidChars(const std::string& string);
+
     private:
+        std::vector<std::pair<std::string, std::string> >   _channels;
 
 };
 

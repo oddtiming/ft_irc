@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 #include <sys/socket.h>
+#include <netinet/in.h>
 
 /* Local Includes */
 #include "Channel.hpp"
@@ -24,12 +25,18 @@ class Client {
 		void				setPassword(const std::string& password) { _password = password; }
 		void				setUsername(const std::string& username) { _username = username; }
 		void				setRealname(const std::string& realname) { _realname = realname; }
+		void				setAddress(const struct sockaddr_in address) { _address = address; }
+		void				setRegistration(const bool& registration) { _isRegistered = registration; }
+		void 				setAwayMessage(const std::string& awayMessage) {_awayMessage = awayMessage;}
+		void				setRegistration(const bool& registration) { _isRegistered = registration; }
 
 		const std::string&	getNickname(void) const { return (_nickname); }
 		const std::string&	getPassword(void) const { return (_password); }
 		const std::string&	getUsername(void) const { return (_username); }
 		const std::string&	getRealname(void) const { return (_realname); }
+		const std::string&	getAwayMessage(void) const { return (_awayMessage); }
 		const int&			getSocket(void) const { return (_socket); }
+		bool				getRegistration(void) { return (_isRegistered); }
 		
 		/*************************/
 		/*    Mode Management    */
@@ -52,9 +59,12 @@ class Client {
 		std::string						_realname;
 		std::string						_password;
 		char							_globalModes;		/* Mode flags stored using bitmask */
-		std::string						_inputBuffer;		/*  Raw data received from socket reads */
+		std::string						_inputBuffer;		/* Raw data received from socket reads */
 		std::string						_awayMessage;
 		// bool							_isAway;
+		bool							_isRegistered;
+
+		struct sockaddr_in				_address;
 		
 		/* Private Member Functions */
 };
