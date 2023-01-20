@@ -18,7 +18,9 @@ CPP_FILES		:=	main.cpp \
 					commands/Away.cpp \
 					commands/Privmsg.cpp \
 					commands/List.cpp \
-					commands/Topic.cpp
+					commands/Topic.cpp \
+					commands/Ping.cpp \
+					commands/Pong.cpp
 
 
 INC_FILES		:=	defines.h \
@@ -36,7 +38,9 @@ INC_FILES		:=	defines.h \
                     commands/Away.hpp \
                     commands/Privmsg.hpp \
                     commands/List.hpp \
-                    commands/Topic.hpp
+                    commands/Topic.hpp \
+                    commands/Ping.hpp \
+                    commands/Pong.hpp
 
 
 
