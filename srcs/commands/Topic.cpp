@@ -24,7 +24,7 @@ bool	Topic::validate(const Message& msg) {
 	}
 	return true;
 }
-
+//FIXME: /topic +t segfaults using limechat in a channel
 void	Topic::execute(const Message& msg) {
 	if (validate(msg)) {
 		if (msg.getTrailing().empty())
