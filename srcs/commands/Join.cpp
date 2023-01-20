@@ -69,6 +69,10 @@ bool	Join::validate(StringPair channel) {
 	if (name.size() > 0 && name.at(0) != '#')
 	{
 		_client->reply(ERR_BADCHANMASK(name));
+
+		if (DEBUG)
+			std::cerr << RED "received name is: " << name << CLEAR << std::endl;
+
 		return (false);
 	}
 
@@ -145,9 +149,16 @@ void	Join::execute(const Message& msg) {
 			_server->createChannel(name, _client);
 			hasJoined = false;
 		}
-		/* Otherwise attempt to join channel */
+
 		channelPtr = _server->getChannelPtr(name);
+		if (channelPtr == nullptr)
+			return ;
 		channelPtr->addMember(_client, CMD_JOIN(_buildPrefix(msg), name));
+
+
+		/* If the channel didn't exist, make the client a channel operator */
+		if (!hasJoined)
+			channelPtr->setMemberModes(_client, C_OP);
 
 		/* Send reply messages */
 		_client->reply(RPL_NAMREPLY(_server->getHostname(), _client->getNickname(), name, channelPtr->getMemberList()));
@@ -172,4 +183,3 @@ bool	Join::checkInvalidChars(const std::string& string) {
 	}
 	return (true);
 }
-

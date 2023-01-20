@@ -62,7 +62,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCS)
 #--------------------------------#
 CC				= c++
 RM				= rm -rf
-CFLAGS			= -Wall -Wextra -Werror -Wshadow -Wno-shadow -std=c++98 -I$(INC_DIR)
+CFLAGS			= -Wall -Wextra -Werror -Wshadow -Wno-shadow -std=c++98 -I$(INC_DIR) -g
 
 #--------------------------------#
 #   Makefile rules and targets   #

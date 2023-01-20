@@ -60,7 +60,7 @@ Server::Server(const std::string& hostname, const int port, const std::string& p
 Server::~Server() {
 	/* Delete Commands*/
 	std::map<std::string, Command *>::iterator it = _commands.begin();
-	for (; it != _commands.end(); it++)
+	for (; it != _commands.end(); ++it)
 		delete it->second;
 
 	/* Delete Clients */
@@ -310,10 +310,10 @@ bool	Server::doesChannelExist(const std::string& channel) const {
 /* Create a new channel with given channel name */
 void	Server::createChannel(const std::string& channel, Client* owner) {
 	/* Check if channel already exists */
-	if (!_channels.empty() && (_channels.find(channel) == _channels.end()))
+	if (!_channels.empty() && (_channels.find(channel) != _channels.end()))
 		return;
 	if (DEBUG)
-		std::cout << GREEN"New channel created: " CLEAR << channel << std::endl << std::endl;
+		std::cout << GREEN "New channel created: " CLEAR << channel << std::endl << std::endl;
 	_channels[channel] = new Channel(channel, owner);
 }
 
@@ -339,19 +339,37 @@ bool	Server::channelCheckPass(const std::string& channel, const std::string& pas
 	return (false);
 }
 
-/* Return a ptr to the channel referred to by given channel name */
+/**
+ * @return Channel* 
+ * 		ptr to the channel referred to by given channel name if found
+ * 		nullptr if not found
+ */
 Channel*	Server::getChannelPtr(const std::string& channel) {
-	std::map<std::string, Channel*>::iterator it = _channels.find(channel);
-	//FIXME: Might need to add protection here if channel not found
+	std::map<std::string, Channel *>::iterator it = _channels.find(channel);
+	if (it == _channels.end())
+	{
+		std::cerr << RED "Channel '" << channel << "' was not found." CLEAR << std::endl;
+		return (nullptr);
+	}
 	return(it->second);
 }
 
+/**
+ * @return Client* 
+ * 		ptr to the Client referred to by given client name if found
+ * 		nullptr if not found
+ */
 Client* Server::getClientPtr(const std::string &client) {
 	std::vector<Client*>::iterator it = _clients.begin();
 	for (; it != _clients.end(); ++it)
 	{
 		if ((*it)->getNickname() == client)
 			break;
+	}
+	if (it == _clients.end())
+	{
+		std::cerr << RED "Client '" << client << "' was not found." CLEAR << std::endl;
+		return (nullptr);
 	}
 	return *it;
 }

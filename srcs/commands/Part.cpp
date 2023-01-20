@@ -29,7 +29,8 @@ bool	Part::validate(const Message& msg) {
     if (chan.size() > 0)
 		channels.push_back(chan);
     std::vector<std::string>::iterator it = channels.begin();
-	for (; it != channels.end(); it++){
+	for (; it != channels.end(); ++it)
+    {
         if (!_server->isUserChannelMember(msg._client->getNickname()))
             msg._client->reply(ERR_NOTONCHANNEL(*it));
         else if(!valideChanName.find(chan.at(0)))
@@ -49,9 +50,9 @@ bool	Part::validate(const Message& msg) {
 void	Part::execute(const Message& msg) {
 
     if (validate(msg))
-        {
-            /* Check permissions for execution of function */
+    {
+        /* Check permissions for execution of function */
 
-        }
+    }
     
 }
