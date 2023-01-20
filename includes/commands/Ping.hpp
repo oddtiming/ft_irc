@@ -13,7 +13,7 @@ class Ping : public Command
 {
     public:
         /* Constructors & Destructor */
-        Ping();
+        Ping(Server* server);
         ~Ping();
 
         /* Public Member Functions */

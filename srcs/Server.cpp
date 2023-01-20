@@ -179,6 +179,7 @@ void	Server::handleConnections()
 		throw Server::acceptException();
 	_clients.push_back(new Client(new_fd));
 	_clients.back()->setAddress(clientAddress);
+	_clients.back()->setHostname(inet_ntoa(clientAddress.sin_addr));
 	pollfd pfd = {.fd = new_fd, .events = POLLIN, .revents = 0};
 	_pfds.push_back(pfd);
 

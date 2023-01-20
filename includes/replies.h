@@ -19,6 +19,8 @@
 #define CMD_NICK(prefix, nick) ":" + (prefix) + " NICK :" + (nick) + "\r\n"
 #define CMD_PRIVMSG(prefix, channel, message) ":" + (prefix) + " PRIVMSG " + (channel) + " :" + (message) + "\r\n"
 #define CMD_NICK(prefix, nick) ":" + (prefix) + " NICK :" + (nick) + "\r\n"
+#define CMD_PING(hostname) ":" + (hostname) + " PONG " + (hostname) + " :" + (hostname)
+
 /* Error Messages */
 #define ERR_NOSUCHNICK(nickname) "401 * " + (nickname) + " :No such nickname" + "\r\n" //401
 #define ERR_NOSUCHCHANNEL(channel) "403 * " +(channel) + " :No such channel" + "\r\n" //403

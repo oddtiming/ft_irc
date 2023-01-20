@@ -25,6 +25,7 @@ class Client {
 		void				setPassword(const std::string& password) { _password = password; }
 		void				setUsername(const std::string& username) { _username = username; }
 		void				setRealname(const std::string& realname) { _realname = realname; }
+		void				setHostname(const std::string& hostname) { _hostname = hostname; }
 		void				setAddress(const struct sockaddr_in address) { _address = address; }
 		void				setRegistration(const bool& registration) { _isRegistered = registration; }
 		void 				setAwayMessage(const std::string& awayMessage) {_awayMessage = awayMessage;}
@@ -33,6 +34,7 @@ class Client {
 		const std::string&	getPassword(void) const { return (_password); }
 		const std::string&	getUsername(void) const { return (_username); }
 		const std::string&	getRealname(void) const { return (_realname); }
+		const std::string&	getHostname(void) const { return (_hostname); }
 		const std::string&	getAwayMessage(void) const { return (_awayMessage); }
 		const int&			getSocket(void) const { return (_socket); }
 		bool				getRegistration(void) { return (_isRegistered); }
@@ -64,6 +66,7 @@ class Client {
 		bool							_isRegistered;
 
 		struct sockaddr_in				_address;
+		std::string						_hostname;
 		
 		/* Private Member Functions */
 };

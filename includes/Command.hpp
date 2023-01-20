@@ -40,7 +40,7 @@ class Command {
 		std::string			_buildPrefix(const Message& msg) { 
 			return msg._client->getNickname() + "!"
 				 + msg._client->getUsername() + "@"
-				 + _server->getHostname();
+				 + msg._client->getHostname();
 				 //FIXME: DO NOT FORGET TO CHANGE THIS, hardcoded for testing
 		}
 };

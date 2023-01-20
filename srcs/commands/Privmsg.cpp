@@ -86,7 +86,7 @@ void	Privmsg::execute(const Message& msg) {
 
        //FIXME: temporarily commented out to see if capitalization fixed the channel error
 		// std::string message = ":"+_buildPrefix(msg) + " " + msg.getCommand() + " " + _target + " :" + msg.getTrailing();
-		std::string message = ":"+_buildPrefix(msg) + " PRIVMSG " + _target + " :" + msg.getTrailing();
+		std::string message = ":" + _buildPrefix(msg) + " PRIVMSG " + _target + " :" + msg.getTrailing() + "\r\n";
 		std::vector<std::string>::const_iterator it = msg.getMiddle().begin();
 		for (; it != msg.getMiddle().end(); ++it)
 			std::cout << YELLOW << *it << CLEAR << std::endl;

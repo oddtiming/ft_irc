@@ -63,7 +63,7 @@ void	Client::read(void) {
 	/* Print received messages from client */
 	if (DEBUG)
 	{
-		std::cerr << BLUE"Message received from client on socket #" << _socket << CLEAR << std::endl <<
+		std::cerr << BLUE "Message received from client on socket #" << _socket << CLEAR << std::endl <<
 				"	" << input << std::endl;
 	}
 }
@@ -79,6 +79,7 @@ void	Client::reply(const std::string& reply) {
 	
 	if ((sz = send(_socket, reply.c_str(), reply.size(), 0)) < 0)
 		throw std::runtime_error("Error sending message");
+	std::cerr << RED "return from send() on socket #" << _socket << ": " << sz << CLEAR << std::endl;
 
 }
 
