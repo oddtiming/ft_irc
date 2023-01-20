@@ -21,6 +21,7 @@ class Mode : public Command
         void                execute(const Message& msg);
 
     private:
+		bool 				_targetIsChannel;
 
 };
 

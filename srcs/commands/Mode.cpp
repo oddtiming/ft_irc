@@ -24,7 +24,12 @@ bool	Mode::validate(const Message& msg) {
 	std::string					target = middle.at(0);
 	std::string					mode = middle.at(1);
 	bool						removeMode;
+	std::string 						modes = "+-";
 
+	if (target.at(0) == '#')
+		_targetIsChannel = 1;
+	else
+		_targetIsChannel = 0;
 	if (mode.c_str()[0] == '-')
 		removeMode = true;
 	else if (mode.c_str()[0] == '+')
@@ -33,14 +38,45 @@ bool	Mode::validate(const Message& msg) {
 		msg._client->reply(ERR_UNKNOWNMODE(mode, target));
 		return false;
 	}
-	if (mode.c_str()[1] == 'o')
-		msg._client->setGlobalModes(C_OP, removeMode);
-	else if (mode.c_str()[1] == 'i')
+	if (_targetIsChannel == 1 /*&& (msg._client->checkGlobalModes(OP) || _server->getChannelPtr(target)->checkMemberModes(msg._client,C_OP ))*/){
+		if (mode.c_str()[1] == 'p'){
+			_server->getChannelPtr(target)->setModes(PRIVATE, removeMode);
+			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+		}
+		if (mode.c_str()[1] == 's'){
+			_server->getChannelPtr(target)->setModes(SECRET, removeMode);
+			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+		}
+		if (mode.c_str()[1] == 'm'){
+			_server->getChannelPtr(target)->setModes(MODERATED, removeMode);
+			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+		}
+		if (mode.c_str()[1] == 'i'){
+			_server->getChannelPtr(target)->setModes(INV_ONLY, removeMode);
+			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+		}
+		if (mode.c_str()[1] == 't'){
+			_server->getChannelPtr(target)->setModes(TOPIC_SET_OP, removeMode);
+			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+		}
+		if (mode.c_str()[1] == 'n'){
+			_server->getChannelPtr(target)->setModes(NO_MSG_IN, removeMode);
+			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+		}
+		if (mode.c_str()[1] == 'k'){
+			_server->getChannelPtr(target)->setModes(PASS_REQ, removeMode);
+			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+		}
+	}
+	else {
+		if (mode.c_str()[1] == 'o')
+			msg._client->setGlobalModes(OP, removeMode);
+		else if (mode.c_str()[1] == 'i')
 			msg._client->setGlobalModes(INV_ONLY, removeMode);
-	else
-	{
-		msg._client->reply(ERR_UNKNOWNMODE(mode, target));
-		return false;
+		else {
+			msg._client->reply(ERR_UNKNOWNMODE(mode, target));
+			return false;
+		}
 	}
 
 	return true;
@@ -49,8 +85,6 @@ bool	Mode::validate(const Message& msg) {
 
 void	Mode::execute(const Message& msg) {
 	if (validate(msg)){
-		msg._client->reply("1 alx Changed mode to +o");
-		if (msg._client->checkGlobalModes(C_OP))
-			msg._client->reply(" and it worked!\r\n");
+
 	}
 }

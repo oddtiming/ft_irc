@@ -16,7 +16,9 @@ CPP_FILES		:=	main.cpp \
 					commands/Pass.cpp \
 					commands/Mode.cpp \
 					commands/Away.cpp \
-					commands/Privmsg.cpp
+					commands/Privmsg.cpp \
+					commands/List.cpp \
+					commands/Topic.cpp
 
 
 INC_FILES		:=	defines.h \
@@ -32,7 +34,9 @@ INC_FILES		:=	defines.h \
 					commands/Join.hpp \
                     commands/Mode.hpp \
                     commands/Away.hpp \
-                    commands/Privmsg.hpp
+                    commands/Privmsg.hpp \
+                    commands/List.hpp \
+                    commands/Topic.hpp
 
 
 

@@ -30,7 +30,6 @@ class Client {
 		void				setRegistration(const bool& registration) { _isRegistered = registration; }
 		void 				setAwayMessage(const std::string& awayMessage) {_awayMessage = awayMessage;}
 		void				setPingStatus(const bool& status) { _wasPinged = status; }
-
 		const std::string&	getNickname(void) const { return (_nickname); }
 		const std::string&	getPassword(void) const { return (_password); }
 		const std::string&	getUsername(void) const { return (_username); }

@@ -78,7 +78,7 @@ class Server {
 		std::map<std::string, Channel *>	getChannelList() { return _channels; }
 
 
-		/* Exceptions */
+	/* Exceptions */
 		class socketException : public std::exception {
 			public:
 				const char*	what() const throw() {
