@@ -18,7 +18,17 @@ bool	Topic::validate(const Message& msg) {
 		msg._client->reply(ERR_CHANOPRIVSNEEDED(_target));
 		return false;
 	}*/
-	if (!_server->getChannelPtr(_target)->isMember(msg._client)) {
+	
+	Channel *target = _server->getChannelPtr(_target);
+
+	if (target == nullptr)
+	{
+		msg._client->reply(ERR_NOSUCHCHANNEL(_target));
+		return false;
+	}
+
+	if (target->isMember(msg._client) == false)
+	{
 		msg._client->reply(ERR_NOTONCHANNEL(_target));
 		return false;
 	}
