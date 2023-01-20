@@ -1,5 +1,5 @@
-#ifndef LIST_HPP
-#define LIST_HPP
+#ifndef TOPIC_HPP
+#define TOPIC_HPP
 
 #pragma once
 
@@ -9,18 +9,19 @@
 /* Local Includes */
 #include "../Command.hpp"
 
-class List : public Command
+class Topic : public Command
 {
 public:
 	/* Constructors & Destructor */
-	List(Server *server);
-	~List();
+	Topic(Server *server);
+	~Topic();
 
 	/* Public Member Functions */
 	bool                validate(const Message& msg);
 	void                execute(const Message& msg);
 
 private:
+	std::string 		_target;
 
 };
 
