@@ -13,7 +13,6 @@
 #define	RPL_NOTOPIC(channel) (channel) + " :No topic is set" //331
 #define	RPL_TOPIC(channel, topic) (channel) + " :" + (topic) //332
 #define RPL_NAMREPLY(hostname, nick, channel, users) ":" + (hostname) + " 353 " + (nick) + " = " + (channel) + " :" + users +  "\r\n" //353
-#define RPL_LISTEND(host, nick) ":" + (host) + " 323 " + (nick) + " :End of /NAMES list.\r\n" //323
 
 /* Command Success Messages */
 #define CMD_JOIN(prefix, channel) ":" + (prefix) + " JOIN :" + (channel) + "\r\n"
@@ -43,6 +42,7 @@
 #define	ERR_BANNEDFROMCHAN(channel) (channel) + " :Cannot join channel (+b)" //474
 #define	ERR_BADCHANNELKEY(channel) (channel) + " :Cannot join channel (+k)" //475
 #define ERR_BADCHANMASK(channel) (channel) + " :Bad Channel Mask" //476
+#define ERR_CHANOPRIVSNEEDED(channel) "482 * " + (channel) + " :You're not channel operator" + "\r\n"//482
 
 
 /*
