@@ -9,6 +9,7 @@
 
 #define MAX_BUFFER_SIZE 512			/* Maximum read size from recv() in bytes */
 #define MAX_CHANNELS 100			/* Maximum number of channels that can exist on server */
+#define PING_INTERVAL 60			/* Interval after which to send a ping to client since their last activity */
 
 /* Global Modes */
 typedef enum e_globalModes {

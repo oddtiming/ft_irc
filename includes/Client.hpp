@@ -8,7 +8,7 @@
 #include <string>
 #include <sys/socket.h>
 #include <netinet/in.h>
-
+#include <ctime>
 /* Local Includes */
 #include "Channel.hpp"
 #include "Message.hpp"
@@ -29,6 +29,7 @@ class Client {
 		void				setAddress(const struct sockaddr_in address) { _address = address; }
 		void				setRegistration(const bool& registration) { _isRegistered = registration; }
 		void 				setAwayMessage(const std::string& awayMessage) {_awayMessage = awayMessage;}
+		void				setPingStatus(const bool& status) { _wasPinged = status; }
 
 		const std::string&	getNickname(void) const { return (_nickname); }
 		const std::string&	getPassword(void) const { return (_password); }
@@ -38,6 +39,9 @@ class Client {
 		const std::string&	getAwayMessage(void) const { return (_awayMessage); }
 		const int&			getSocket(void) const { return (_socket); }
 		bool				getRegistration(void) { return (_isRegistered); }
+		const std::time_t&	getConnectTime(void) const { return (_timeConnect); }
+		const std::time_t&	getLastActivityTime(void) const { return _timeLastActivity; }
+		const bool&			getPingStatus(void) const { return _wasPinged; }
 		
 		/*************************/
 		/*    Mode Management    */
@@ -64,6 +68,12 @@ class Client {
 		std::string						_awayMessage;
 		// bool							_isAway;
 		bool							_isRegistered;
+
+
+		/* Time management */
+		const std::time_t				_timeConnect;
+		std::time_t						_timeLastActivity;
+		bool							_wasPinged;
 
 		struct sockaddr_in				_address;
 		std::string						_hostname;

@@ -10,21 +10,10 @@ Ping::~Ping() {
 }
 
 /* Public Member Functions */
-bool	Ping::validate(const Message& msg) {
-
-}
-
-
 void	Ping::execute(const Message& msg) {
-
-	/* Check permissions for execution of function */
-	msg._client->reply(CMD_PING(_server->getHostname()));
+	std::string token;
+	/* If anything other than just PING received sent back same token, otherwise send empty string */
+	if (!msg.getMiddle().empty())
+		token = msg.getMiddle().at(0);
+	msg._client->reply(CMD_PONG(_server->getHostname(), token));
 }
-
-
-/*
-PONG REPLY
-:serverhost PONG serverhost :serverhost
-*/
-
-// :penguin.omega.example.org PONG penguin.omega.example.org :penguin.omega.example.org

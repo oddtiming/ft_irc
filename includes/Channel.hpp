@@ -8,6 +8,7 @@
 #include <vector>
 #include <stdint.h>		// uint32_t
 #include <string>
+#include <ctime>
 
 /* Local Includes */
 class Client;
@@ -37,6 +38,7 @@ class Channel {
 		Client*		getOwner(void) const { return (_owner); }
 		std::string	getPass() { return (_pass); }
 		int			getHighestRank(Client* client);
+		const std::time_t&	getStartTime(void) const { return _timeStart; }
 
 		/*******************************/
 		/*        Mode Management      */
@@ -71,6 +73,7 @@ private:
 		MemberMap						_members;		/* Channel member list, paired with their memberModes */
 		MemberMap						_notMembers;	/* Clients with flags set who are not currently in the channel */
 		char							_modes;			/* Channel modes */
+		const std::time_t				_timeStart;		/* Time channel was created */
 
 
 

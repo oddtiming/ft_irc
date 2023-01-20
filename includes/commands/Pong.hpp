@@ -1,5 +1,5 @@
-#ifndef PING_HPP
-#define PING_HPP
+#ifndef PONG_HPP
+#define PONG_HPP
 
 #pragma once
 
@@ -9,12 +9,12 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Ping : public Command
+class Pong : public Command
 {
     public:
         /* Constructors & Destructor */
-        Ping(Server* server);
-        ~Ping();
+        Pong(Server* server);
+        ~Pong();
 
         /* Public Member Functions */
         void                execute(const Message& msg);

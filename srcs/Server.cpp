@@ -19,7 +19,8 @@
 // #include "commands/Ope.hpp"
 // #include "commands/Part.hpp"
  #include "commands/Pass.hpp"
-// #include "commands/Ping.hpp"
+#include "commands/Ping.hpp"
+#include "commands/Pong.hpp"
 #include "commands/Privmsg.hpp"
 #include "commands/Quit.hpp"
 #include "commands/User.hpp"
@@ -30,7 +31,7 @@
 /*****************************/
 
 Server::Server(const std::string& hostname, const int port, const std::string& password) :
-	_hostname(hostname), _password(password), _port(port) {
+	_hostname(hostname), _password(password), _timeStart(std::time(nullptr)), _port(port) {
 	
 	/* Setup server connection */
 	initializeConnection();
@@ -133,7 +134,8 @@ void	Server::initializeConnection(void) {
 /* Intialize Commands Map */
 void	Server::initializeCommands(void) {
 	/* General Commands */
-	// _commands["ping"] = new Ping();
+	_commands["ping"] = new Ping(this);
+	_commands["pong"] = new Pong(this);
 	// _commands["info"] = new Info();
 	// _commands["exit"] = new Exit();
 	// _commands["echo"] = new Echo();
@@ -162,6 +164,11 @@ void	Server::initializeCommands(void) {
 	//_commands["motd"] = new Motd();
 	
 }
+
+
+/****************************************/
+/*      Server Operation Functions      */
+/****************************************/
 
 /* Manage Connection Requests from New Clients */
 void	Server::handleConnections()
@@ -235,8 +242,8 @@ void	Server::executeCommand(const Message & msg) {
 /* Main server loop */
 void	Server::runServer(void) {
 	while (_status == ONLINE) {
-
-		if (poll(_pfds.data(), _pfds.size(), -1) < 0)
+		/**/
+		if (poll(_pfds.data(), _pfds.size(), 10) < 0)
 			throw Server::pollException();
 			
 		/* Iterate through sockets to check for events*/
@@ -245,7 +252,7 @@ void	Server::runServer(void) {
 
 			/* If any readable data is available */
 			if (_pfds[i].revents & POLLIN) {
-
+				
 				/* If the event is on the server socket, check for new connection */
 				if (_pfds[i].fd == _socket)
 					handleConnections();
@@ -254,6 +261,16 @@ void	Server::runServer(void) {
 				else if (i > 0)
 					handleMessages(_clients[i - 1]);
 			}
+			/* If no input check time since last activity and send PING if more than 3 minutes */
+			else if (i > 0) {
+				
+				if (_clients[i - 1]->getRegistration() && !_clients[i - 1]->getPingStatus() && ((std::time(nullptr) - _clients[i - 1]->getLastActivityTime()) > PING_INTERVAL))
+				{
+					_clients[i - 1]->reply(CMD_PING(_hostname, std::to_string(std::time(nullptr))));
+					_clients[i - 1]->setPingStatus(true);
+				}
+			}
+		/* Iterate through clients and check time since last activity to send PING */
 		}
 	}
 }
@@ -373,3 +390,11 @@ Client* Server::getClientPtr(const std::string &client) {
 	}
 	return *it;
 }
+
+/*
+std::time_t result = std::time(nullptr);
+	char Output[19];
+	strftime(Output, 19, "[%Y%m%d_%H%M%S] ", std::localtime(&result));
+	std::cout << Output;
+
+*/

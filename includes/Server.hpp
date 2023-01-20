@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <vector>
 #include <map>
+#include <ctime>
 
 /* Local Includes */
 #include "Client.hpp"
@@ -40,9 +41,9 @@ class Server {
 		
 
 		/* Setters & Getters */
-		const std::string& getServerPassword(void) const { return _password; }
-		const std::string& getHostname(void) const { return _hostname; }
-
+		const std::string&	getServerPassword(void) const { return _password; }
+		const std::string&	getHostname(void) const { return _hostname; }
+		const std::time_t&	getStartTime(void) const { return _timeStart; }
 	
 		/*************************/
 		/*    Server Operation   */
@@ -117,6 +118,7 @@ class Server {
 		std::string							_hostname;
 		std::string							_password;
 		int									_status;
+		const std::time_t					_timeStart;
 
 		/* Networking Data */
 		const int							_port;

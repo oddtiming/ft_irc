@@ -7,7 +7,7 @@ class Client;
 
 
 /* Constructors & Destructor */
-Channel::Channel(const std::string& name, Client* owner) : _name(name), _owner(owner) {
+Channel::Channel(const std::string& name, Client* owner) : _name(name), _owner(owner), _timeStart(std::time(nullptr)) {
 
 	/* Set default channel modes */
 	setModes(TOPIC_SET_OP | NO_MSG_IN);

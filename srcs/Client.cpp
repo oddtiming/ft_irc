@@ -3,9 +3,10 @@
 #include "defines.h"
 
 /* Constructors & Destructor */
-Client::Client(int socket) : _socket(socket) {
+Client::Client(int socket) : _socket(socket), _timeConnect(std::time(nullptr)) {
 	_isRegistered = false;
 	_globalModes = 0;
+	_wasPinged = false;
 }
 
 Client::~Client() {
@@ -59,7 +60,7 @@ void	Client::read(void) {
 	if (nbytes == MAX_BUFFER_SIZE)
 		input = input.replace(510, 2, "\r\n");
 	_inputBuffer.append(input);
-
+	_timeLastActivity = std::time(nullptr);
 	/* Print received messages from client */
 	if (DEBUG)
 	{
