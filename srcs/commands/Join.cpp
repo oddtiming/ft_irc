@@ -20,7 +20,7 @@ bool	Join::parse(const Message& msg) {
 		return (false);
 	}
 
-	/* Split all requested channels into _channels vector */
+	/* Split all requested channels into _targets vector */
 	std::string rawChannels = msg.getMiddle().at(0);
 	size_t posChannels = rawChannels.find(',');
 	std::string rawPasswords;
@@ -36,25 +36,25 @@ bool	Join::parse(const Message& msg) {
 		posPasswords = rawPasswords.find(',');
 	}
 
-	/* Iterate through channels and add channel/password pair to vector (_channels) */
+	/* Iterate through channels and add channel/password pair to vector (_targets) */
 	while ((posChannels = rawChannels.find(',')) != std::string::npos)
 	{
 		/* If passwords and still remaining passwords add name/pass to vector */
 		if (pass && (posPasswords != std::string::npos))
 		{
-			_channels.push_back(StringPair(rawChannels.substr(0, posChannels), rawPasswords.substr(0, posPasswords)));
+			_targets.push_back(StringPair(rawChannels.substr(0, posChannels), rawPasswords.substr(0, posPasswords)));
 			rawPasswords.erase(0, posPasswords + 1);
 		}
 		/* Otherwise add name and empty password to vector */
 		else
-			_channels.push_back(StringPair(rawChannels.substr(0, posChannels), std::string()));
+			_targets.push_back(StringPair(rawChannels.substr(0, posChannels), std::string()));
 		rawChannels.erase(0, posChannels + 1);
 	}
 	/* Add remaining name/pass to vector */
 	if (pass && (posPasswords != std::string::npos))
-		_channels.push_back(StringPair(rawChannels, rawPasswords));
+		_targets.push_back(StringPair(rawChannels, rawPasswords));
 	else
-		_channels.push_back(StringPair(rawChannels, std::string()));
+		_targets.push_back(StringPair(rawChannels, std::string()));
 	return (true);
 }
 
@@ -129,10 +129,10 @@ void	Join::execute(const Message& msg) {
 		return;
 	
 	/* Iterate through channels list and attempt to validate and exectute for each one */
-	ChannelList::iterator 	ite = _channels.end();
+	ChannelList::iterator 	ite = _targets.end();
 	bool					hasJoined = true;
 	
-	for (ChannelList::iterator it = _channels.begin(); it != ite; ++it)
+	for (ChannelList::iterator it = _targets.begin(); it != ite; ++it)
 	{
 		/* QoL variables */
 		std::string name = it->first;

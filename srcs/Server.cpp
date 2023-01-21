@@ -17,7 +17,7 @@
 // #include "commands/Names.hpp"
 #include "commands/Nick.hpp"
 // #include "commands/Ope.hpp"
-// #include "commands/Part.hpp"
+#include "commands/Part.hpp"
  #include "commands/Pass.hpp"
 #include "commands/Ping.hpp"
 #include "commands/Pong.hpp"
@@ -136,12 +136,12 @@ void	Server::initializeCommands(void) {
 	/* General Commands */
 	_commands["ping"] = new Ping(this);
 	_commands["pong"] = new Pong(this);
-	// _commands["info"] = new Info();
-	// _commands["exit"] = new Exit();
-	// _commands["echo"] = new Echo();
-	// _commands["help"] = new Help();
-	// _commands["ban"] = new Ban();
-	// _commands["ope"] = new Ope();
+	// _commands["info"] = new Info(this);
+	// _commands["exit"] = new Exit(this);
+	// _commands["echo"] = new Echo(this);
+	// _commands["help"] = new Help(this);
+	// _commands["ban"] = new Ban(this);
+	// _commands["ope"] = new Ope(this);
 	_commands["quit"] = new Quit(this);
 	_commands["mode"] = new Mode(this);
 	_commands["away"] = new Away(this);
@@ -149,19 +149,19 @@ void	Server::initializeCommands(void) {
 	/* Channel Commands */
 	_commands["privmsg"] = new Privmsg(this);
 	_commands["join"] = new Join(this);
-	// _commands["part"] = new Part();
+	_commands["part"] = new Part(this);
 	 _commands["list"] = new List(this);
-	// _commands["names"] = new Names();
-	// _commands["kick"] = new Kick();
+	// _commands["names"] = new Names(this);
+	// _commands["kick"] = new Kick(this);
 	_commands["nick"] = new Nick(this);
 	_commands["user"] = new User(this);
 	_commands["pass"] = new Pass(this);
-	// _commands["mode"] = new Mode();
+	// _commands["mode"] = new Mode(this);
 
-	//_commands["who"] = new Who();
-	//_commands["time"] = new Time();
-	//_commands["invite"] = new Invite();
-	//_commands["motd"] = new Motd();
+	//_commands["who"] = new Who(this);
+	//_commands["time"] = new Time(this);
+	//_commands["invite"] = new Invite(this);
+	//_commands["motd"] = new Motd(this);
 	
 }
 
@@ -280,7 +280,14 @@ void	Server::removeClient(Client* client) {
 	/* Remove client from all channels */
 	std::map<std::string, Channel *>::iterator it = _channels.begin();
 	for (; it != _channels.end(); ++it)
-		it->second->removeMember(client);
+	{
+		it->second->setMemberModes(client, BAN, true);
+		// FIXME: CMD_PART macro should actually use the buildPrefix() fn, but it lives in the wrong scope for now. (private attribute of Command class)
+		//	Possible Fixes
+		//		1) make it public in Command
+		//		2) Add a utils file
+		it->second->removeMember(client, CMD_PART(client->getNickname(), it->second->getName(), ""));
+	}
 
 	/* Remove client socket from pollFD vector */
 	std::vector<pollfd>::iterator it2 = _pfds.begin();

@@ -36,14 +36,14 @@ bool	Topic::validate(const Message& msg) {
 }
 
 void	Topic::execute(const Message& msg) {
-	if (validate(msg)) {
+	
+	if (validate(msg))
+	{
 		if (msg.getTrailing().empty())
 			msg._client->reply(RPL_TOPIC(_target, _server->getChannelPtr(_target)->getTopic()));
 		if (msg.getTrailing().size() == 1 && msg.getTrailing().at(0) == ':')
 			_server->getChannelPtr(_target)->setTopic(" ");
 		else
 			_server->getChannelPtr(_target)->setTopic(msg.getTrailing());
-
-
 	}
 }

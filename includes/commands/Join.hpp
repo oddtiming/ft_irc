@@ -31,7 +31,7 @@ class Join : public Command
         bool                checkInvalidChars(const std::string& string);
 
     private:
-        std::vector< std::pair< std::string, std::string > >    _channels;
+        std::vector< std::pair< std::string, std::string > >    _targets;   /* Pairs of channel names w their passwords  */
         Client*                                                 _client;
 };
 
