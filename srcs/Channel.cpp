@@ -117,7 +117,8 @@ void	Channel::removeMember(Client* client) {
 	if (checkMemberModes(client, BAN))
 		_notMembers[it->first] = it->second;
 	//FIXME: Ensure that deleting from memberModes right after will not remove this
-
+	//FIXME: If a banned client leaves the server, there will be an invalid pointer remaining in _notMembers
+	
 	/* Erase member from channel */
 	_members.erase(it);
 	

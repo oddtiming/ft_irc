@@ -11,6 +11,6 @@ Pong::~Pong() {
 
 /* Public Member Functions */
 void	Pong::execute(const Message& msg) {
-	/* When PONG is received do nothing */
-	(void)msg;
+	/* When PONG is received, reset PING status for client */
+	msg._client->setPingStatus(false);
 }
