@@ -12,76 +12,71 @@ Privmsg::~Privmsg() {
 bool Privmsg::validate(const Message& msg) {
     std::vector<std::string>  args = msg.getMiddle();
 
-	/*make sure there's a target for the message*/
-    if(args.size() == 0)
+	/* Ensure there's a target for the message */
+    if (args.size() < 1)
     {
         msg._client->reply(ERR_NORECIPIENT(msg.getCommand()));
         return false;
     }
-	/*and a message to send*/
-   /* if (args.size() == 1)
+    if (_message.empty())
     {
-		msg._client->reply(ERR_NOTEXTTOSEND());
+        msg._client->reply(ERR_NOTEXTTOSEND());
         return false;
-    }*/
+    }
     _target = args.at(0);
     args.erase(args.begin());
-    if(_target.at(0) == '#')
+    if (_target.at(0) == '#')
     {
         _targetIsChannel = true;
         if(!_server->doesChannelExist(_target))
+        {
+			msg._client->reply(ERR_NOSUCHCHANNEL(_target));
 			return false;
+        }
 		if (!_server->getChannelPtr(_target)->isMember(msg._client))
 		{
 			 msg._client->reply(ERR_CANNOTSENDTOCHAN(_target));
 			 return false;
 		}
-		/*if (!_server->getChannelPtr(_target)->checkMemberModes(msg._client, BAN | INV_ONLY))
-        {
-			msg._client->reply(ERR_CANNOTSENDTOCHAN(_target));
-            return false;
-        }*/
+        return true;
     }
-    else
+
+    _targetIsChannel = false;
+    if (!_server->doesNickExist(_target))
     {
-        _targetIsChannel = false;
-        if (_server->getClientPtr(_target)->checkGlobalModes(AWAY))
-        {
-			msg._client->reply(RPL_AWAY(_target, _server->getClientPtr(_target)->getAwayMessage()));  //return(_nickname + " :" + _awayMessage)
-            return false;
-        }
-        if (!(_server->doesNickExist(_target)))
-        {
-			msg._client->reply(ERR_NOSUCHNICK(_target));
-            return false;
-        }
+        msg._client->reply(ERR_NOSUCHNICK(_target));
+        return false;
+    }
+    if (_server->getClientPtr(_target)->checkGlobalModes(AWAY))
+    {
+        msg._client->reply(RPL_AWAY(_target, _server->getClientPtr(_target)->getAwayMessage()));  //return(_nickname + " :" + _awayMessage)
+        return false;
     }
     return true;
 }
 
-void	Privmsg::execute(const Message& msg) {
-	if (validate(msg)) {
-        //FIXME: Structure for single word and multiple word messages is different
-        /*
-        Single word:
-            PRIVMSG #new hello
-        Multiple word:
-            PRIVMSG #new :hello hello
-        */
+void	Privmsg::execute(const Message& msg)
+{
+    _buildMessage(msg);
 
-       //FIXME: temporarily commented out to see if capitalization fixed the channel error
-		// std::string message = ":"+_buildPrefix(msg) + " " + msg.getCommand() + " " + _target + " :" + msg.getTrailing();
-		std::string message = ":" + _buildPrefix(msg) + " PRIVMSG " + _target + " :" + msg.getTrailing() + "\r\n";
-		std::vector<std::string>::const_iterator it = msg.getMiddle().begin();
-		for (; it != msg.getMiddle().end(); ++it)
-			std::cout << YELLOW << *it << CLEAR << std::endl;
-        /* If target of a message is a channel */
-		if (_targetIsChannel) {
-            std::cout << YELLOW << "this" << CLEAR << std::endl;
-			_server->getChannelPtr(_target)->sendToOthers(message, msg._client);
-		}
-        /* If target is another user */
-        else
-			_server->getClientPtr(_target)->reply(message);
-	}
+	if (!validate(msg))
+        return ;
+
+    if (_targetIsChannel)
+        _server->getChannelPtr(_target)->sendToOthers(
+            CMD_PRIVMSG(_buildPrefix(msg), _target, _message), msg._client);
+    else
+        _server->getClientPtr(_target)->reply(
+            CMD_PRIVMSG(_buildPrefix(msg), _target, _message));
+}
+
+void    Privmsg::_buildMessage(const Message& msg)
+{
+	size_t	nb_args = msg.getMiddle().size();
+	
+	/* If the message was a single word, some clients (e.g. Limechat) do not
+		prepend a ':' before it, so it stays in the msg's _middle field */
+	for (size_t i = 2; i < nb_args; ++i)
+        _message.append(msg.getMiddle().at(i));
+    _message.append(msg.getTrailing());
 }

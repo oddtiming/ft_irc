@@ -18,8 +18,8 @@
 /* Command Success Messages */
 #define CMD_JOIN(prefix, channel) ":" + (prefix) + " JOIN :" + (channel) + "\r\n"
 #define CMD_NICK(prefix, nick) ":" + (prefix) + " NICK :" + (nick) + "\r\n"
-#define CMD_PRIVMSG(prefix, channel, message) ":" + (prefix) + " PRIVMSG " + (channel) + " :" + (message) + "\r\n"
-#define CMD_NICK(prefix, nick) ":" + (prefix) + " NICK :" + (nick) + "\r\n"
+#define CMD_PRIVMSG(prefix, target, message) ":" + (prefix) + " PRIVMSG " + (target) + " :" + (message) + "\r\n"
+#define CMD_NOTICE(prefix, target, message) ":" + (prefix) + " NOTICE " + (target) + " :" + (message) + "\r\n"
 #define CMD_PONG(hostname, token) ":" + (hostname) + " PONG " + (hostname) + " :" + (token) + "\r\n"
 #define CMD_PING(hostname, timestamp) ":" + (hostname) + " PING " + (hostname) + " :" + (timestamp) + "\r\n"
 #define CMD_PART(prefix, channel, message) ":" + (prefix) + " PART " + (channel) + " :" + (message) + "\r\n"
@@ -27,11 +27,11 @@
 
 /* Error Messages */
 #define ERR_NOSUCHNICK(nickname) "401 * " + (nickname) + " :No such nickname" + "\r\n" //401
-#define ERR_NOSUCHCHANNEL(channel) "403 * " +(channel) + " :No such channel" + "\r\n" //403
+#define ERR_NOSUCHCHANNEL(channel) "403 * " + (channel) + " :No such channel" + "\r\n" //403
 #define ERR_CANNOTSENDTOCHAN(channel) (channel) + " :Cannot send to channel" //404
 #define	ERR_TOOMANYCHANNELS(channel) (channel) + " :You have joined too many channels" //405
 #define ERR_NORECIPIENT(cmd) ":No recipient given (" + (cmd) + ")" //411
-#define ERR_NOTEXTTOSEND() ":No text to send" //412
+#define ERR_NOTEXTTOSEND() "412 * :No text to send" //412
 #define ERR_NONICKNAMEGIVEN() "431 * :No nickname given \r\n" //431
 #define ERR_ERRONEUSNICKNAME(nick) "432 * " + (nick) + " :Erroneous nickname" + "\r\n" //432
 #define ERR_NICKNAMEINUSE(nick) "433 * " + (nick) + " :Nickname is already in use" + "\r\n" //433

@@ -21,8 +21,13 @@ class Privmsg : public Command
         void				execute(const Message& msg);
 
     private:
+        /* Attributes */
         std::string _target;
+        std::string _message;
         bool        _targetIsChannel;
+        
+        /* Private Member Functions */
+        void				_buildMessage(const Message& msg);
 
 };
 
