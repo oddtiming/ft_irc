@@ -11,7 +11,7 @@
 #define RPL_ENDOFNAMES(host, nick, channel) ":" + (host) + " 366 " + (nick) + " " + (channel) + " :End of /NAMES list.\r\n" //366
 #define RPL_LISTEND(host, nick) ":" + (host) + " 323 " + (nick) + " :End of channel list.\r\n" //323
 #define RPL_CHANNELMODEIS(target, modes, param) "324 * " + (target) + " " + (modes) + param + "\r\n" //324
-#define	RPL_NOTOPIC(channel) (channel) + " :No topic is set/r/n" //331
+#define	RPL_NOTOPIC(channel) (channel) + " :No topic is set\r\n" //331
 #define	RPL_TOPIC(channel, topic) (channel) + " :" + (topic) //332
 #define RPL_NAMREPLY(hostname, nick, channel, users) ":" + (hostname) + " 353 " + (nick) + " = " + (channel) + " :" + users +  "\r\n" //353
 
@@ -23,6 +23,7 @@
 #define CMD_PONG(hostname, token) ":" + (hostname) + " PONG " + (hostname) + " :" + (token) + "\r\n"
 #define CMD_PING(hostname, timestamp) ":" + (hostname) + " PING " + (hostname) + " :" + (timestamp) + "\r\n"
 #define CMD_PART(prefix, channel, message) ":" + (prefix) + " PART " + (channel) + " :" + (message) + "\r\n"
+#define CMD_PART_NO_MSG(prefix, channel) ":" + (prefix) + " PART " + (channel) + "\r\n"
 
 /* Error Messages */
 #define ERR_NOSUCHNICK(nickname) "401 * " + (nickname) + " :No such nickname" + "\r\n" //401
