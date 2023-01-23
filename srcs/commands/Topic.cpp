@@ -13,7 +13,6 @@ bool	Topic::validate(const Message& msg) {
 		msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
 		return false;
 	}
-	_target = msg.getMiddle().at(0);
 	if (_target.empty())
 		return false;
 	if (_server->getChannelPtr(_target)->checkModes(TOPIC_SET_OP) && !_server->getChannelPtr(_target)->checkMemberModes(msg._client, C_OP)) {
@@ -26,7 +25,6 @@ bool	Topic::validate(const Message& msg) {
 	}
 	return true;
 }
-//FIXME: /topic +t segfaults using limechat in a channel
 void	Topic::execute(const Message& msg) {
 	if (validate(msg)) {
 		if (msg.getTrailing().empty())
