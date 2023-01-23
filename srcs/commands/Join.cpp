@@ -91,10 +91,7 @@ bool	Join::validate(StringPair channel) {
 
 		/* If user is already a member of channel then do nothing */
 		if (channelPtr->isMember(_client))
-		{
-			std::cout << "Validate failing on isMember" << std::endl;
 			return (false);
-		}
 
 		/* Check if channel is invite only & user is not invited */
 		if (channelPtr->checkModes(INV_ONLY) && !channelPtr->checkMemberModes(_client, INV))
@@ -137,7 +134,6 @@ void	Join::execute(const Message& msg) {
 
 	for (ChannelList::iterator it = _targets.begin(); it != ite; ++it)
 	{
-		std::cout << "Printing channel join targets: " << it->first << std::endl;
 		/* QoL variables */
 		std::string name = it->first;
 		std::string pass = it->second;
@@ -156,7 +152,10 @@ void	Join::execute(const Message& msg) {
 
 		channelPtr = _server->getChannelPtr(name);
 		if (channelPtr == nullptr)
+		{
+			_targets.clear();
 			return ;
+		}
 		channelPtr->addMember(_client, CMD_JOIN(_buildPrefix(msg), name));
 
 
@@ -173,7 +172,8 @@ void	Join::execute(const Message& msg) {
 			_client->reply(RPL_TOPIC(name, channelPtr->getTopic()));
 		else if (hasJoined)
 			_client->reply(RPL_NOTOPIC(name));
-	}		
+	}
+	_targets.clear();
 }
 
 /* Check for unprintable characters in channel name */
