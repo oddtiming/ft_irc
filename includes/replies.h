@@ -12,7 +12,6 @@
 #define RPL_CHANNELMODEIS(target, modes, param) "324 * " + (target) + " " + (modes) + param + "\r\n" //324
 #define	RPL_NOTOPIC(channel) "331 * " + (channel) + " :No topic is set \r\n" //331
 #define	RPL_TOPIC(channel, topic) "332 * " + (channel) + " :" + (topic) + "\r\n"//332
-#define RPL_INVITING(channel,nick) "341 * " + (channel) + " " + (nick) + "\r\n" //341
 #define RPL_NAMREPLY(hostname, nick, channel, users) ":" + (hostname) + " 353 " + (nick) + " = " + (channel) + " :" + users +  "\r\n" //353
 #define RPL_INVITING(prefix, targetnick, channel) ":" + (prefix) + " INVITE " + (targetnick) + " " + (channel) + "\r\n"
 
@@ -26,6 +25,8 @@
 #define CMD_PART(prefix, channel, message) ":" + (prefix) + " PART " + (channel) + " :" + (message) + "\r\n"
 #define CMD_PART_NO_MSG(prefix, channel) ":" + (prefix) + " PART " + (channel) + "\r\n"
 #define CMD_INVITE(hostname, client, target, channel) ":" + (hostname) + " 341 " + (client) + " " + (target) + " :" + (channel) + "\r\n"
+// FIXME: the RPL_INVITING and CMD_INVITE are curently inverted; 
+//  the 341 reply code is meant to be sent to the inviting client, not the invited client
 
 /* Error Messages */
 #define ERR_NOSUCHNICK(nickname) "401 * " + (nickname) + " :No such nickname" + "\r\n" //401
