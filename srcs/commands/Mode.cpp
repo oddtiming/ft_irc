@@ -62,7 +62,7 @@ bool	Mode::validate(const Message& msg) {
 
 				if (mode.c_str()[1] == 'p') {
 					_server->getChannelPtr(target)->setModes(PRIVATE, removeMode);
-					msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), _server->getChannelPtr(target)->getChannelModes()));
+					msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
 				}
 				if (mode.c_str()[1] == 's') {
 					_server->getChannelPtr(target)->setModes(SECRET, removeMode);
@@ -95,7 +95,7 @@ bool	Mode::validate(const Message& msg) {
 						_server->getChannelPtr(target)->setMemberModes(_server->getClientPtr(user), BAN, removeMode);
 						if (_server->getChannelPtr(target)->isMember(_server->getClientPtr(user)))
 							_server->getChannelPtr(target)->removeMember(_server->getClientPtr(user),
-																		 ERR_BANNEDFROMCHAN(target));
+																		 CMD_PART(user, target, "User has been banned"));
 						msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
 					}
 					if (mode.c_str()[1] == 'i') {
