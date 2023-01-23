@@ -8,18 +8,22 @@
 
 /* Local Includes */
 #include "Command.hpp"
+#include "defines.h"
 
 class Invite : public Command {
-public:
-	/* Constructors & Destructor */
-	Invite(Server* server);
-	~Invite() { }
+	public:
+		/* Constructors & Destructor */
+		Invite(Server* server);
+		~Invite();
 
-	/* Public Member Functions */
-	bool	validate(const Message& msg);
-	void    execute(const Message& msg);
+		/* Public Member Functions */
+		bool	validate(const Message& msg);
+		void    execute(const Message& msg);
 
-private:
+	private:
+		Client*		_client;
+		Client*		_targetUser;
+		Channel*	_targetChannel;
 
 };
 

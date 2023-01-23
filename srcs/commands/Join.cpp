@@ -91,7 +91,10 @@ bool	Join::validate(StringPair channel) {
 
 		/* If user is already a member of channel then do nothing */
 		if (channelPtr->isMember(_client))
+		{
+			std::cout << "Validate failing on isMember" << std::endl;
 			return (false);
+		}
 
 		/* Check if channel is invite only & user is not invited */
 		if (channelPtr->checkModes(INV_ONLY) && !channelPtr->checkMemberModes(_client, INV))
@@ -131,9 +134,10 @@ void	Join::execute(const Message& msg) {
 	/* Iterate through channels list and attempt to validate and exectute for each one */
 	ChannelList::iterator 	ite = _targets.end();
 	bool					hasJoined = true;
-	
+
 	for (ChannelList::iterator it = _targets.begin(); it != ite; ++it)
 	{
+		std::cout << "Printing channel join targets: " << it->first << std::endl;
 		/* QoL variables */
 		std::string name = it->first;
 		std::string pass = it->second;

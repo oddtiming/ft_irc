@@ -10,17 +10,23 @@
 #include "Command.hpp"
 
 class Notice : public Command {
-public:
-	/* Constructors & Destructor */
-	Notice(Server* server);
-	~Notice() { }
+	public:
+		/* Constructors & Destructor */
+		Notice(Server* server);
+		~Notice();
 
-	/* Public Member Functions */
-	bool	validate(const Message& msg);
-	void    execute(const Message& msg);
+		/* Public Member Functions */
+		bool	validate(const Message& msg);
+		void    execute(const Message& msg);
 
-private:
-
+	private:
+        /* Attributes */
+        std::string _target;
+        std::string _message;
+        bool        _targetIsChannel;
+        
+        /* Private Member Functions */
+        void				_buildMessage(const Message& msg);
 };
 
 #endif

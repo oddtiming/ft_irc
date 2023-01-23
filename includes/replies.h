@@ -1,11 +1,9 @@
 #include "Command.hpp"
-// ": 001 " + (nick) + " " + : + "Welcome to the Internet Relay Network " + (prefix)
-
 
 /* Reply Messages */
 #define RPL_WELCOME(nick, prefix) "001 " + (nick) + " Welcome to Internet Relay Network " + (prefix) + "\r\n" //001
 #define RPL_UMODEIS(modes) "221 * " + (modes) + "\r\n" //221
-#define RPL_AWAY(_target, _awayMessage) (_target) + " :" + (_awayMessage) //301
+#define RPL_AWAY(hostname, client, target, message) ":" + (hostname) + " 301 " +  (client) + " " + (target) + " :" + (message) + "\r\n"
 #define RPL_UNAWAY()  "305 * :You are no longer marked as being away \r\n" //305
 #define RPL_NOWAWAY() "306 * :You have been marked as being away \r\n" //306
 #define RPL_LIST(channel,nbUsers,topic) "322 * " + (channel) + " " + (nbUsers) + " : " + (topic) +  "\r\n" //322
@@ -16,27 +14,29 @@
 #define	RPL_TOPIC(channel, topic) "332 * " + (channel) + " :" + (topic) + "\r\n"//332
 #define RPL_INVITING(channel,nick) "341 * " + (channel) + " " + (nick) + "\r\n" //341
 #define RPL_NAMREPLY(hostname, nick, channel, users) ":" + (hostname) + " 353 " + (nick) + " = " + (channel) + " :" + users +  "\r\n" //353
+#define RPL_INVITING(prefix, targetnick, channel) ":" + (prefix) + " INVITE " + (targetnick) + " " + (channel) + "\r\n"
 
 /* Command Success Messages */
 #define CMD_JOIN(prefix, channel) ":" + (prefix) + " JOIN :" + (channel) + "\r\n"
 #define CMD_NICK(prefix, nick) ":" + (prefix) + " NICK :" + (nick) + "\r\n"
-#define CMD_PRIVMSG(prefix, channel, message) ":" + (prefix) + " PRIVMSG " + (channel) + " :" + (message) + "\r\n"
-#define CMD_NICK(prefix, nick) ":" + (prefix) + " NICK :" + (nick) + "\r\n"
+#define CMD_PRIVMSG(prefix, target, message) ":" + (prefix) + " PRIVMSG " + (target) + " :" + (message) + "\r\n"
+#define CMD_NOTICE(prefix, target, message) ":" + (prefix) + " NOTICE " + (target) + " :" + (message) + "\r\n"
 #define CMD_PONG(hostname, token) ":" + (hostname) + " PONG " + (hostname) + " :" + (token) + "\r\n"
 #define CMD_PING(hostname, timestamp) ":" + (hostname) + " PING " + (hostname) + " :" + (timestamp) + "\r\n"
 #define CMD_PART(prefix, channel, message) ":" + (prefix) + " PART " + (channel) + " :" + (message) + "\r\n"
 #define CMD_PART_NO_MSG(prefix, channel) ":" + (prefix) + " PART " + (channel) + "\r\n"
+#define CMD_INVITE(hostname, client, target, channel) ":" + (hostname) + " 341 " + (client) + " " + (target) + " :" + (channel) + "\r\n"
 
 /* Error Messages */
 #define ERR_NOSUCHNICK(nickname) "401 * " + (nickname) + " :No such nickname" + "\r\n" //401
-#define ERR_NOSUCHCHANNEL(channel) "403 * " +(channel) + " :No such channel" + "\r\n" //403
 #define ERR_CANNOTSENDTOCHAN(channel) "404 * " + (channel) + " :Cannot send to channel" + "\r\n" //404
+#define ERR_NOSUCHCHANNEL(channel) "403 * " + (channel) + " :No such channel" + "\r\n" //403
 #define	ERR_TOOMANYCHANNELS(channel) (channel) + " :You have joined too many channels" //405
 #define ERR_NORECIPIENT(cmd) ":No recipient given (" + (cmd) + ")" //411
-#define ERR_NOTEXTTOSEND() ":No text to send" //412
+#define ERR_NOTEXTTOSEND() "412 * :No text to send" //412
 #define ERR_NONICKNAMEGIVEN() "431 * :No nickname given \r\n" //431
 #define ERR_ERRONEUSNICKNAME(nick) "432 * " + (nick) + " :Erroneous nickname" + "\r\n" //432
-#define ERR_NICKNAMEINUSE(nick) "433 * " + (nick) + " :Nickname is already in use" + "\r\n" //433
+#define ERR_NICKNAMEINUSE(nick) ":433 * " + (nick) + " :Nickname is already in use" + "\r\n" //433
 #define ERR_NOTONCHANNEL(channel) (channel) + " :You're not on that channel" + "\r\n"
 #define ERR_NEEDMOREPARAMS(cmd) "461 * " + (cmd) + " :Not enough parameters" + "\r\n" //461
 #define ERR_ALREADYREGISTRED() ":Unauthorized command (already registered) \r\n" //462
@@ -47,7 +47,7 @@
 #define	ERR_BADCHANNELKEY(channel) (channel) + " :Cannot join channel (+k)" //475
 #define ERR_BADCHANMASK(channel) (channel) + " :Bad Channel Mask" //476
 #define ERR_CHANOPRIVSNEEDED(channel) "482 * " + (channel) + " :You're not channel operator" + "\r\n"//482
-
+#define ERR_USERONCHANNEL(nickname, channel) ":hostname 443 " + (nickname) + " " + (channel) + " :is already on channel\r\n"  
 
 /*
 
