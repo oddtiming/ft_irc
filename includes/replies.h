@@ -12,7 +12,7 @@
 #define RPL_CHANNELMODEIS(target, modes, param) "324 * " + (target) + " " + (modes) + param + "\r\n" //324
 #define	RPL_NOTOPIC(channel) "331 * " + (channel) + " :No topic is set \r\n" //331
 #define	RPL_TOPIC(channel, topic) "332 * " + (channel) + " :" + (topic) + "\r\n"//332
-#define RPL_INVITING(channel,nick) "341 * " + (channel) + " " + (nick) + "\r\n" //341
+//#define RPL_INVITING(channel,nick) "341 * " + (channel) + " " + (nick) + "\r\n" //341
 #define RPL_NAMREPLY(hostname, nick, channel, users) ":" + (hostname) + " 353 " + (nick) + " = " + (channel) + " :" + users +  "\r\n" //353
 #define RPL_INVITING(prefix, targetnick, channel) ":" + (prefix) + " INVITE " + (targetnick) + " " + (channel) + "\r\n"
 
