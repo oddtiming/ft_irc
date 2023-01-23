@@ -26,6 +26,8 @@
 #define CMD_PART(prefix, channel, message) ":" + (prefix) + " PART " + (channel) + " :" + (message) + "\r\n"
 #define CMD_PART_NO_MSG(prefix, channel) ":" + (prefix) + " PART " + (channel) + "\r\n"
 #define CMD_INVITE(hostname, client, target, channel) ":" + (hostname) + " 341 " + (client) + " " + (target) + " :" + (channel) + "\r\n"
+// FIXME: the RPL_INVITING and CMD_INVITE are curently inverted; 
+//  the 341 reply code is meant to be sent to the inviting client, not the invited client
 
 /* Error Messages */
 #define ERR_NOSUCHNICK(nickname) "401 * " + (nickname) + " :No such nickname" + "\r\n" //401
