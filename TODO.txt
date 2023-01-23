@@ -40,3 +40,12 @@ Bonus Section:
 - Write simple GetTime bot that replies to a specifically formatted message with the current time.
 
 - Try and get DCC file transfer working properly.
+
+
+KNOWN ERRORS:
+- If a client thinks it has been disconnected, and tries to reconnect
+	it can force the server to send a message to a socket which is not longer
+	connected to anything
+
+	Potential solution: check each socket before attempting to reply
+

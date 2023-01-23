@@ -178,6 +178,11 @@ void	Server::handleConnections()
 	/* Attempt to connect to client and get client address info*/
 	if ((new_fd = accept(_socket, (struct sockaddr *)&clientAddress, (socklen_t *)&addressLen)) < 0)
 		throw std::runtime_error("Failure to accept incoming connection due to socket error");
+	
+	/* Set socket option to ensure that we dont attempt to send on a socket that has been disconnected */
+	int yes = 1;
+	if (setsockopt(new_fd, SOL_SOCKET, SO_NOSIGPIPE, &yes, sizeof(int)) < 0)
+		throw std::runtime_error("Unable to set socket options");
 
 	/* Add client to _clients map and populate address variables */
 	_clients.push_back(new Client(new_fd));
@@ -222,7 +227,7 @@ void	Server::handleMessages(Client* client)
 
 			// }
 			/* Attempt to execute command */
-			// if (msg.getCommand() != "cap")
+			if (msg.getCommand()!= "cap")
 				executeCommand(msg);
 			
 			/* Retrieve next command */
@@ -403,17 +408,6 @@ Channel*	Server::getChannelPtr(const std::string& channel) {
 	}
 	return(it->second);
 }
-
-
-
-//NOTE: Formatting for timestamps
-/*
-std::time_t result = std::time(nullptr);
-	char Output[19];
-	strftime(Output, 19, "[%Y%m%d_%H%M%S] ", std::localtime(&result));
-	std::cout << Output;
-
-*/
 
 /* Return a formatted timestamp for current time */
 const std::string	getTimestamp() {
