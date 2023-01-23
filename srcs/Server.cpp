@@ -16,6 +16,7 @@
 #include "commands/Mode.hpp"
 // #include "commands/Names.hpp"
 #include "commands/Nick.hpp"
+#include "commands/Notice.hpp"
 // #include "commands/Ope.hpp"
 #include "commands/Part.hpp"
  #include "commands/Pass.hpp"
@@ -145,6 +146,7 @@ void	Server::initializeCommands(void)
 
 	/* Channel Commands */
 	_commands["privmsg"] = new Privmsg(this);
+	_commands["notice"] = new Notice(this);
 	_commands["join"] = new Join(this);
 	_commands["part"] = new Part(this);
 	 _commands["list"] = new List(this);
