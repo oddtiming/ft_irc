@@ -55,7 +55,7 @@ void Nick::execute(const Message &msg) {
         _client->setRegistration(true);
         _client->reply(RPL_WELCOME(_client->getNickname(), _buildPrefix(msg)));
 		if (DEBUG)
-        	std::cout << GREEN "New user successfully registered: " CLEAR << _client->getNickname() << std::endl << std::endl;
+        	std::cout << getTimestamp() << GREEN "New user successfully registered: " CLEAR << _client->getNickname() << std::endl << std::endl;
     }
 
 }

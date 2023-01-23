@@ -58,7 +58,7 @@ void    User::execute(const Message& msg) {
         client->setRegistration(true);
         client->reply(RPL_WELCOME(msg._client->getNickname(), _buildPrefix(msg)));
         if (DEBUG)
-            std::cout << GREEN "New user successfully registered: " CLEAR << client->getNickname() << std::endl << std::endl;
+            std::cout << getTimestamp() <<  GREEN "New user successfully registered: " CLEAR << client->getNickname() << std::endl << std::endl;
     }
     /*if (msg.getMiddle().size() > 1 && msg.getMiddle().at(1).isdigit()) // FIXME: make sure only +i / +w can be passed
         msg._client->modifyGlobalModes(stoi(msg.getMiddle().at(1)), 0); // FIXME: call mode cmd */

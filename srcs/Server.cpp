@@ -17,7 +17,7 @@
 // #include "commands/Names.hpp"
 #include "commands/Nick.hpp"
 // #include "commands/Ope.hpp"
-// #include "commands/Part.hpp"
+// #include "commands/Part.hpp"x
  #include "commands/Pass.hpp"
 #include "commands/Ping.hpp"
 #include "commands/Pong.hpp"
@@ -33,28 +33,28 @@
 Server::Server(const std::string& hostname, const int port, const std::string& password) :
 	_hostname(hostname), _password(password), _timeStart(std::time(nullptr)), _port(port) {
 	
-	/* Setup server connection */
-	initializeConnection();
-	if (DEBUG)
+	try
 	{
-		std::cout << RED "Server initialization successful" CLEAR << std::endl;
-		std::cout << "	port: " << port << std::endl;
-		std::cout << "	pass: " << password << std::endl;
+		/* Setup server connection */
+		initializeConnection();
+		std::cout << getTimestamp() << GREEN "Server initialization successful" CLEAR << std::endl;
+		std::cout << "\t\t\t\tport: " << port << std::endl << "\t\t\t\tpass: " << password << std::endl;
+		
+		/* Initialize commands map */
+		initializeCommands();
+		std::cout << getTimestamp() << GREEN "Command initialization successful" CLEAR<< std::endl;
 	}
-	
-	/* Initialize commands map */
-	initializeCommands();
-	if (DEBUG)
+	catch(const std::exception& e)
 	{
-		std::cout << RED "Command initialization successful" CLEAR<< std::endl;
+		std::cerr << e.what() << '\n';
+		std::cerr << RED "Failure to initialize server, program exiting" CLEAR << std::endl;
+		exit (1);
 	}
+
 	/* Start Server Loop */
-	if (DEBUG)
-	{
-		std::cout << "_______________________________________" << std::endl << std::endl;
-		std::cout << RED "Server status: " CLEAR << GREEN"ONLINE" CLEAR << std::endl;
-		std::cout << "_______________________________________" << std::endl << std::endl;
-	}
+	std::cout << "_______________________________________________________" << std::endl << std::endl;
+	std::cout << getTimestamp() <<  "Server status - " << GREEN "ONLINE" CLEAR << std::endl;
+	std::cout << "_______________________________________________________" << std::endl << std::endl;
 	runServer();
 }
 
@@ -95,14 +95,14 @@ void	Server::initializeConnection(void)
 
 	/* Create socket */
 	if ((_socket  = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-		throw Server::socketException();
+		throw std::runtime_error("Unable to create socket");
 
 	/* Set socket as non-blocking */
 	fcntl(_socket, F_SETFL, O_NONBLOCK);
 
 	/* Set socket options to reuse addresses */
 	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) < 0)
-		throw Server::socketException();
+		throw std::runtime_error("Unable to set socket options");
 
 	/* Setup socket address struct */
 	_address.sin_port = htons(_port);
@@ -112,11 +112,11 @@ void	Server::initializeConnection(void)
 
 	/* Bind Socket */
 	if (bind(_socket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
-		throw Server::bindException();
+		throw std::runtime_error("Unable to bind socket");
 	
 	/* Set socket to passive listening */
 	if (listen(_socket, MAX_CONNECTIONS) < 0)
-		throw Server::listenException();
+		throw std::runtime_error("Unable to listen on socket");
 	
 	/* Set Server Status */
 	_status = ONLINE;
@@ -167,9 +167,8 @@ void	Server::initializeCommands(void)
 /* Manage Connection Requests from New Clients */
 void	Server::handleConnections()
 {
-	//FIXME: Clean up server status printouts, add timestamps, and add logging to file
-	if (DEBUG)
-		std::cout << RED"Incoming connection request" CLEAR<< std::endl;
+
+	std::cout << getTimestamp() << RED "Incoming connection request" CLEAR<< std::endl;
 
 	int	new_fd;
 	int	addressLen;
@@ -178,7 +177,7 @@ void	Server::handleConnections()
 
 	/* Attempt to connect to client and get client address info*/
 	if ((new_fd = accept(_socket, (struct sockaddr *)&clientAddress, (socklen_t *)&addressLen)) < 0)
-		throw Server::acceptException();
+		throw std::runtime_error("Failure to accept incoming connection due to socket error");
 
 	/* Add client to _clients map and populate address variables */
 	_clients.push_back(new Client(new_fd));
@@ -189,14 +188,9 @@ void	Server::handleConnections()
 	pollfd pfd = {.fd = new_fd, .events = POLLIN, .revents = 0};
 	_pfds.push_back(pfd);
 
-	
 	/* Print new client data */
-	if (DEBUG)
-	{
-		std::cout << GREEN "New client connected successfully" CLEAR << std::endl;
-		std::cout << "	address: " << inet_ntoa(clientAddress.sin_addr) <<  std::endl << std::endl;
-	}
-
+	std::cout << getTimestamp() << GREEN "New client connected successfully" CLEAR << std::endl;
+	std::cout << "\t\t\t\taddress: " << inet_ntoa(clientAddress.sin_addr) <<  std::endl;
 }
 
 /* Read incoming data from client socket & perform actions */
@@ -210,8 +204,7 @@ void	Server::handleMessages(Client* client)
 	/* Handle forcefully disconnected clients */
 	if ((rawMessage = client->retrieveMessage()).empty() == true)
 	{
-		if (DEBUG)
-			std::cout << RED "Removing disconnected client: " CLEAR << client->getUsername() << std::endl;
+		std::cout << getTimestamp() << RED "Removing disconnected client: " CLEAR << client->getUsername() << std::endl;
 		removeClient(client);
 	}
 	else
@@ -222,10 +215,14 @@ void	Server::handleMessages(Client* client)
 			Message	msg(client, rawMessage);
 
 			/* Handle default response to capabilities requests */
-			if (msg.getCommand() == "CAP")
-				msg._client->reply("CAP * LS :");
+			// if (msg.getCommand() == "cap")
+			// {
+			// 	if (msg.hasMiddle() && msg.getMiddle().at(0) == "LS")
+			// 		msg._client->reply("CAP * LS :");
+
+			// }
 			/* Attempt to execute command */
-			else
+			// if (msg.getCommand() != "cap")
 				executeCommand(msg);
 			
 			/* Retrieve next command */
@@ -243,8 +240,7 @@ void	Server::executeCommand(const Message & msg)
 	}
 	/* Error message if command is invalid or not supported */
 	catch(std::out_of_range &e) {
-		std::cerr << "Command '" << msg.getCommand() 
-				<< "' was not found." << std::endl;
+		std::cerr << RED "\t\t\t\tCommand '" << msg.getCommand() << "' was not found." CLEAR << std::endl;
 	}
 }
 
@@ -255,7 +251,7 @@ void	Server::runServer(void)
 	{
 		/* Poll all open sockets for activity */
 		if (poll(_pfds.data(), _pfds.size(), 10) < 0)
-			throw Server::pollException();
+			throw std::runtime_error("Error when attempting to poll");
 			
 		/* Iterate through sockets to check for events */
 		for (size_t i = 0; i < _pfds.size(); i++)
@@ -418,3 +414,14 @@ std::time_t result = std::time(nullptr);
 	std::cout << Output;
 
 */
+
+/* Return a formatted timestamp for current time */
+const std::string	getTimestamp() {
+	std::time_t time = std::time(nullptr);
+	char output[50];
+	int len;
+	len = strftime(output, 50, "[%a %b %d %Y %X] : ", std::localtime(&time));
+	output[len] = 0;
+	return (std::string(output));
+}
+

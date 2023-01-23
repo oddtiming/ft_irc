@@ -12,21 +12,6 @@ Privmsg::~Privmsg() {
 bool Privmsg::validate(const Message& msg) {
     std::vector<std::string>  args = msg.getMiddle();
 
-
-    /* DEBUG */
-    // std::cout << "Prefix" << std::endl;
-    // std::cout << YELLOW << msg.getPrefix() << CLEAR << std::endl;
-    // std::cout << "Middle" << std::endl;
-
-    // std::vector<std::string>::const_iterator it = msg.getMiddle().begin();
-    // for (; it != msg.getMiddle().end(); ++it)
-    //     std::cout << YELLOW << *it << CLEAR << std::endl;
-
-    // std::cout << "Prefix" << std::endl;
-    // std::cout << YELLOW << msg.getPrefix() << CLEAR << std::endl;
-
-    //FIXME: TRAILING CAN BE MULTIPLE WORDS
-
 	/*make sure there's a target for the message*/
     if(args.size() == 0)
     {
@@ -100,11 +85,3 @@ void	Privmsg::execute(const Message& msg) {
 			_server->getClientPtr(_target)->reply(message);
 	}
 }
-/*
- *  ERR_NORECIPIENT                 
- *  ERR_NOTEXTTOSEND    
- *  ERR_CANNOTSENDTOCHAN            
- *  ERR_TOOMANYTARGETS
- *  ERR_NOSUCHNICK
- *  RPL_AWAY
- */

@@ -62,11 +62,17 @@ void	Client::read(void) {
 	_inputBuffer.append(input);
 	_timeLastActivity = std::time(nullptr);
 	/* Print received messages from client */
-	if (DEBUG)
+	std::cout << getTimestamp() << BLUE "Raw input received from client on socket #" << _socket << ":" << CLEAR << std::endl;
+	
+	/* Print input to terminal in proper format */
+	std::string tmp = _inputBuffer;
+	size_t pos = 0;
+	while ((pos = tmp.find("\n")) != std::string::npos)
 	{
-		std::cerr << BLUE "Message received from client on socket #" << _socket << CLEAR << std::endl <<
-				"	" << input << std::endl;
+		std::cout << "\t\t\t\t" << tmp.substr(0, pos + 1);
+		tmp.erase(0, pos + 1);
 	}
+	std::cout << "\t\t\t\t" << tmp << std::endl;
 }
 
 
@@ -74,14 +80,13 @@ void	Client::read(void) {
 void	Client::reply(const std::string& reply) {
 	size_t sz;
 	
-	if (DEBUG)
-		std::cerr << RED"Sending reply to client on socket #" << _socket << CLEAR << std::endl <<
-			"	" << reply << std::endl;
+
+	std::cerr << getTimestamp() << RED "Sending reply to client on socket #" << _socket << ":" <<  CLEAR << std::endl;
+	std::cout << "\t\t\t\t" << reply << std::endl;
 	
 	if ((sz = send(_socket, reply.c_str(), reply.size(), 0)) < 0)
 		throw std::runtime_error("Error sending message");
-	std::cerr << RED "return from send() on socket #" << _socket << ": " << sz << CLEAR << std::endl;
-
+	// std::cerr << RED "return from send() on socket #" << _socket << ": " << sz << CLEAR << std::endl;
 }
 
 /* Check input buffer and return a single message command string */

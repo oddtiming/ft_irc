@@ -34,7 +34,6 @@
 #define ERR_ERRONEUSNICKNAME(nick) "432 * " + (nick) + " :Erroneous nickname" + "\r\n" //432
 #define ERR_NICKNAMEINUSE(nick) "433 * " + (nick) + " :Nickname is already in use" + "\r\n" //433
 #define ERR_NOTONCHANNEL(channel) (channel) + " :You're not on that channel" + "\r\n"
-//fixme: add RPL_NAMREPLY && RPL_ENDOFNAMES
 #define ERR_NEEDMOREPARAMS(cmd) "461 * " + (cmd) + " :Not enough parameters" + "\r\n" //461
 #define ERR_ALREADYREGISTRED() ":Unauthorized command (already registered) \r\n" //462
 #define	ERR_CHANNELISFULL(channel) (channel) + " :Cannot join channel (+l)" //471
@@ -48,8 +47,6 @@
 
 /*
 
-RPL_JOIN
-:Jon!jgoad@127.0.0.1 JOIN :#new
 
 
 #define RPL_WELCOME 1
