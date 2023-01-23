@@ -23,7 +23,7 @@ bool	Mode::validate(const Message& msg) {
 	bool removeMode;
 	std::string modes = "+-";
 
-
+	//TODO: rewrite functions using the new target channel/msg attribute
 	if (target.at(0) == '#')
 		_targetIsChannel = 1;
 	else
