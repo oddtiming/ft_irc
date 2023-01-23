@@ -42,24 +42,30 @@ void	Channel::setModes(char modes, bool removeMode) {
 void	Channel::setMemberModes(Client* client, char modes, bool removeMode) {
 	MemberMap::iterator it = _members.find(client);
 	
+	/* Check if user is a member of channel*/
 	if (it == _members.end())
 	{
-		/* If user not found in members, check whether their status is stored */
+		/* Check if a user is a member of notMembers */
 		it = _notMembers.find(client);
+
+		/* If user does not exist in notMembers, then add them */
 		if (it == _notMembers.end())
-			return;
+		{
+			if (removeMode)
+				return ;
+			_notMembers.insert(std::pair<Client*, int>(client, modes));
+			it = _notMembers.find(client);
+		}
 	}
+	/* If setmode is to remove flag*/
 	if (removeMode) {
 		it->second &= ~(modes);
-		if (modes & BAN) {
-			_notMembers.erase(it);
-		}
 		return ;
 	}
 	it->second |= modes;
 	
-	// After member mode is set run KICK command on banned user.
-	// TODO: MODE command will remove the client if the provided mode has "+b"
+	//FIXME:After member mode is set run KICK command on banned user.
+	//TODO: MODE command will remove the client if the provided mode has "+b"
 }
 
 /* Check channel wide mode flags */
@@ -92,12 +98,22 @@ bool	Channel::isMember(Client* client) {
 
 /* Add a new member to channel */
 void	Channel::addMember(Client* client, const std::string& reply, int modes) {
+
+	/* Check if user is on notMembers list and move them */
+	MemberMap::iterator it = _notMembers.find(client);
+	if (it != _notMembers.end())
+	{
+		_members.insert(std::pair<Client*, int>(client, modes | it->second));
+		_notMembers.erase(it);
+	}
 	/* Add member and set default member modes */
-	_members.insert(std::pair<Client*, int>(client, modes));
+	else
+	{
+		_members.insert(std::pair<Client*, int>(client, modes));
+	}
 	sendToAll(reply);
 	
-	if (DEBUG)
-		std::cout << GREEN "New member: " CLEAR << client->getNickname() << GREEN " joined channel: " CLEAR << this->getName() << std::endl;
+	std::cout << getTimestamp() << " : " <<  GREEN "New member: " CLEAR << client->getNickname() << GREEN " joined channel: " CLEAR << this->getName() << std::endl;
 }
 
 /* Remove a member from channel */

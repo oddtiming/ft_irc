@@ -47,7 +47,7 @@ bool Privmsg::validate(const Message& msg) {
         _targetIsChannel = false;
         if (_server->getClientPtr(_target)->checkGlobalModes(AWAY))
         {
-			msg._client->reply(RPL_AWAY(_target, _server->getClientPtr(_target)->getAwayMessage()));  //return(_nickname + " :" + _awayMessage)
+			msg._client->reply(RPL_AWAY(_server->getHostname(), msg._client->getNickname(), _target, _server->getClientPtr(_target)->getAwayMessage()));  //return(_nickname + " :" + _awayMessage)
             return false;
         }
         if (!(_server->doesNickExist(_target)))

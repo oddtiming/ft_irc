@@ -49,3 +49,4 @@ KNOWN ERRORS:
 
 	Potential solution: check each socket before attempting to reply
 
+- PART reply message being sent after client QUIT causing segfault
