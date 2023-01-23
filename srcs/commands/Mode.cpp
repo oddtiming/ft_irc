@@ -100,7 +100,7 @@ bool	Mode::validate(const Message& msg) {
 					}
 					if (mode.c_str()[1] == 'i') {
 						_server->getChannelPtr(target)->setMemberModes(_server->getClientPtr(user), INV, removeMode);
-						msg._client->reply(RPL_INVITING(target, user));
+						// msg._client->reply(RPL_INVITING(target, user));
 					}
 					if (mode.c_str()[1] == 'v') {
 						_server->getChannelPtr(target)->setMemberModes(_server->getClientPtr(user), VOICE, removeMode);
