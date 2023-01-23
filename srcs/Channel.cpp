@@ -80,6 +80,25 @@ bool	Channel::checkMemberModes(Client* client, char modes) {
 	return (it->second & modes) == modes;
 }
 
+std::string 		Channel::getChannelModes(void){
+	std::string channelModes = "";
+	if (checkModes(PRIVATE))
+		channelModes += 'p';
+	if (checkModes(SECRET))
+		channelModes += 's';
+	if (checkModes(MODERATED))
+		channelModes += 'm';
+	if (checkModes(INV_ONLY))
+		channelModes += 'i';
+	if (checkModes(TOPIC_SET_OP))
+		channelModes += 't';
+	if (checkModes(NO_MSG_IN))
+		channelModes += 'n';
+	if (checkModes(PASS_REQ))
+		channelModes += 'k';
+	return channelModes;
+}
+
 
 /***********************************/
 /*    Channel Member Management    */

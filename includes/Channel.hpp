@@ -48,8 +48,10 @@ class Channel {
 		void	setMemberModes(Client* client, char modes, bool removeMode = false);
 		bool	checkModes(char modes);
 		bool	checkMemberModes(Client *client, char modes);
+		std::string 		getChannelModes(void);
 
-		/***********************************/
+
+	/***********************************/
 		/*    Channel Member Management    */
 		/***********************************/
 		bool	isMember(Client* client);

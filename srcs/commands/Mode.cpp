@@ -28,8 +28,12 @@ bool	Mode::validate(const Message& msg) {
 		_targetIsChannel = 1;
 	else
 		_targetIsChannel = 0;
-	/*if (middle.size() == 1 && _targetIsChannel)*/
-	//fixme: add ode to send all modes to client in case of /mode #targetChannel
+	if (middle.size() == 1 && _targetIsChannel)
+	{
+		msg._client->reply(RPL_CHANNELMODEIS(target, "+", _server->getChannelPtr(target)->getChannelModes()));
+		return false;
+	}
+	//fixme: add code to send all modes to client in case of /mode #targetChannel
 	if (middle.size() > 1) {
 		std::string mode = middle.at(1);
 		if (mode.c_str()[0] == '-')
@@ -58,7 +62,7 @@ bool	Mode::validate(const Message& msg) {
 
 				if (mode.c_str()[1] == 'p') {
 					_server->getChannelPtr(target)->setModes(PRIVATE, removeMode);
-					msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+					msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), _server->getChannelPtr(target)->getChannelModes()));
 				}
 				if (mode.c_str()[1] == 's') {
 					_server->getChannelPtr(target)->setModes(SECRET, removeMode);
