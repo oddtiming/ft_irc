@@ -10,20 +10,18 @@ Mode::~Mode() {
 }
 
 bool	Mode::validate(const Message& msg) {
-	std::vector<std::string>	middle = msg.getMiddle();
+	std::vector<std::string> middle = msg.getMiddle();
 
 
 	/*check if there's a target for the command*/
 	//fixme: when receiving "MODE #channelName", reply with channel modes
-	if (middle.size() < 1)
-	{
-		msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
-		std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
+	if (middle.size() < 1) {
+		msg._client->reply(RPL_UMODEIS(msg._client->getGlobalModes()));
 		return false;
 	}
-	std::string					target = middle.at(0);
-	bool						removeMode;
-	std::string 				modes = "+-";
+	std::string target = middle.at(0);
+	bool removeMode;
+	std::string modes = "+-";
 
 
 	if (target.at(0) == '#')
@@ -31,7 +29,7 @@ bool	Mode::validate(const Message& msg) {
 	else
 		_targetIsChannel = 0;
 	/*if (middle.size() == 1 && _targetIsChannel)*/
-		//fixme: add ode to send all modes to client in case of /mode #targetChannel
+	//fixme: add ode to send all modes to client in case of /mode #targetChannel
 	if (middle.size() > 1) {
 		std::string mode = middle.at(1);
 		if (mode.c_str()[0] == '-')
@@ -42,8 +40,20 @@ bool	Mode::validate(const Message& msg) {
 			msg._client->reply(ERR_UNKNOWNMODE(mode, target));
 			return false;
 		}
+		if (_targetIsChannel == 0){
+			if (mode.c_str()[1] == 'o') {
+				msg._client->setGlobalModes(OP, removeMode);
+				msg._client->reply(RPL_UMODEIS(msg._client->getGlobalModes()));
+			} else if (mode.c_str()[1] == 'i') {
+				msg._client->setGlobalModes(INVIS, removeMode);
+				msg._client->reply(RPL_UMODEIS(msg._client->getGlobalModes()));
+			} else {
+				msg._client->reply(ERR_UNKNOWNMODE(mode, target));
+				return false;
+			}
+		}
 		if (_targetIsChannel ==
-			1 /*&& (msg._client->checkGlobalModes(OP) || _server->getChannelPtr(target)->checkMemberModes(msg._client,C_OP ))*/) {
+			1/* && (msg._client->checkGlobalModes(OP) || _server->getChannelPtr(target)->checkMemberModes(msg._client,C_OP ))*/) {
 			{
 
 				if (mode.c_str()[1] == 'p') {
@@ -98,16 +108,11 @@ bool	Mode::validate(const Message& msg) {
 					}
 				}
 				else {
-					if (mode.c_str()[1] == 'o')
-						msg._client->setGlobalModes(OP, removeMode);
-					else if (mode.c_str()[1] == 'i')
-						msg._client->setGlobalModes(INV_ONLY, removeMode);
-					else {
-						msg._client->reply(ERR_UNKNOWNMODE(mode, target));
-						return false;
-					}
+					msg._client->reply(ERR_UNKNOWNMODE(mode, target));
+					return false;
 				}
 			}
+
 		}
 	}
 	return true;

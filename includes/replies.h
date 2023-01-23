@@ -4,6 +4,7 @@
 
 /* Reply Messages */
 #define RPL_WELCOME(nick, prefix) "001 " + (nick) + " Welcome to Internet Relay Network " + (prefix) + "\r\n" //001
+#define RPL_UMODEIS(modes) "221 * " + (modes) + "\r\n" //221
 #define RPL_AWAY(_target, _awayMessage) (_target) + " :" + (_awayMessage) //301
 #define RPL_UNAWAY()  "305 * :You are no longer marked as being away \r\n" //305
 #define RPL_NOWAWAY() "306 * :You have been marked as being away \r\n" //306
