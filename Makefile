@@ -20,7 +20,8 @@ CPP_FILES		:=	main.cpp \
 					commands/List.cpp \
 					commands/Topic.cpp \
 					commands/Ping.cpp \
-					commands/Pong.cpp
+					commands/Pong.cpp \
+					commands/Part.cpp
 
 
 INC_FILES		:=	defines.h \
@@ -40,7 +41,8 @@ INC_FILES		:=	defines.h \
                     commands/List.hpp \
                     commands/Topic.hpp \
                     commands/Ping.hpp \
-                    commands/Pong.hpp
+                    commands/Pong.hpp \
+                    commands/Part.hpp
 
 
 

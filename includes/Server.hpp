@@ -70,7 +70,6 @@ class Server {
 		/*  Channel Management  */
 		/************************/
 		bool								doesChannelExist(const std::string& channel) const;
-		bool								isUserChannelMember(const std::string& user) const;
 		void								createChannel(const std::string& channel, Client* owner);
 		void								destroyChannel(const std::string& channel);
 		bool								channelCheckPass(const std::string& channel, const std::string& pass);

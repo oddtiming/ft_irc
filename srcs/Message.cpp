@@ -22,6 +22,9 @@ Message::Message(Client* client, std::string raw) : _client(client)
     {
         _trailing = raw.substr(pos + 2, raw.size());
         raw = raw.substr(0, pos + 2);
+
+        if ((pos = _trailing.find("\r\n")) != std::string::npos)
+            _trailing = _trailing.substr(0, pos);
         _hasTrailing = true;
     }
 
