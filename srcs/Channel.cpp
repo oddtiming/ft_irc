@@ -101,7 +101,7 @@ void	Channel::addMember(Client* client, const std::string& reply, int modes) {
 }
 
 /* Remove a member from channel */
-void	Channel::removeMember(Client* client) {
+void	Channel::removeMember(Client* client, const std::string& reply) {
 	bool				wasOpe = false;
 	MemberMap::iterator it = _members.find(client);
 
@@ -117,6 +117,9 @@ void	Channel::removeMember(Client* client) {
 	if (checkMemberModes(client, BAN))
 		_notMembers[it->first] = it->second;
 	//FIXME: Ensure that deleting from memberModes right after will not remove this
+
+	/* Notify all Channel users of the impending departure */
+	sendToAll(reply);
 
 	/* Erase member from channel */
 	_members.erase(it);
