@@ -15,72 +15,102 @@ bool	Mode::validate(const Message& msg) {
 
 	/*check if there's a target for the command*/
 	//fixme: when receiving "MODE #channelName", reply with channel modes
-	if (middle.size() < 2)
+	if (middle.size() < 1)
 	{
-		/*msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
-		std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;*/
+		msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
+		std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
 		return false;
 	}
 	std::string					target = middle.at(0);
-	std::string					mode = middle.at(1);
 	bool						removeMode;
-	std::string 						modes = "+-";
+	std::string 				modes = "+-";
+
 
 	if (target.at(0) == '#')
 		_targetIsChannel = 1;
 	else
 		_targetIsChannel = 0;
-	if (mode.c_str()[0] == '-')
-		removeMode = true;
-	else if (mode.c_str()[0] == '+')
-		removeMode = false;
-	else {
-		msg._client->reply(ERR_UNKNOWNMODE(mode, target));
-		return false;
-	}
-	if (_targetIsChannel == 1 /*&& (msg._client->checkGlobalModes(OP) || _server->getChannelPtr(target)->checkMemberModes(msg._client,C_OP ))*/){
-		if (mode.c_str()[1] == 'p'){
-			_server->getChannelPtr(target)->setModes(PRIVATE, removeMode);
-			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
-		}
-		if (mode.c_str()[1] == 's'){
-			_server->getChannelPtr(target)->setModes(SECRET, removeMode);
-			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
-		}
-		if (mode.c_str()[1] == 'm'){
-			_server->getChannelPtr(target)->setModes(MODERATED, removeMode);
-			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
-		}
-		if (mode.c_str()[1] == 'i'){
-			_server->getChannelPtr(target)->setModes(INV_ONLY, removeMode);
-			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
-		}
-		if (mode.c_str()[1] == 't'){
-			_server->getChannelPtr(target)->setModes(TOPIC_SET_OP, removeMode);
-			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
-		}
-		if (mode.c_str()[1] == 'n'){
-			_server->getChannelPtr(target)->setModes(NO_MSG_IN, removeMode);
-			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
-		}
-		if (mode.c_str()[1] == 'k'){
-			_server->getChannelPtr(target)->setModes(PASS_REQ, removeMode);
-			msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
-		}
-	}
-	else {
-		if (mode.c_str()[1] == 'o')
-			msg._client->setGlobalModes(OP, removeMode);
-		else if (mode.c_str()[1] == 'i')
-			msg._client->setGlobalModes(INV_ONLY, removeMode);
+	/*if (middle.size() == 1 && _targetIsChannel)*/
+		//fixme: add ode to send all modes to client in case of /mode #targetChannel
+	if (middle.size() > 1) {
+		std::string mode = middle.at(1);
+		if (mode.c_str()[0] == '-')
+			removeMode = true;
+		else if (mode.c_str()[0] == '+')
+			removeMode = false;
 		else {
 			msg._client->reply(ERR_UNKNOWNMODE(mode, target));
 			return false;
 		}
+		if (_targetIsChannel ==
+			1 /*&& (msg._client->checkGlobalModes(OP) || _server->getChannelPtr(target)->checkMemberModes(msg._client,C_OP ))*/) {
+			{
+
+				if (mode.c_str()[1] == 'p') {
+					_server->getChannelPtr(target)->setModes(PRIVATE, removeMode);
+					msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+				}
+				if (mode.c_str()[1] == 's') {
+					_server->getChannelPtr(target)->setModes(SECRET, removeMode);
+					msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+				}
+				if (mode.c_str()[1] == 'm') {
+					_server->getChannelPtr(target)->setModes(MODERATED, removeMode);
+					msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+				}
+				if (mode.c_str()[1] == 'i') {
+					_server->getChannelPtr(target)->setModes(INV_ONLY, removeMode);
+					msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+				}
+				if (mode.c_str()[1] == 't') {
+					_server->getChannelPtr(target)->setModes(TOPIC_SET_OP, removeMode);
+					msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+				}
+				if (mode.c_str()[1] == 'n') {
+					_server->getChannelPtr(target)->setModes(NO_MSG_IN, removeMode);
+					msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+				}
+				if (mode.c_str()[1] == 'k') {
+					_server->getChannelPtr(target)->setModes(PASS_REQ, removeMode);
+					msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+				}
+
+				if (middle.size() > 2) {
+					std::string user = middle.at(2);
+					if (mode.c_str()[1] == 'b') {
+						_server->getChannelPtr(target)->setMemberModes(_server->getClientPtr(user), BAN, removeMode);
+						if (_server->getChannelPtr(target)->isMember(_server->getClientPtr(user)))
+							_server->getChannelPtr(target)->removeMember(_server->getClientPtr(user),
+																		 ERR_BANNEDFROMCHAN(target));
+						msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+					}
+					if (mode.c_str()[1] == 'i') {
+						_server->getChannelPtr(target)->setMemberModes(_server->getClientPtr(user), INV, removeMode);
+						msg._client->reply(RPL_INVITING(target, user));
+					}
+					if (mode.c_str()[1] == 'v') {
+						_server->getChannelPtr(target)->setMemberModes(_server->getClientPtr(user), VOICE, removeMode);
+						msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+					}
+					if (mode.c_str()[1] == 'o') {
+						_server->getChannelPtr(target)->setMemberModes(_server->getClientPtr(user), C_OP, removeMode);
+						msg._client->reply(RPL_CHANNELMODEIS(target, modes.at(removeMode), mode.c_str()[1]));
+					}
+				}
+				else {
+					if (mode.c_str()[1] == 'o')
+						msg._client->setGlobalModes(OP, removeMode);
+					else if (mode.c_str()[1] == 'i')
+						msg._client->setGlobalModes(INV_ONLY, removeMode);
+					else {
+						msg._client->reply(ERR_UNKNOWNMODE(mode, target));
+						return false;
+					}
+				}
+			}
+		}
 	}
-
 	return true;
-
 }
 
 void	Mode::execute(const Message& msg) {
