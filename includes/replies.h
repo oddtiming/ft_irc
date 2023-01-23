@@ -2,6 +2,7 @@
 
 /* Reply Messages */
 #define RPL_WELCOME(nick, prefix) "001 " + (nick) + " Welcome to Internet Relay Network " + (prefix) + "\r\n" //001
+#define RPL_UMODEIS(modes) "221 * " + (modes) + "\r\n" //221
 #define RPL_AWAY(hostname, client, target, message) ":" + (hostname) + " 301 " +  (client) + " " + (target) + " :" + (message) + "\r\n"
 #define RPL_UNAWAY()  "305 * :You are no longer marked as being away \r\n" //305
 #define RPL_NOWAWAY() "306 * :You have been marked as being away \r\n" //306
@@ -11,6 +12,7 @@
 #define RPL_CHANNELMODEIS(target, modes, param) "324 * " + (target) + " " + (modes) + param + "\r\n" //324
 #define	RPL_NOTOPIC(channel) "331 * " + (channel) + " :No topic is set \r\n" //331
 #define	RPL_TOPIC(channel, topic) "332 * " + (channel) + " :" + (topic) + "\r\n"//332
+#define RPL_INVITING(channel,nick) "341 * " + (channel) + " " + (nick) + "\r\n" //341
 #define RPL_NAMREPLY(hostname, nick, channel, users) ":" + (hostname) + " 353 " + (nick) + " = " + (channel) + " :" + users +  "\r\n" //353
 #define RPL_INVITING(prefix, targetnick, channel) ":" + (prefix) + " INVITE " + (targetnick) + " " + (channel) + "\r\n"
 
@@ -27,8 +29,8 @@
 
 /* Error Messages */
 #define ERR_NOSUCHNICK(nickname) "401 * " + (nickname) + " :No such nickname" + "\r\n" //401
+#define ERR_CANNOTSENDTOCHAN(channel) "404 * " + (channel) + " :Cannot send to channel" + "\r\n" //404
 #define ERR_NOSUCHCHANNEL(channel) "403 * " + (channel) + " :No such channel" + "\r\n" //403
-#define ERR_CANNOTSENDTOCHAN(channel) (channel) + " :Cannot send to channel" //404
 #define	ERR_TOOMANYCHANNELS(channel) (channel) + " :You have joined too many channels" //405
 #define ERR_NORECIPIENT(cmd) ":No recipient given (" + (cmd) + ")" //411
 #define ERR_NOTEXTTOSEND() "412 * :No text to send" //412
@@ -41,7 +43,7 @@
 #define	ERR_CHANNELISFULL(channel) (channel) + " :Cannot join channel (+l)" //471
 #define ERR_UNKNOWNMODE(mode, channel) "472 * " + (mode) + " :is unknown mode char to me for " + (channel) + "\r\n" //472
 #define	ERR_INVITEONLYCHAN(channel) (channel) + " :Cannot join channel (+i)" //473
-#define	ERR_BANNEDFROMCHAN(channel) (channel) + " :Cannot join channel (+b)" //474
+#define	ERR_BANNEDFROMCHAN(channel) "474 * " + (channel) + " :Cannot join channel (+b)" + "\r\n"//474
 #define	ERR_BADCHANNELKEY(channel) (channel) + " :Cannot join channel (+k)" //475
 #define ERR_BADCHANMASK(channel) (channel) + " :Bad Channel Mask" //476
 #define ERR_CHANOPRIVSNEEDED(channel) "482 * " + (channel) + " :You're not channel operator" + "\r\n"//482

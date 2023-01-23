@@ -47,6 +47,7 @@ class Client {
 		/*************************/
 		void				setGlobalModes(const char& mode, bool removeMode = false);
 		bool				checkGlobalModes(const char& mode) const;
+		std::string 		getGlobalModes(void);
 
 		/************************/
 		/*    I/O Management    */
