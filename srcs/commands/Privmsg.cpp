@@ -25,6 +25,8 @@ bool Privmsg::validate(const Message& msg) {
     }
     _target = args.at(0);
     args.erase(args.begin());
+
+    _targetIsChannel = false;
     if (_target.at(0) == '#')
     {
         _targetIsChannel = true;
@@ -41,7 +43,6 @@ bool Privmsg::validate(const Message& msg) {
         return true;
     }
 
-    _targetIsChannel = false;
     if (!_server->doesNickExist(_target))
     {
         msg._client->reply(ERR_NOSUCHNICK(_target));
@@ -72,6 +73,9 @@ void	Privmsg::execute(const Message& msg)
 
 void    Privmsg::_buildMessage(const Message& msg)
 {
+    /* Clear the message buffer, since the Privmsg object never gets out of scope */
+    _message.clear();
+    
 	size_t	nb_args = msg.getMiddle().size();
 	
 	/* If the message was a single word, some clients (e.g. Limechat) do not
