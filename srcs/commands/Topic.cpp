@@ -14,6 +14,8 @@ bool	Topic::validate(const Message& msg) {
 		return false;
 	}
 	_target = msg.getMiddle().at(0);
+	if (_target.empty())
+		return false;
 	if (_server->getChannelPtr(_target)->checkModes(TOPIC_SET_OP) && !_server->getChannelPtr(_target)->checkMemberModes(msg._client, C_OP)) {
 		msg._client->reply(ERR_CHANOPRIVSNEEDED(_target));
 		return false;
