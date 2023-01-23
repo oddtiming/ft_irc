@@ -35,6 +35,17 @@ bool	Client::checkGlobalModes(const char &modes) const {
 	return _globalModes & modes;
 }
 
+std::string 		Client::getGlobalModes(void){
+	std::string globalModes = "";
+	if (checkGlobalModes(OP))
+		globalModes += 'o';
+	if (checkGlobalModes(AWAY))
+		globalModes += 'a';
+	if (checkGlobalModes(INVIS))
+		globalModes += 'i';
+	return globalModes;
+}
+
 
 /*****************************/
 /*      I/O Management       */
