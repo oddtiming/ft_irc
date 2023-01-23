@@ -9,8 +9,9 @@
 #include <stdint.h>		// uint32_t
 #include <string>
 #include <ctime>
+#include <iostream>
 
-/* Local Includes */
+/* Class Definitions */
 class Client;
 
 class Channel {

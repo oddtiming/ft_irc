@@ -27,34 +27,34 @@
 #include "Client.hpp"
 
 /*****************************/
-/* Constructors & Destructor */
+/* Constructor & Destructor */
 /*****************************/
 
 Server::Server(const std::string& hostname, const int port, const std::string& password) :
 	_hostname(hostname), _password(password), _timeStart(std::time(nullptr)), _port(port) {
 	
-	/* Setup server connection */
-	initializeConnection();
-	if (DEBUG)
+	try
 	{
-		std::cout << RED "Server initialization successful" CLEAR << std::endl;
-		std::cout << "	port: " << port << std::endl;
-		std::cout << "	pass: " << password << std::endl;
+		/* Setup server connection */
+		initializeConnection();
+		std::cout << getTimestamp() << GREEN "Server initialization successful" CLEAR << std::endl;
+		std::cout << "\t\t\t\tport: " << port << std::endl << "\t\t\t\tpass: " << password << std::endl;
+		
+		/* Initialize commands map */
+		initializeCommands();
+		std::cout << getTimestamp() << GREEN "Command initialization successful" CLEAR<< std::endl;
 	}
-	
-	/* Initialize commands map */
-	initializeCommands();
-	if (DEBUG)
+	catch(const std::exception& e)
 	{
-		std::cout << RED "Command initialization successful" CLEAR<< std::endl;
+		std::cerr << e.what() << '\n';
+		std::cerr << RED "Failure to initialize server, program exiting" CLEAR << std::endl;
+		exit (1);
 	}
+
 	/* Start Server Loop */
-	if (DEBUG)
-	{
-		std::cout << "_______________________________________" << std::endl << std::endl;
-		std::cout << RED "Server status: " CLEAR << GREEN"ONLINE" CLEAR << std::endl;
-		std::cout << "_______________________________________" << std::endl << std::endl;
-	}
+	std::cout << "_______________________________________________________" << std::endl << std::endl;
+	std::cout << getTimestamp() <<  "Server status - " << GREEN "ONLINE" CLEAR << std::endl;
+	std::cout << "_______________________________________________________" << std::endl << std::endl;
 	runServer();
 }
 
@@ -62,7 +62,8 @@ Server::~Server() {
 	/* Delete Commands*/
 	std::map<std::string, Command *>::iterator it = _commands.begin();
 	for (; it != _commands.end(); ++it)
-		delete it->second;
+		delete (it->second);
+	_commands.clear();
 
 	/* Delete Clients */
 	for (size_t i = 0; i < _clients.size(); i++)
@@ -79,49 +80,43 @@ Server::~Server() {
 	shutdown(_socket, SHUT_RDWR);
 }
 
-/*********************/
-/* Setters & Getters */
-/*********************/
+/***********************************/
+/*      Server Initialization      */
+/***********************************/
+
+//FIXME: Need to ensure all exceptions are being caught
+//FIXME: Check if we need to buffer outgoing communications (look into POLLOUT option for poll() )
 
 
-/***************************/
-/* Public Member Functions */
-/***************************/
-
-void	Server::initializeConnection(void) {
+/* Open server socket and configure for listening */
+void	Server::initializeConnection(void)
+{
 	int	yes = 1;
 
 	/* Create socket */
 	if ((_socket  = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-		throw Server::socketException();
+		throw std::runtime_error("Unable to create socket");
 
 	/* Set socket as non-blocking */
 	fcntl(_socket, F_SETFL, O_NONBLOCK);
 
 	/* Set socket options to reuse addresses */
-	// FIXME: figure out why the SO_DEBUG doesn't work
-	// if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR | (DEBUG * SO_DEBUG), &yes, sizeof(int)) < 0)
 	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) < 0)
-	{
-		// FIXME: temporary addition to see why SO_DEBUG fails setsockopt()
-		// std::cerr << "setsockopt() failed " << _socket << "." << std::endl;
-		// std::cerr << "errno set to " << errno << "." << std::endl;
-		throw Server::socketException();
-	}
+		throw std::runtime_error("Unable to set socket options");
 
 	/* Setup socket address struct */
 	_address.sin_port = htons(_port);
 	_address.sin_family = AF_INET;
 	_address.sin_addr.s_addr = INADDR_ANY;
-	//FIXME: convert to using hints and proper method for address struct
+	//FIXME: convert to using hints and proper method for address struct (confirm if this matters )
 
 	/* Bind Socket */
 	if (bind(_socket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
-		throw Server::bindException();
+		throw std::runtime_error("Unable to bind socket");
 	
-		/* Set socket to passive listening */
+	/* Set socket to passive listening */
 	if (listen(_socket, MAX_CONNECTIONS) < 0)
-		throw Server::listenException();
+		throw std::runtime_error("Unable to listen on socket");
 	
 	/* Set Server Status */
 	_status = ONLINE;
@@ -131,8 +126,9 @@ void	Server::initializeConnection(void) {
 	_pfds.push_back(pfd);
 }
 
-/* Intialize Commands Map */
-void	Server::initializeCommands(void) {
+/* Build Server Commands */
+void	Server::initializeCommands(void)
+{
 	/* General Commands */
 	_commands["ping"] = new Ping(this);
 	_commands["pong"] = new Pong(this);
@@ -173,31 +169,35 @@ void	Server::initializeCommands(void) {
 /* Manage Connection Requests from New Clients */
 void	Server::handleConnections()
 {
-	if (DEBUG)
-		std::cout << RED"Incoming connection request" CLEAR<< std::endl;
 
-	//FIXME: Pass addressinfo struct to get client data for implementing FTP later on
+	std::cout << getTimestamp() << RED "Incoming connection request" CLEAR<< std::endl;
+
 	int	new_fd;
 	int	addressLen;
 	struct sockaddr_in clientAddress;
-
 	addressLen = sizeof(clientAddress);
+
+	/* Attempt to connect to client and get client address info*/
 	if ((new_fd = accept(_socket, (struct sockaddr *)&clientAddress, (socklen_t *)&addressLen)) < 0)
-		throw Server::acceptException();
+		throw std::runtime_error("Failure to accept incoming connection due to socket error");
+	
+	/* Set socket option to ensure that we dont attempt to send on a socket that has been disconnected */
+	int yes = 1;
+	if (setsockopt(new_fd, SOL_SOCKET, SO_NOSIGPIPE, &yes, sizeof(int)) < 0)
+		throw std::runtime_error("Unable to set socket options");
+
+	/* Add client to _clients map and populate address variables */
 	_clients.push_back(new Client(new_fd));
 	_clients.back()->setAddress(clientAddress);
 	_clients.back()->setHostname(inet_ntoa(clientAddress.sin_addr));
+
+	/* Create new pollfd object and add to _pfds list */
 	pollfd pfd = {.fd = new_fd, .events = POLLIN, .revents = 0};
 	_pfds.push_back(pfd);
 
-	
 	/* Print new client data */
-	if (DEBUG)
-	{
-		std::cout << GREEN "New client connected successfully" CLEAR << std::endl;
-		std::cout << "	address: " << inet_ntoa(clientAddress.sin_addr) <<  std::endl << std::endl;
-	}
-
+	std::cout << getTimestamp() << GREEN "New client connected successfully" CLEAR << std::endl;
+	std::cout << "\t\t\t\taddress: " << inet_ntoa(clientAddress.sin_addr) <<  std::endl;
 }
 
 /* Read incoming data from client socket & perform actions */
@@ -211,81 +211,98 @@ void	Server::handleMessages(Client* client)
 	/* Handle forcefully disconnected clients */
 	if ((rawMessage = client->retrieveMessage()).empty() == true)
 	{
-		if (DEBUG)
-			std::cout << RED "Removing disconnected client: " CLEAR << client->getUsername() << std::endl;
+		std::cout << getTimestamp() << RED "Removing disconnected client: " CLEAR << client->getUsername() << std::endl;
 		removeClient(client);
 	}
 	else
 	{
-		/* While there are valid commands (Messages) stored in the client's input string */
+		/* While there are valid commands (messages) stored in the client's input string */
 		while (rawMessage.empty() == false)
 		{
 			Message	msg(client, rawMessage);
-			executeCommand(msg);
+
+			/* Handle default response to capabilities requests */
+			// if (msg.getCommand() == "cap")
+			// {
+			// 	if (msg.hasMiddle() && msg.getMiddle().at(0) == "LS")
+			// 		msg._client->reply("CAP * LS :");
+
+			// }
+			/* Attempt to execute command */
+			if (msg.getCommand()!= "cap")
+				executeCommand(msg);
+			
+			/* Retrieve next command */
 			rawMessage = client->retrieveMessage();
 		}
 	}
 }
 
 /* Execute a command from client */
-void	Server::executeCommand(const Message & msg) {
+void	Server::executeCommand(const Message & msg)
+{
 	try {
-		/* Check if command exists */
+		/* Attempt to execute command */
 		_commands.at(msg.getCommand())->execute(msg);
 	}
+	/* Error message if command is invalid or not supported */
 	catch(std::out_of_range &e) {
-		std::cerr << "Command '" << msg.getCommand() 
-				<< "' was not found." << std::endl;
+		std::cerr << RED "\t\t\t\tCommand '" << msg.getCommand() << "' was not found." CLEAR << std::endl;
 	}
 }
 
 /* Main server loop */
-void	Server::runServer(void) {
-	while (_status == ONLINE) {
-		/**/
+void	Server::runServer(void)
+{
+	while (_status == ONLINE)
+	{
+		/* Poll all open sockets for activity */
 		if (poll(_pfds.data(), _pfds.size(), 10) < 0)
-			throw Server::pollException();
+			throw std::runtime_error("Error when attempting to poll");
 			
-		/* Iterate through sockets to check for events*/
-		for (size_t i = 0; i < _pfds.size(); i++) {
-
-
-			/* If any readable data is available */
-			if (_pfds[i].revents & POLLIN) {
-				
-				/* If the event is on the server socket, check for new connection */
-				if (_pfds[i].fd == _socket)
+		/* Iterate through sockets to check for events */
+		for (size_t i = 0; i < _pfds.size(); i++)
+		{
+			/* If there is an event is on the server socket, check for new connection */
+			if (i == 0 && (_pfds[i].revents & POLLIN))
 					handleConnections();
-
-				/* If the event is on a client socket, deal with messages */
-				else if (i > 0)
-					handleMessages(_clients[i - 1]);
-			}
-			/* If no input check time since last activity and send PING if more than 3 minutes */
-			else if (i > 0) {
-				
-				if (_clients[i - 1]->getRegistration() && !_clients[i - 1]->getPingStatus() && ((std::time(nullptr) - _clients[i - 1]->getLastActivityTime()) > PING_INTERVAL))
+			else if (i > 0)
+			{
+				Client* client = _clients[i - 1];
+				/* If there is an event on a client socket, get input */
+				if (_pfds[i].revents & POLLIN)
+					handleMessages(client);
+				/* If there is no event, check if ping interval has passed and send PING to */
+				//FIXME: Do we want to auto disconnect clients after a certain period of inactivity?
+				else
 				{
-					_clients[i - 1]->reply(CMD_PING(_hostname, std::to_string(std::time(nullptr))));
-					_clients[i - 1]->setPingStatus(true);
+					if (client->getRegistration() && !client->getPingStatus() && 
+						((std::time(nullptr) - client->getLastActivityTime()) > PING_INTERVAL))
+					{
+						client->reply(CMD_PING(_hostname, std::to_string(std::time(nullptr))));
+						client->setPingStatus(true);
+					}
 				}
 			}
-		/* Iterate through clients and check time since last activity to send PING */
 		}
 	}
 }
 
+
+/*******************************/
+/*      Client Management      */
+/*******************************/
+
 /* Remove a client from the server */
-void	Server::removeClient(Client* client) {
+void	Server::removeClient(Client* client)
+{
+
 	/* Remove client from all channels */
 	std::map<std::string, Channel *>::iterator it = _channels.begin();
 	for (; it != _channels.end(); ++it)
 	{
+		/* Remove ban from user to prevent stale memory pointer from remaining in _notMembers */
 		it->second->setMemberModes(client, BAN, true);
-		// FIXME: CMD_PART macro should actually use the buildPrefix() fn, but it lives in the wrong scope for now. (private attribute of Command class)
-		//	Possible Fixes
-		//		1) make it public in Command
-		//		2) Add a utils file
 		it->second->removeMember(client, CMD_PART(client->getNickname(), it->second->getName(), ""));
 	}
 
@@ -293,7 +310,6 @@ void	Server::removeClient(Client* client) {
 	std::vector<pollfd>::iterator it2 = _pfds.begin();
 	for (; it2 != _pfds.end(); ++it2)
 	{
-
 		if (it2->fd == client->getSocket())
 		{
 			_pfds.erase(it2);
@@ -324,12 +340,26 @@ bool	Server::doesNickExist(const std::string nick) const {
 	return (false);
 }
 
-/* Check if a specified channel name already exists */
-bool	Server::doesChannelExist(const std::string& channel) const {
-	if (_channels.find(channel) != _channels.end())
-		return (true);
-	return (false);
+/* Find and return client pointer using given nickname */
+Client*		Server::getClientPtr(const std::string &client) {
+	std::vector<Client*>::iterator it = _clients.begin();
+	for (; it != _clients.end(); ++it)
+	{
+		if ((*it)->getNickname() == client)
+			break;
+	}
+	if (it == _clients.end())
+	{
+		std::cerr << RED "Client '" << client << "' was not found." CLEAR << std::endl;
+		return (nullptr);
+	}
+	return *it;
 }
+
+
+/********************************/
+/*      Channel Management      */
+/********************************/
 
 /* Create a new channel with given channel name */
 void	Server::createChannel(const std::string& channel, Client* owner) {
@@ -351,6 +381,13 @@ void	Server::destroyChannel(const std::string& channel) {
 	_channels.erase(it);
 }
 
+/* Check if a specified channel name already exists */
+bool	Server::doesChannelExist(const std::string& channel) const {
+	if (_channels.find(channel) != _channels.end())
+		return (true);
+	return (false);
+}
+
 /* Check if password provided for given channel is correct */
 bool	Server::channelCheckPass(const std::string& channel, const std::string& pass) {
 	std::map<std::string, Channel *>::iterator it = _channels.find(channel);
@@ -363,11 +400,7 @@ bool	Server::channelCheckPass(const std::string& channel, const std::string& pas
 	return (false);
 }
 
-/**
- * @return Channel* 
- * 		ptr to the channel referred to by given channel name if found
- * 		nullptr if not found
- */
+/* Find and return channel pointer using given channel name */
 Channel*	Server::getChannelPtr(const std::string& channel) {
 	std::map<std::string, Channel *>::iterator it = _channels.find(channel);
 	if (it == _channels.end())
@@ -378,30 +411,13 @@ Channel*	Server::getChannelPtr(const std::string& channel) {
 	return(it->second);
 }
 
-/**
- * @return Client* 
- * 		ptr to the Client referred to by given client name if found
- * 		nullptr if not found
- */
-Client* Server::getClientPtr(const std::string &client) {
-	std::vector<Client*>::iterator it = _clients.begin();
-	for (; it != _clients.end(); ++it)
-	{
-		if ((*it)->getNickname() == client)
-			break;
-	}
-	if (it == _clients.end())
-	{
-		std::cerr << RED "Client '" << client << "' was not found." CLEAR << std::endl;
-		return (nullptr);
-	}
-	return *it;
+/* Return a formatted timestamp for current time */
+const std::string	getTimestamp() {
+	std::time_t time = std::time(nullptr);
+	char output[50];
+	int len;
+	len = strftime(output, 50, "[%a %b %d %Y %X] : ", std::localtime(&time));
+	output[len] = 0;
+	return (std::string(output));
 }
 
-/*
-std::time_t result = std::time(nullptr);
-	char Output[19];
-	strftime(Output, 19, "[%Y%m%d_%H%M%S] ", std::localtime(&result));
-	std::cout << Output;
-
-*/

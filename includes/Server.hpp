@@ -6,6 +6,7 @@
 /* System Includes */
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <sys/types.h> //MSG_NOSIGNAL
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -62,9 +63,7 @@ class Server {
 		bool		doesNickExist(const std::string nick) const;
 		Client* 	getClientPtr(const std::string& client);
 		Channel*	getChannelPtr(const std::string& channel);
-		// FIXME: not sure if Client * needs to be const. Needs to be implemented anyways
-
-		void	removeClient(Client* client);
+		void		removeClient(Client* client);
 
 
 		/************************/
@@ -78,26 +77,6 @@ class Server {
 
 
 	/* Exceptions */
-		class socketException : public std::exception {
-			public:
-				const char*	what() const throw() {
-					return("Unable to create socket");
-				}
-		};
-
-		class bindException : public std::exception {
-			public:
-				const char*	what() const throw() {
-					return("Unable to bind socket to port");
-				}
-		};
-
-		class listenException : public std::exception {
-			public:
-				const char*	what() const throw() {
-					return("Unable to set socket to passive");
-				}
-		};
 		class pollException : public std::exception {
 			public:
 				const char*	what() const throw() {
@@ -130,5 +109,7 @@ class Server {
 		std::map<std::string, Channel *>	_channels;
 		std::map<std::string, Command *>	_commands;
 };
+
+const std::string	getTimestamp();
 
 #endif

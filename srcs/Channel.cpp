@@ -116,11 +116,10 @@ void	Channel::removeMember(Client* client, const std::string& reply) {
 	/* If member is banned keep track of them*/
 	if (checkMemberModes(client, BAN))
 		_notMembers[it->first] = it->second;
-	//FIXME: Ensure that deleting from memberModes right after will not remove this
 
 	/* Notify all Channel users of the impending departure */
 	sendToAll(reply);
-
+	
 	/* Erase member from channel */
 	_members.erase(it);
 	
