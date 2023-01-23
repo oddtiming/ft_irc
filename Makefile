@@ -22,7 +22,9 @@ CPP_FILES		:=	main.cpp \
 					commands/Ping.cpp \
 					commands/Pong.cpp \
 					commands/Part.cpp \
+					commands/Invite.cpp \
 					commands/Notice.cpp
+
 
 
 INC_FILES		:=	defines.h \
@@ -44,6 +46,7 @@ INC_FILES		:=	defines.h \
                     commands/Ping.hpp \
                     commands/Pong.hpp \
                     commands/Part.hpp \
+					commands/Invite.hpp \
                     commands/Notice.hpp
 
 

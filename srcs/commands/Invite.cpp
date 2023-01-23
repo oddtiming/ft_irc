@@ -10,40 +10,75 @@ Invite::~Invite() {
 }
 
 bool	Invite::validate(const Message& msg) {
-	if (getMiddle().size() < 2)
+
+	/* Ensure that there is both a target user and a target channel parameter */
+	if (msg.getMiddle().size() < 2)
 	{
-		msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
-		std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
+		_client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
 		return false;
 	}
-	std::string					nickname = getMiddle().at(0);
-	std::string					channel = getMiddle().at(1);
-	/*check if channel exists*/
+
+	std::string	nickname = msg.getMiddle().at(0);
+	std::string	channel = msg.getMiddle().at(1);
+
+	/* Check if target user exists */
+	if (!_server->doesNickExist(nickname))
+	{
+		_client->reply(ERR_NOSUCHNICK(nickname));
+		return false;
+	}
+
+	_targetUser = _server->getClientPtr(nickname);
+
+	/* Check if channel exists */
 	if (!_server->doesChannelExist(channel)){
-		msg._client->reply(ERR_NOSUCHCHANNEL(channel));
-		std::cerr << "ERR_NOSUCHCHANNEL" << std::endl;
+		_client->reply(ERR_NOSUCHCHANNEL(channel));
 		return false;
 	}
-	/*check if user is on the channel*/
-	if (!_server->getChannelPtr(channel)->isMember(_client->getNickname())){
-		msg._client->reply(ERR_NOTONCHANNEL(channel));
-		std::cerr << "ERR_NOTONCHANNEL" << std::endl;
+
+	_targetChannel = _server->getChannelPtr(channel);
+
+	/* Check if user attempting to send invite belongs to the target channel */
+	if (!_targetChannel->isMember(_client))
+	{
+		_client->reply(ERR_NOTONCHANNEL(channel));
 		return false;
 	}
-	/*check if target exists*/
-	if (!_server->doesNickExist(nickname)){
-		msg._client->reply(ERR_NOSUCHNICK(nickname));
-		std::cerr << "ERR_NOSUCHNICK" << std::endl;
+
+	/* Check if target user is already on target channel */
+	if (_targetChannel->isMember(_targetUser))
+	{
+		_client->reply(ERR_USERONCHANNEL(nickname, channel));
 		return false;
 	}
-	//TODO: Add permission check for invitation (+o +i, also away status)
+	
+	/* Check if target channel has +i flag (operator only invite) and user attempting to invite is not OP */
+	if (_targetChannel->checkModes(INV_ONLY) && !_targetChannel->checkMemberModes(_client, C_OP))
+	{
+		_client->reply(ERR_CHANOPRIVSNEEDED(channel));
+		return false;
+	}
+	
+	return true;
 }
 
 void	Invite::execute(const Message& msg) {
+	_client = msg._client;
 
 	if (validate(msg))
 	{
-		//TODO add invitation message to user
-	}
+		/* Send message to target user */
+		//NOTE: the prefix for this is the senders, not the receiver
+		_targetUser->reply(RPL_INVITING( _buildPrefix(msg), _targetUser->getNickname(), _targetChannel->getName()));
+		
+		/* Send message to client */
+		_client->reply(CMD_INVITE(_server->getHostname(), _client->getNickname(), _targetUser->getNickname(), _targetChannel->getName()));
 
+		/* If target user is away send reply to client */
+		if (_targetUser->checkGlobalModes(AWAY))
+			_client->reply(RPL_AWAY(_server->getHostname(), _client->getNickname(), _targetUser->getNickname(), _targetUser->getAwayMessage()));
+
+		/* If channel was invite only, set invite flag for member */
+		_targetChannel->setMemberModes(_targetUser, INV);
+	}
 }

@@ -11,6 +11,9 @@
 #include <ctime>
 #include <iostream>
 
+/* Funtion Prototype */
+const std::string	getTimestamp();
+
 /* Class Definitions */
 class Client;
 
