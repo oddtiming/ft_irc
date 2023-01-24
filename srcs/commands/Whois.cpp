@@ -16,7 +16,7 @@ bool	Whois::validate(const Message& msg) {
 	}
 	std::string target = msg.getMiddle().at(0);
 
-	if (!_server->doesNickExist(target) || _server->getClientPtr(target)->checkGlobalModes(INVIS)) {
+	if (!_server->doesNickExist(target)) {
 		msg._client->reply(ERR_NOSUCHNICK(target));
 		return false;
 	}
@@ -34,7 +34,7 @@ void	Whois::execute(const Message& msg) {
 			std::string host = _target->getHostname();
 			std::string realName = _target->getRealname();
 			msg._client->reply(RPL_WHOISUSER(nick, user, host, realName));
-
+			/* Iterate over every channel to see which the target user is part of*/
 			ChannelList channelList = _server->getChannelList();
 			ChannelList::iterator it = channelList.begin();
 			ChannelList::iterator ite = channelList.end();
