@@ -1,4 +1,4 @@
-#include "../../includes/commands/Mode.hpp"
+#include "commands/Mode.hpp"
 
 Mode::Mode(Server* server) : Command("mode", server) {
 	_channelOpRequired = false;
@@ -8,6 +8,35 @@ Mode::Mode(Server* server) : Command("mode", server) {
 Mode::~Mode() {
 
 }
+
+/* Parse incoming mode request */
+bool	Mode::parse(const Message& msg) {
+	std::vector<std::string>	input = msg.getMiddle();
+
+	/* Check if there is any target for command */
+	if (input.empty())
+		return false;
+	
+	/* Get primary target */
+	_target = input.at(0);
+
+	/* Check if target is channel */
+	if (input.at(0).at(0) == '#')
+		_targetType = CHANNEL;
+	else
+		_targetType = USER;
+	
+	/* Check for modes and add to _modes string */
+	if (input.size() > 1)
+		_modes = input.at(1);
+	
+	/* Check for secondary user target for channel member modes */
+	if (input.size() > 2)
+		_targetMember = input.at(2);
+
+	return true;
+}
+
 
 bool	Mode::validate(const Message& msg) {
 	std::vector<std::string> middle = msg.getMiddle();
@@ -122,8 +151,86 @@ bool	Mode::validate(const Message& msg) {
 	return true;
 }
 
-void	Mode::execute(const Message& msg) {
-	if (validate(msg)){
-
-	}
+/* Function to clear stored data before returning */
+void	Mode::clearData(void) {
+	_target.clear();
+	_targetMember.clear();
+	_modes.clear();
+	_targetType = 0;
+	_reply.clear();
+	_client = nullptr;
 }
+
+/* Send list of modes for a given user */
+void	Mode::sendUserModes() {
+	
+}
+
+/* Send a list of modes for a given channel */
+void	Mode::sendChannelModes() {
+
+}
+
+/* Attempt to execute command */
+void	Mode::execute(const Message& msg) {
+	bool	removeMode = false;	// Is set to true if the mode is prepended with `-'
+	
+	_client = msg._client;
+
+	/* Parse input to get targets and modes string */
+	if (!parse(msg))
+	{
+		clearData();
+		return ;
+	}
+
+	/* If there is only a target, then send modes list reply */
+	if (_modes.empty())
+	{
+		if (_targetType == CHANNEL)
+			sendChannelModes();
+		else
+			sendUserModes();
+	}
+
+	std::string::iterator	ite = _modes.end();
+	for (std::string::iterator it = _modes.begin(); it != ite; ++it)
+	{
+		if (*it == '-' || *it == '+')
+			removeMode = (*it == '-') ? true : false;
+		
+		/* Iterate through mode string and attempt to validate each individual modes */
+		// FIXME: validate needs to be completely overhauled
+		// 			validate_mode(char mode, removeMode)
+		// NOTE: it also needs to send the numerical replies 
+		else if (!validate(msg))
+			continue ;
+		_reply.append(*it);
+	}
+
+
+
+	/* Send reply message (if any) */
+	
+	/* Channel mode messages are sent to all members of channel */
+	/* Member mode message are sent to all member of channel */
+	
+	/* Clear all stored data before returning */
+	clearData();
+}
+
+
+	/*
+		NOTES::
+		+imk is valid
+		+i-m+k is also valid
+		if the mode is already set then do nothing (no reply)
+		/mode #channel b without sign requests channel ban list
+		-m i  is valid and will set removemode for both
+
+
+		Reply will contain all modes successfully changed in the order they were received (if mode was already set it will be removed from reply)
+		Additionally another error for each mode that fails will be sent
+
+		Irssi will not send /mode with no parameters - test with other clients. IF this is consistent then do nothing and ignore commands
+	*/

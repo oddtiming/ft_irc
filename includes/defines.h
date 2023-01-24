@@ -40,6 +40,11 @@ typedef enum e_memberModes {
 	OWNER =				0x10		/* q: owner (highest perm level, only one can exist) */
 }	t_memberModes;
 
+typedef enum e_targetType {
+	CHANNEL =			0x1,
+	USER =				0x2
+}	t_targetType;
+
 //NOTE: All +qao members automatically inherit (VOICE | BAN_EXEMPT | INV_EXEMPT)
 //They cannot be placed on ban list, never need an invite, and can always speak
 
