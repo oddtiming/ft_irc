@@ -49,20 +49,16 @@ bool	Kick::validate(const Message& msg) {
 
 void	Kick::execute(const Message& msg) {
 	if (validate(msg)) {
-		std::string					channel = msg.getMiddle().at(0);
-		std::string					user = msg.getMiddle().at(1);
-		std::string	message = "KICK " + channel + " " + user + " :";
+		std::string channel = msg.getMiddle().at(0);
+		std::string user = msg.getMiddle().at(1);
+		std::string message;
 
-		if (!msg.getTrailing().empty())
-			message += msg.getTrailing();
-		else
-			message += msg._client->getNickname();
 		if (msg.getMiddle().size() > 2)
-			_server->getChannelPtr(channel)->removeMember(_server->getClientPtr(user),
-													  ":" + _buildPrefix(msg) + " KICK " + channel + " " + user + " :"+ msg.getMiddle().at(2) + "\r\n");
+			message = msg.getMiddle().at(2);
 		else
-			_server->getChannelPtr(channel)->removeMember(_server->getClientPtr(user),
-													  ":" + _buildPrefix(msg) + " KICK " + channel + " " + user + " :"+ msg.getTrailing() + "\r\n");
+			message = msg.getTrailing();
+		_server->getChannelPtr(channel)->removeMember(_server->getClientPtr(user),
+													  ":" + _buildPrefix(msg) + " KICK " + channel + " " + user + " :" +
+													  message + "\r\n");
 	}
-
 }
