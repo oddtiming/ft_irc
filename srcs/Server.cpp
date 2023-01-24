@@ -228,15 +228,15 @@ void	Server::handleMessages(Client* client)
 		{
 			Message	msg(client, rawMessage);
 
-			/* Handle default response to capabilities requests */
-			// if (msg.getCommand() == "cap")
-			// {
-			// 	if (msg.hasMiddle() && msg.getMiddle().at(0) == "LS")
-			// 		msg._client->reply("CAP * LS :");
-
-			// }
-			/* Attempt to execute command */
-			if (msg.getCommand()!= "cap")
+			/* If command is nick but password has not been validated then remove user and break loop */
+			if (msg.getCommand() == "nick" && !client->getPassStatus())
+			{
+				client->reply("ERROR :Closing Link: localhost (Bad Password)\n");
+				removeClient(client);
+				break ;
+			}
+			/* Attempt to execute command, ignoring CAP commands */
+			else if (msg.getCommand() != "cap")
 				executeCommand(msg);
 			
 			/* Retrieve next command */
@@ -280,7 +280,6 @@ void	Server::runServer(void)
 				if (_pfds[i].revents & POLLIN)
 					handleMessages(client);
 				/* If there is no event, check if ping interval has passed and send PING to */
-				//FIXME: Do we want to auto disconnect clients after a certain period of inactivity?
 				else
 				{
 					if (client->getRegistration() && !client->getPingStatus() && 

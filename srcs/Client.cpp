@@ -4,6 +4,7 @@
 
 /* Constructors & Destructor */
 Client::Client(int socket) : _socket(socket), _timeConnect(std::time(nullptr)) {
+	_isPassValidated = false;
 	_isRegistered = false;
 	_globalModes = 0;
 	_wasPinged = false;
