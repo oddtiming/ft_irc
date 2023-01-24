@@ -29,6 +29,8 @@
 #include "Client.hpp"
 #include "commands/Who.hpp"
 #include "commands/Whois.hpp"
+#include "commands/Topic.hpp"
+
 
 /*****************************/
 /* Constructor & Destructor */
@@ -165,7 +167,9 @@ void	Server::initializeCommands(void)
 	//_commands["motd"] = new Motd(this);
 	_commands["who"] = new Who(this);
 	_commands["whois"] = new Whois(this);
-	
+	_commands["topic"] = new Topic(this);
+
+
 }
 
 
