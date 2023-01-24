@@ -27,6 +27,8 @@
 #include "commands/User.hpp"
 #include "commands/Invite.hpp"
 #include "Client.hpp"
+#include "commands/Who.hpp"
+#include "commands/Whois.hpp"
 
 /*****************************/
 /* Constructor & Destructor */
@@ -161,6 +163,8 @@ void	Server::initializeCommands(void)
 	//_commands["time"] = new Time(this);
 	_commands["invite"] = new Invite(this);
 	//_commands["motd"] = new Motd(this);
+	_commands["who"] = new Who(this);
+	_commands["whois"] = new Whois(this);
 	
 }
 
