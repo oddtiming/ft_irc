@@ -35,9 +35,9 @@ void	Whois::execute(const Message& msg) {
 			std::string realName = _target->getRealname();
 			msg._client->reply(RPL_WHOISUSER(nick, user, host, realName));
 
-			std::map<std::string, Channel *> channelList = _server->getChannelList();
-			std::map<std::string, Channel *>::iterator it = channelList.begin();
-			std::map<std::string, Channel *>::iterator ite = channelList.end();
+			ChannelList channelList = _server->getChannelList();
+			ChannelList::iterator it = channelList.begin();
+			ChannelList::iterator ite = channelList.end();
 			for (; it != ite; ++it)
 			{
 				std::string reply = _target->getNickname() + " : ";

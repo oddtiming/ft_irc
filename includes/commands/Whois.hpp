@@ -13,7 +13,7 @@ class Whois : public Command
 {
 public:
 	/* QoL typedefs */
-	typedef std::vector< std::pair< std::string, std::string > > ChannelList;
+	typedef std::map<std::string, Channel *> ChannelList;
 
 	/* Constructors & Destructor */
 	Whois(Server* server);
