@@ -53,9 +53,6 @@ void	Whois::execute(const Message& msg) {
 			msg._client->reply(RPL_WHOISIDLE(_target->getNickname(), std::to_string(std::time(nullptr) - _target->getLastActivityTime())));
 			msg._client->reply(RPL_AWAY(_target->getHostname(), msg._client->getNickname(), _target->getNickname(), _target->getAwayMessage()));
 			msg._client->reply(RPL_ENDOFWHOIS(_target->getNickname()));
-
-
-
 	}
 
 }

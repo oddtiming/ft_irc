@@ -40,7 +40,8 @@
 #define ERR_NOSUCHCHANNEL(channel) "403 * " + (channel) + " :No such channel" + "\r\n" //403
 #define	ERR_TOOMANYCHANNELS(channel) (channel) + " :You have joined too many channels" //405
 #define ERR_NORECIPIENT(cmd) ":No recipient given (" + (cmd) + ")" //411
-#define ERR_NOTEXTTOSEND() "412 * :No text to send" //412
+#define ERR_NOTEXTTOSEND() "412 * :No text to send\r\n" //412
+#define ERR_UNKNOWNCOMMAND(cmd) "421 * " + cmd + " :Unknown command\r\n" //421
 #define ERR_NONICKNAMEGIVEN() "431 * :No nickname given \r\n" //431
 #define ERR_ERRONEUSNICKNAME(nick) "432 * " + (nick) + " :Erroneous nickname" + "\r\n" //432
 #define ERR_NICKNAMEINUSE(nick) ":433 * " + (nick) + " :Nickname is already in use" + "\r\n" //433
