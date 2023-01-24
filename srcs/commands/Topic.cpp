@@ -20,7 +20,7 @@ bool	Topic::validate(const Message& msg) {
 	}
 	if (_target.empty())
 		return false;
-	if (msg.hasTrailing() && _server->getChannelPtr(_target)->checkModes(TOPIC_SET_OP) && !_server->getChannelPtr(_target)->checkMemberModes(msg._client, C_OP)) {
+	if ((msg.hasTrailing() || msg.getMiddle().size() > 1) && _server->getChannelPtr(_target)->checkModes(TOPIC_SET_OP) && !_server->getChannelPtr(_target)->checkMemberModes(msg._client, C_OP)) {
 		msg._client->reply(ERR_CHANOPRIVSNEEDED(_target));
 		return false;
 	}
