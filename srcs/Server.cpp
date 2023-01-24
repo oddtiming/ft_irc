@@ -11,15 +11,15 @@
 // #include "commands/Help.hpp"
 // #include "commands/Info.hpp"
 #include "commands/Join.hpp"
-// #include "commands/Kick.hpp"
- #include "commands/List.hpp"
+#include "commands/Kick.hpp"
+#include "commands/List.hpp"
 #include "commands/Mode.hpp"
 // #include "commands/Names.hpp"
 #include "commands/Nick.hpp"
 #include "commands/Notice.hpp"
 // #include "commands/Ope.hpp"
 #include "commands/Part.hpp"
- #include "commands/Pass.hpp"
+#include "commands/Pass.hpp"
 #include "commands/Ping.hpp"
 #include "commands/Pong.hpp"
 #include "commands/Privmsg.hpp"
@@ -155,7 +155,7 @@ void	Server::initializeCommands(void)
 	_commands["part"] = new Part(this);
 	 _commands["list"] = new List(this);
 	// _commands["names"] = new Names(this);
-	// _commands["kick"] = new Kick(this);
+	 _commands["kick"] = new Kick(this);
 	_commands["nick"] = new Nick(this);
 	_commands["user"] = new User(this);
 	_commands["pass"] = new Pass(this);
