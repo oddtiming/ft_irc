@@ -40,7 +40,7 @@ void	Whois::execute(const Message& msg) {
 			std::map<std::string, Channel *>::iterator ite = channelList.end();
 			for (; it != ite; ++it)
 			{
-				std::string reply = _target + " :* ";
+				std::string reply = _target + " : ";
 				if (it->second->isMember(_server->getClientPtr(_target))) {
 					if (it->second->checkMemberModes(_server->getClientPtr(_target), C_OP))
 						reply += "@" + it->first;
