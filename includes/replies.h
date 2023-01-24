@@ -9,11 +9,13 @@
 #define RPL_LIST(channel,nbUsers,topic) "322 * " + (channel) + " " + (nbUsers) + " : " + (topic) +  "\r\n" //322
 #define RPL_ENDOFNAMES(host, nick, channel) ":" + (host) + " 366 " + (nick) + " " + (channel) + " :End of /NAMES list.\r\n" //366
 #define RPL_LISTEND(host, nick) ":" + (host) + " 323 " + (nick) + " :End of channel list.\r\n" //323
-#define RPL_CHANNELMODEIS(target, modes, param) "324 * " + (target) + " " + (modes) + param + "\r\n" //324
+#define RPL_CHANNELMODEIS(host, nick, channel, modes) ":" + (host) + " 324 " + (nick) + " " + (channel) + " :" + (modes) + "\r\n" // 324
+
 #define	RPL_NOTOPIC(channel) "331 * " + (channel) + " :No topic is set \r\n" //331
 #define	RPL_TOPIC(channel, topic) "332 * " + (channel) + " :" + (topic) + "\r\n"//332
 #define RPL_NAMREPLY(hostname, nick, channel, users) ":" + (hostname) + " 353 " + (nick) + " = " + (channel) + " :" + users +  "\r\n" //353
 #define RPL_INVITING(prefix, targetnick, channel) ":" + (prefix) + " INVITE " + (targetnick) + " " + (channel) + "\r\n"
+
 
 /* Command Success Messages */
 #define CMD_JOIN(prefix, channel) ":" + (prefix) + " JOIN :" + (channel) + "\r\n"
@@ -25,30 +27,35 @@
 #define CMD_PART(prefix, channel, message) ":" + (prefix) + " PART " + (channel) + " :" + (message) + "\r\n"
 #define CMD_PART_NO_MSG(prefix, channel) ":" + (prefix) + " PART " + (channel) + "\r\n"
 #define CMD_INVITE(hostname, client, target, channel) ":" + (hostname) + " 341 " + (client) + " " + (target) + " :" + (channel) + "\r\n"
+#define CMD_MODE(prefix, channel, modes) ":" + (prefix) + " MODE " + (channel) + " :" + (modes) + "\r\n"
+
 // FIXME: the RPL_INVITING and CMD_INVITE are curently inverted; 
 //  the 341 reply code is meant to be sent to the inviting client, not the invited client
 
 /* Error Messages */
 #define ERR_NOSUCHNICK(nickname) "401 * " + (nickname) + " :No such nickname" + "\r\n" //401
 #define ERR_CANNOTSENDTOCHAN(channel) "404 * " + (channel) + " :Cannot send to channel" + "\r\n" //404
-#define ERR_NOSUCHCHANNEL(channel) "403 * " + (channel) + " :No such channel" + "\r\n" //403
-#define	ERR_TOOMANYCHANNELS(channel) (channel) + " :You have joined too many channels" //405
-#define ERR_NORECIPIENT(cmd) ":No recipient given (" + (cmd) + ")" //411
-#define ERR_NOTEXTTOSEND() "412 * :No text to send" //412
+#define ERR_NOSUCHCHANNEL(hostname, nick, channel) ":" + (hostname) + " 403 " + (nick) + " " + (channel) + " :No such channel" + "\r\n" //403
+#define	ERR_TOOMANYCHANNELS(channel) (channel) + " :You have joined too many channels\r\n" //405
+#define ERR_NORECIPIENT(cmd) ":No recipient given (" + (cmd) + ")\r\n" //411
+#define ERR_NOTEXTTOSEND() "412 * :No text to send\r\n" //412
 #define ERR_NONICKNAMEGIVEN() "431 * :No nickname given \r\n" //431
 #define ERR_ERRONEUSNICKNAME(nick) "432 * " + (nick) + " :Erroneous nickname" + "\r\n" //432
-#define ERR_NICKNAMEINUSE(nick) ":433 * " + (nick) + " :Nickname is already in use" + "\r\n" //433
+#define ERR_NICKNAMEINUSE(nick) "433 * " + (nick) + " :Nickname is already in use" + "\r\n" //433
 #define ERR_NOTONCHANNEL(channel) (channel) + " :You're not on that channel" + "\r\n"
 #define ERR_NEEDMOREPARAMS(cmd) "461 * " + (cmd) + " :Not enough parameters" + "\r\n" //461
-#define ERR_ALREADYREGISTRED() ":Unauthorized command (already registered) \r\n" //462
-#define	ERR_CHANNELISFULL(channel) (channel) + " :Cannot join channel (+l)" //471
-#define ERR_UNKNOWNMODE(mode, channel) "472 * " + (mode) + " :is unknown mode char to me for " + (channel) + "\r\n" //472
-#define	ERR_INVITEONLYCHAN(channel) (channel) + " :Cannot join channel (+i)" //473
-#define	ERR_BANNEDFROMCHAN(channel) "474 * " + (channel) + " :Cannot join channel (+b)" + "\r\n"//474
-#define	ERR_BADCHANNELKEY(channel) (channel) + " :Cannot join channel (+k)" //475
-#define ERR_BADCHANMASK(channel) (channel) + " :Bad Channel Mask" //476
-#define ERR_CHANOPRIVSNEEDED(channel) "482 * " + (channel) + " :You're not channel operator" + "\r\n"//482
-#define ERR_USERONCHANNEL(nickname, channel) ":hostname 443 " + (nickname) + " " + (channel) + " :is already on channel\r\n"  
+#define ERR_ALREADYREGISTRED() "462 * :Unauthorized command (already registered) \r\n" //462
+#define	ERR_CHANNELISFULL(channel) (channel) + " :Cannot join channel (+l)\r\n" //471
+#define ERR_UNKNOWNMODE(mode, target) "472 * " + (mode) + " :is unknown mode char to me for " + (target) + "\r\n" //472
+#define	ERR_INVITEONLYCHAN(channel) "473 * " + (channel) + " :Cannot join channel (+i)\r\n" //473
+#define	ERR_BANNEDFROMCHAN(channel) "474 * " + (channel) + " :Cannot join channel (+b)\r\n"//474
+#define	ERR_BADCHANNELKEY(channel) "475 * " + (channel) + " :Cannot join channel (+k)\r\n" //475
+#define ERR_BADCHANMASK(channel) "476 * " + (channel) + " :Bad Channel Mask\r\n" //476
+#define ERR_CHANOPRIVSNEEDED(channel, mode) "482 * " + (channel) + " :You must be a channel op or higher to set channel mode " + mode + "\r\n"//482
+#define ERR_USERONCHANNEL(nickname, channel) "443 " + (nickname) + " " + (channel) + " :is already on channel\r\n"  
+#define ERR_USERSDONTMATCH(hostname, nick) ":" + (hostname) + " 502 " + (nick) + " :Can't view modes for other users\r\n" //502
+#define ERR_UMODEUNKNOWNFLAG(hostname, mode, target) ":" + (hostname) + " 501 :Unknown MODE flag " + (mode) + " for " + (target) + "\r\n" //501
+
 
 /*
 

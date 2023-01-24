@@ -22,7 +22,9 @@ bool	Notice::validate(const Message& msg) {
     if(_target.at(0) == '#')
     {
         _targetIsChannel = true;
-        if(!_server->doesChannelExist(_target) || !_server->getChannelPtr(_target)->isMember(msg._client))
+        if(!_server->doesChannelExist(_target) 
+			|| (!_server->getChannelPtr(_target)->isMember(msg._client) 
+				&& (!_server->getChannelPtr(_target)->checkModes(NO_MSG_IN))))
 			return false;
 		return true;
     }

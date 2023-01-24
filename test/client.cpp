@@ -1,22 +1,28 @@
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
+#include "TimeBot.hpp"
 
-#include <sys/types.h>
-#include <stdlib.h>
-
-#include <unistd.h>
-#include <netinet/in.h>
-
-#define PORT 6697
  
-
-
-
-
-int main(void)
+int main(int argc, char **argv)
 {
+	if (argc != 3)
+	{
+		std::cerr << "usage: " << argv[0] << " <host ip> <port> <password> <channel>" << std::endl;
+		return 1;
+	}
+
+	TimeBot timebot(argc, argv);
+
+	/* Set up variables */
+	int port = atoi(argv[2]);
+	std::string password = argv[3];
+	std::string channel = argv[4];
+
+	/* Set up connection */
+
+	int socket = socket(AF_INET, SOCK_STREAM, 0);
+
+
+
+
 	//Create network socket (endpoint) for TCP/IP communication
 	int client_fd;
 	client_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -42,3 +48,10 @@ int main(void)
 
 	close(client_fd);
 }
+
+
+/* TO FOR TIMEBOT 
+
+	- Add bonus makefile option to compile bot - ./timebot
+
+*/

@@ -35,7 +35,8 @@ bool Privmsg::validate(const Message& msg) {
 			msg._client->reply(ERR_NOSUCHCHANNEL(_target));
 			return false;
         }
-		if (!_server->getChannelPtr(_target)->isMember(msg._client))
+		if (!_server->getChannelPtr(_target)->isMember(msg._client)
+            && !_server->getChannelPtr(_target)->checkModes(NO_MSG_IN))
 		{
 			 msg._client->reply(ERR_CANNOTSENDTOCHAN(_target));
 			 return false;
