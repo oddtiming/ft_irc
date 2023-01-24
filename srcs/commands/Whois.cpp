@@ -41,7 +41,7 @@ void	Whois::execute(const Message& msg) {
 			for (; it != ite; ++it)
 			{
 				std::string reply = _target->getNickname() + " : ";
-				if (it->second->isMember(_target)) {
+				if (it->second->isMember(_target) && (!it->second->checkModes(SECRET) ||it->second->isMember(msg._client))) {
 					if (it->second->checkMemberModes(_target, C_OP))
 						reply += "@" + it->first;
 					else
