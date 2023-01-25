@@ -7,13 +7,16 @@
 #include <string>
 
 /* Local Includes */
-#include "Command.hpp"
+#include "../Command.hpp"
 
 class Names : public Command
 {
     public:
+		/* QoL typedefs */
+		typedef std::map<std::string, Channel *> ChannelList;
+
         /* Constructors & Destructor */
-        Names();
+        Names(Server *server);
         ~Names();
 
         /* Public Member Functions */
@@ -21,6 +24,9 @@ class Names : public Command
         void                execute(const Message& msg);
 
     private:
+		std::string 		_target;
+		bool 				_hasTarget;
+		std::vector<std::string> _targetList;
 
 };
 

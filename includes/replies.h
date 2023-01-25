@@ -6,6 +6,11 @@
 #define RPL_AWAY(hostname, client, target, message) ":" + (hostname) + " 301 " +  (client) + " " + (target) + " :" + (message) + "\r\n"
 #define RPL_UNAWAY()  "305 * :You are no longer marked as being away \r\n" //305
 #define RPL_NOWAWAY() "306 * :You have been marked as being away \r\n" //306
+#define RPL_WHOISUSER(nick, user, host, realName) "311 * " + (nick) + " " + (user) + " " + (host) + " * :"+ (realName) + "\r\n" //311
+#define RPL_WHOISSERVER(nick, server, serverName) "312 * " + (nick) + " " + (server) + " :" + (serverName) + "\r\n" //312
+#define RPL_WHOISIDLE(nick, idle) "317 * " + (nick) + " " + (idle) + " :seconds idle\r\n" //317
+#define RPL_ENDOFWHOIS(nick) "318 * " + (nick) + " :End of WHOIS list\r\n" //318
+#define RPL_WHOISCHANNELS(msg) "319 * " + (msg) + "\r\n" //319
 #define RPL_LIST(channel,nbUsers,topic) "322 * " + (channel) + " " + (nbUsers) + " : " + (topic) +  "\r\n" //322
 #define RPL_ENDOFNAMES(host, nick, channel) ":" + (host) + " 366 " + (nick) + " " + (channel) + " :End of /NAMES list.\r\n" //366
 #define RPL_BANLIST(nick, channel, target) "367 " + (nick) + " " + (channel) + " " + (target) + "\r\n" //367
@@ -15,7 +20,9 @@
 
 #define	RPL_NOTOPIC(channel) "331 * " + (channel) + " :No topic is set \r\n" //331
 #define	RPL_TOPIC(channel, topic) "332 * " + (channel) + " :" + (topic) + "\r\n"//332
+//#define RPL_INVITING(channel,nick) "341 * " + (channel) + " " + (nick) + "\r\n" //341
 #define RPL_NAMREPLY(hostname, nick, channel, users) ":" + (hostname) + " 353 " + (nick) + " = " + (channel) + " :" + users +  "\r\n" //353
+#define RPL_ENDOFNAMES(host, nick, channel) ":" + (host) + " 366 " + (nick) + " " + (channel) + " :End of /NAMES list.\r\n" //366
 #define RPL_INVITING(prefix, targetnick, channel) ":" + (prefix) + " INVITE " + (targetnick) + " " + (channel) + "\r\n"
 
 
@@ -37,6 +44,7 @@
 /* Error Messages */
 #define ERR_NOSUCHNICK(nickname) "401 * " + (nickname) + " :No such nickname" + "\r\n" //401
 #define ERR_CANNOTSENDTOCHAN(channel) "404 * " + (channel) + " :Cannot send to channel" + "\r\n" //404
+#define ERR_UNKNOWNCOMMAND(cmd) "421 * " + cmd + " :Unknown command\r\n" //421
 #define ERR_NOSUCHCHANNEL(hostname, nick, channel) ":" + (hostname) + " 403 " + (nick) + " " + (channel) + " :No such channel" + "\r\n" //403
 #define	ERR_TOOMANYCHANNELS(channel) (channel) + " :You have joined too many channels\r\n" //405
 #define ERR_NORECIPIENT(cmd) ":No recipient given (" + (cmd) + ")\r\n" //411

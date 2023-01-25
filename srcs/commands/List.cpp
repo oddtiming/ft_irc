@@ -27,7 +27,8 @@ void	List::execute(const Message& msg) {
 		std::map<std::string, Channel *>::iterator it = channelList.begin();
 		for (; it != channelList.end(); ++it)
 		{
-			msg._client->reply(RPL_LIST(it->first, std::to_string(it->second->getMemberVector().size()), it->second->getTopic()));
+			if (!it->second->checkModes(SECRET) || it->second->isMember(msg._client))
+				msg._client->reply(RPL_LIST(it->first, std::to_string(it->second->getMemberVector().size()), it->second->getTopic()));
 		}
 		msg._client->reply(RPL_LISTEND(_server->getHostname(), msg._client->getNickname()));
 

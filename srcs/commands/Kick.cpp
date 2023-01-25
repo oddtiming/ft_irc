@@ -23,6 +23,10 @@ bool	Kick::validate(const Message& msg) {
 	std::string					channel = middle.at(0);
 	std::string					user = middle.at(1);
 	/*check if channel exists*/
+	if (!_server->getChannelPtr(channel)->checkMemberModes(msg._client, C_OP)) {
+		msg._client->reply(ERR_CHANOPRIVSNEEDED(channel));
+		return false;
+	}
 	if (!_server->doesChannelExist(channel)){
 		msg._client->reply(ERR_NOSUCHCHANNEL(channel));
 		std::cerr << "ERR_NOSUCHCHANNEL" << std::endl;
@@ -40,22 +44,21 @@ bool	Kick::validate(const Message& msg) {
 		std::cerr << "ERR_NOSUCHNICK" << std::endl;
 		return false;
 	}
-	//TODO: check if user has op priv
-
+	return true;
 }
 
 void	Kick::execute(const Message& msg) {
 	if (validate(msg)) {
-		std::string					channel = msg.getMiddle().at(0);
-		std::string					user = msg.getMiddle().at(1);
-		std::string	message = "KICK " + channel + " " + user + " :";
+		std::string channel = msg.getMiddle().at(0);
+		std::string user = msg.getMiddle().at(1);
+		std::string message;
 
-		if (!msg.getTrailing().empty())
-			message += msg.getTrailing();
+		if (msg.getMiddle().size() > 2)
+			message = msg.getMiddle().at(2);
 		else
-			message += msg._client->getNickname();
-		msg._client->reply(message);
-		//TODO: add code to kick user from channel
+			message = msg.getTrailing();
+		_server->getChannelPtr(channel)->removeMember(_server->getClientPtr(user),
+													  ":" + _buildPrefix(msg) + " KICK " + channel + " " + user + " :" +
+													  message + "\r\n");
 	}
-
 }
