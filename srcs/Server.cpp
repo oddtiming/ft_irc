@@ -161,8 +161,6 @@ void	Server::initializeCommands(void)
 	_commands["who"] = new Who(this);
 	_commands["whois"] = new Whois(this);
 	_commands["topic"] = new Topic(this);
-
-
 }
 
 

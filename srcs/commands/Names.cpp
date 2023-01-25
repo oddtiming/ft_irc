@@ -32,7 +32,7 @@ bool	Names::validate(const Message& msg) {
 		for (; it != _targetList.end(); ++it)
 		{
 			if (!_server->doesChannelExist(*it)) {
-				msg._client->reply(ERR_NOSUCHCHANNEL(*it));
+				msg._client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), msg._client->getNickname(), *it));
 				_targetList.erase(it);
 				msg._client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), *it));
 

@@ -15,7 +15,7 @@ bool	Topic::validate(const Message& msg) {
 	}
 	_target = msg.getMiddle().at(0);
 	if (!_server->doesChannelExist(_target)) {
-		msg._client->reply(ERR_NOSUCHCHANNEL(_target));
+		msg._client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), msg._client->getNickname(), _target));
 		return false;
 	}
 	if (_target.empty())
