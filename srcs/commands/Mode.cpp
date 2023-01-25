@@ -32,8 +32,11 @@ bool	Mode::parse(const Message& msg) {
 		_modes = *it;
 	
 	/* Check for secondary user target(s) for channel member modes */
-	while (++it != input.end())
+	while (it != input.end())
+	{
 		_params.push_back(*it);
+		++it;
+	}
 
 	return true;
 }
