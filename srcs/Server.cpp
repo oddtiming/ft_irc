@@ -5,7 +5,7 @@
 /********************/
 
 #include "commands/Away.hpp"
-// #include "commands/Shutdown.hpp"
+#include "commands/Shutdown.hpp"
 #include "commands/Join.hpp"
 #include "commands/Kick.hpp"
 #include "commands/List.hpp"
@@ -134,7 +134,7 @@ void	Server::initializeCommands(void)
 	_commands["ping"] = new Ping(this);
 	_commands["pong"] = new Pong(this);
 	// _commands["info"] = new Info(this);
-	// _commands["shutdown"] = new Shutdown(this);
+	_commands["shutdown"] = new Shutdown(this);
 	// _commands["echo"] = new Echo(this);
 	// _commands["help"] = new Help(this);
 	_commands["quit"] = new Quit(this);
@@ -207,17 +207,17 @@ void	Server::handleMessages(Client* client)
 {	
 	std::string	rawMessage;
 
+	
 	/* Client reads entire input string coming from their socket */
-	client->read();
-
-	/* Handle forcefully disconnected clients */
-	if ((rawMessage = client->retrieveMessage()).empty() == true)
+	if (client->read() <= 0)
 	{
+		/* Handle forcefully disconnected clients */
 		std::cout << getTimestamp() << RED "Removing disconnected client: " CLEAR << client->getUsername() << std::endl;
 		removeClient(client);
 	}
 	else
 	{
+		rawMessage = client->retrieveMessage();
 		/* While there are valid commands (messages) stored in the client's input string */
 		while (rawMessage.empty() == false)
 		{
@@ -288,6 +288,17 @@ void	Server::runServer(void)
 			}
 		}
 	}
+}
+
+void	Server::stopServer(void)
+{
+	 _status = OFFLINE;
+	 std::vector<Client*>::iterator it = _clients.begin();
+	 for (; it != _clients.end(); ++it)
+	 {
+		Client* client = *it;
+		client->reply(ERR_SHUTDOWN(client->getUsername(), client->getAddress()));
+	 }
 }
 
 /*******************************/

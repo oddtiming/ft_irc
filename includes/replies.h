@@ -68,6 +68,8 @@
 #define ERR_KEYSET(user, channel) "467 * " + (user) + " " + (channel) + " :Channel key already set\r\n" //467
 
 
+#define ERR_SHUTDOWN(user, address) "ERROR :Closing link: (" + (user) + "@" + (address) + ") [Server shutting down]\r\n"
+
 /*
 
 
