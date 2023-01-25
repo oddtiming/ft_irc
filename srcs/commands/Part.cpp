@@ -40,7 +40,7 @@ bool	Part::validate(const std::string& channel, Client *client)
 
 	if (target == nullptr)
 	{
-		client->reply(ERR_NOSUCHCHANNEL(channel));
+		client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), client->getNickname(), channel));
 		return false;
 	}
 	

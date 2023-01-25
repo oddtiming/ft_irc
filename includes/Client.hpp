@@ -35,6 +35,7 @@ class Client {
 		const std::string&	getUsername(void) const { return (_username); }
 		const std::string&	getRealname(void) const { return (_realname); }
 		const std::string&	getHostname(void) const { return (_hostname); }
+		const std::string	getPrefix(void) const { return (_nickname + "!" + _username + "@" + _hostname); }
 		const std::string&	getAwayMessage(void) const { return (_awayMessage); }
 		const int&			getSocket(void) const { return (_socket); }
 		bool				getRegistration(void) { return (_isRegistered); }

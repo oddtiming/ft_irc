@@ -389,7 +389,7 @@ bool	Server::channelCheckPass(const std::string& channel, const std::string& pas
 	if (it == _channels.end())
 		return (false);
 	/* Check if password match */
-	if (it->second->getPass() == pass)
+	if (it->second->getPassword() == pass)
 		return (true);
 	return (false);
 }

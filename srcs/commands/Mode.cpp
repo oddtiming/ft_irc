@@ -31,9 +31,9 @@ bool	Mode::parse(const Message& msg) {
 	if (++it != input.end())
 		_modes = *it;
 	
-	/* Check for secondary user target for channel member modes */
-	if (++it != input.end())
-		_params.insert(_params.end(), it, _input.end());
+	/* Check for secondary user target(s) for channel member modes */
+	while (++it != input.end())
+		_params.push_back(*it);
 
 	return true;
 }
@@ -43,17 +43,17 @@ bool	Mode::parse(const Message& msg) {
 /*******************************************/
 
 /* Function for executing indivdual modes */
-bool	Mode::executeMode(char mode, bool removeMode) const {
+bool	Mode::executeMode(char mode, bool removeMode) {
 	switch(mode)
 	{
-		case 's'	:	return _secret();
-		case 't'	:	return _topic();
-		case 'i'	:	return _invite();
-		case 'n'	:	return _no_msg_in();
-		case 'k'	:	return _password();
-		case 'b'	:	return _ban();
-		case 'o'	:	return _operators();
-		default		:	_client.reply(ERR_UNKNOWNMODE(mode, _target));
+		case 's'	:	return _secret(removeMode);
+		case 't'	:	return _topic(removeMode);
+		case 'i'	:	return _invite(removeMode);
+		case 'n'	:	return _no_msg_in(removeMode);
+		case 'k'	:	return _password(removeMode);
+		case 'b'	:	return _ban(removeMode);
+		case 'o'	:	return _operators(removeMode);
+		default		:	_client->reply(ERR_UNKNOWNMODE(std::string(mode, 1), _target));
 	}
 	return false;
 }
@@ -91,15 +91,15 @@ void	Mode::execute(const Message& msg) {
 			removeMode = (*it == '-') ? true : false;
 		else if (!executeMode(*it, removeMode))
 			continue ;
-		_reply.append(*it);
+		_reply.append(1, *it);
 	}
 
 	if (_reply.find_first_not_of("+-") == std::string::npos)
 		return ;
 
 	/* Send reply message (if any) */
-	if (_targetType == CHANNEL)
-		_server->getChannelPtr()->sendToAll(CMD_MODE(_buildPrefix(msg), _target, _reply));
+	if (_targetType == CHANNEL && _server->doesChannelExist(_target))
+		_server->getChannelPtr(_target)->sendToAll(CMD_MODE(_buildPrefix(msg), _target, _reply));
 	else if (_targetType == USER)
 		_client->reply(CMD_MODE(_buildPrefix(msg), _target, _reply));
 	// FIXME: RFC 2812 seems to suggest that the correct reply is RPL_UMODEIS (221),
@@ -113,112 +113,182 @@ void	Mode::execute(const Message& msg) {
 /***************************************/
 
 /* +s - Secret channel mode */
-bool                Mode::_secret(bool removeMode) const
+bool                Mode::_secret(bool removeMode)
 {
-	char mode = 's';
+	std::string mode("s");
 
-	// If the target is not a channel, treat 's' as unknown user mode
-	if (_targetType != CHANNEL)
-	{
-		_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode + " (secret)", _target));
-		return false;
-	}
-	Channel*	channelPtr = _server.getChannelPtr(_target);
+	if (_targetType == USER)
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+
+	Channel*	channelPtr = _server->getChannelPtr(_target);
 	if (!channelPtr)
 		return false;
+
 	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-	{
-		_client.reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (secret)."));
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (secret).")), false);
+
+	if (removeMode != channelPtr->checkModes(SECRET))
 		return false;
-	}
 	channelPtr->setModes(SECRET, removeMode);
 	return true;
 }
 
 /* +t - topic limit channel mode (only OP can set topic) */
-bool                Mode::_topic(bool removeMode) const
+bool                Mode::_topic(bool removeMode)
 {
-	char mode = 't';
+	std::string mode("t");
 
-	// If the target is not a channel, treat 't' as unknown user mode
-	if (_targetType != CHANNEL)
-	{
-		_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode + " (topic)", _target));
-		return false;
-	}
-	Channel*	channelPtr = _server.getChannelPtr(_target);
+	if (_targetType == USER)
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+	
+	Channel*	channelPtr = _server->getChannelPtr(_target);
 	if (!channelPtr)
 		return false;
+
 	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-	{
-		_client.reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (topic)."));
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (topic).")), false);
+	
+	if (removeMode != channelPtr->checkModes(TOPIC_SET_OP))
 		return false;
-	}
 	channelPtr->setModes(TOPIC_SET_OP, removeMode);
 	return true;
 }
 
 /* +i - invite only channel mode (must be invited to join channel) */
-bool                Mode::_invite(bool removeMode) const
+bool                Mode::_invite(bool removeMode)
 {
-	char mode = 'i';
+	std::string mode("i");
 
-	// If the target is not a channel, treat 'i' as unknown user mode
-	if (_targetType != CHANNEL)
-	{
-		_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode + " (invite)", _target));
-		return false;
-	}
-	Channel*	channelPtr = _server.getChannelPtr(_target);
+	if (_targetType == USER)
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+	
+	Channel*	channelPtr = _server->getChannelPtr(_target);
 	if (!channelPtr)
 		return false;
+		
 	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-	{
-		_client.reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (invite)."));
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (invite).")), false);
+
+	if (removeMode != channelPtr->checkModes(INV_ONLY))
 		return false;
-	}
 	channelPtr->setModes(INV_ONLY, removeMode);
 	return true;
 }
 
 /* +n - no message in channel mode (users that are not channel members can not send messages to channel) */
-bool                Mode::_no_msg_in(bool removeMode) const
+bool                Mode::_no_msg_in(bool removeMode)
 {
-	char mode = 'n';
+	std::string mode("n");
 
-	// If the target is not a channel, treat 'n' as unknown user mode
-	if (_targetType != CHANNEL)
-	{
-		_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode + " (no_msg_in)", _target));
-		return false;
-	}
-	Channel*	channelPtr = _server.getChannelPtr(_target);
+	if (_targetType == USER)
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+
+	Channel*	channelPtr = _server->getChannelPtr(_target);
 	if (!channelPtr)
 		return false;
+		
 	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-	{
-		_client.reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (no_msg_in)."));
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (no_msg_in).")), false);
+
+	if (removeMode != channelPtr->checkModes(NO_MSG_IN))
 		return false;
-	}
 	channelPtr->setModes(NO_MSG_IN, removeMode);
 	return true;
 }
 
 /* +k - password required (channel is set to be password protected) */
-bool                Mode::_password(bool removeMode) const
+bool                Mode::_password(bool removeMode)
 {
+	std::string	mode("k");
+	std::string	pass;
+
+	if (_targetType == USER)
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+	
+	Channel*	channelPtr = _server->getChannelPtr(_target);
+	if (!channelPtr)
+		return false;
+		
+	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (password protected).")), false);
+	
+	if (_params.empty())
+		return (_client->reply(ERR_NEEDMOREPARAMS(std::string("MODE +k"))), false);
+
+	pass = _params.at(0);
+	_params.erase(_params.begin());
+	if (removeMode && pass.compare(channelPtr->getPassword()))
+		return (_client->reply(ERR_KEYSET(_client->getNickname(), _target)), false);
+
+	if (removeMode != channelPtr->checkModes(PASS_REQ))
+		return false;
+	channelPtr->setModes(PASS_REQ, removeMode);
+	if (!removeMode)
+		channelPtr->setPassword(pass);
 	return true;
 }
 
 /* +b - ban a user from channel, or return ban list for channel */
-bool                Mode::_ban(bool removeMode) const
+bool                Mode::_ban(bool removeMode)
 {
+	std::string	mode("b");
+	std::string	targetNick;
+
+	if (_targetType == USER)
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+	
+	Channel*	channelPtr = _server->getChannelPtr(_target);
+	if (!channelPtr)
+		return false;
+		
+	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (ban).")), false);
+	
+	if (_params.empty())
+		return (sendBanList(), false);
+
+	targetNick = _params.at(0);
+	_params.erase(_params.begin());
+
+	Client*	targetMember = _server->getClientPtr(targetNick);
+	if (!targetMember)
+		return (_client->reply(ERR_NOSUCHNICK(targetNick)), false);
+
+	if (removeMode != channelPtr->checkMemberModes(targetMember, BAN))
+		return false;
+	channelPtr->setMemberModes(targetMember, BAN, removeMode);
 	return true;
 }
 
 /* +o - give a user OP privs in channel */
-bool                Mode::_operators(bool removeMode) const
+bool                Mode::_operators(bool removeMode)
 {
+	std::string	mode("o");
+	std::string	targetNick;
+
+	if (_targetType == USER)
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+	
+	Channel*	channelPtr = _server->getChannelPtr(_target);
+	if (!channelPtr)
+		return false;
+		
+	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (operator).")), false);
+	
+	if (_params.empty())
+		return (sendBanList(), false);
+
+	targetNick = _params.at(0);
+	_params.erase(_params.begin());
+
+	Client*	targetMember = _server->getClientPtr(targetNick);
+	if (!targetMember)
+		return (_client->reply(ERR_NOSUCHNICK(targetNick)), false);
+
+	if (removeMode != channelPtr->checkMemberModes(targetMember, C_OP))
+		return false;
+	channelPtr->setMemberModes(targetMember, C_OP, removeMode);
 	return true;
 }
 
@@ -229,12 +299,13 @@ bool                Mode::_operators(bool removeMode) const
 /***********************************/
 
 /* Clear stored data */
-void	Mode::clearAttributes(void) {
+void	Mode::clearAttributes(void)
+{
 	_target.clear();
 	_params.clear();
 	_modes.clear();
-	_targetType = 0;
 	_reply.clear();
+	_targetType = 0;
 	_client = nullptr;
 }
 
@@ -248,7 +319,7 @@ void	Mode::sendUserModes(void) {
 		return ;
 	}
 	/* Reply list of global user modes if users match */
-	_client->reply(RPL_UMODEIS(msg._client->getGlobalModes()));
+	_client->reply(RPL_UMODEIS(_client->getGlobalModes()));
 }
 
 /* Send a list of modes for a given channel */
@@ -256,7 +327,7 @@ void	Mode::sendChannelModes(void) {
 	Channel* channel = _server->getChannelPtr(_target);
 	
 	/* Check permissions for sending requested mode info */
-	if (channel->checkModes(SECRET) && !channel->isMember(_client->getNickname()))
+	if (channel->checkModes(SECRET) && !channel->isMember(_client))
 	{
 		_client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), _client->getNickname(), channel->getName()));
 		return ;
@@ -264,20 +335,33 @@ void	Mode::sendChannelModes(void) {
 	_client->reply(RPL_CHANNELMODEIS(_server->getHostname(), _client->getNickname(), channel->getName(), channel->getChannelModes()));
 }
 
+/* Send a list of banned users from a given channel */
+void	Mode::sendBanList(void) const {
+	Channel* channel = _server->getChannelPtr(_target);
+	if (!channel)
+		return ;
+
+	std::vector<std::string>			banList = channel->getBanList();
+	std::vector<std::string>::iterator	ite = banList.end();
+	for (std::vector<std::string>::iterator	it = banList.begin(); it != ite; ++it)
+		_client->reply(RPL_BANLIST(_client->getNickname(), _target, *it));
+	_client->reply(RPL_ENDOFBANLIST(_client->getNickname(), _target));
+}
+
 /* Check if target channel or user exists */
 bool	Mode::validateTarget(void) {
 
 	/* If target type is channel, check if channel exists */
-	if (_targetType == CHANNEL && !_server.doesChannelExist(_target))
+	if (_targetType == CHANNEL && !_server->doesChannelExist(_target))
 	{
-		_client.reply(ERR_NOSUCHCHAN());
+		_client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), _client->getNickname(), _target));
 		return false;
 	}
 
 	/* If target type is user, check if user exists*/
-	else if (_targetType == USER && !_server.doesNickExist(_target))
+	else if (_targetType == USER && !_server->doesNickExist(_target))
 	{
-		_client.reply(ERR_NOSUCHNICK());
+		_client->reply(ERR_NOSUCHNICK(_target));
 		return false;
 	}
 	return (true);

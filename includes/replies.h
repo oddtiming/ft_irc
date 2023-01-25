@@ -8,6 +8,8 @@
 #define RPL_NOWAWAY() "306 * :You have been marked as being away \r\n" //306
 #define RPL_LIST(channel,nbUsers,topic) "322 * " + (channel) + " " + (nbUsers) + " : " + (topic) +  "\r\n" //322
 #define RPL_ENDOFNAMES(host, nick, channel) ":" + (host) + " 366 " + (nick) + " " + (channel) + " :End of /NAMES list.\r\n" //366
+#define RPL_BANLIST(nick, channel, target) "367 " + (nick) + " " + (channel) + " " + (target) + "\r\n" //367
+#define RPL_ENDOFBANLIST(nick, channel) "368 " + (nick) + " " + (channel) + " :End of channel ban list.\r\n" //368
 #define RPL_LISTEND(host, nick) ":" + (host) + " 323 " + (nick) + " :End of channel list.\r\n" //323
 #define RPL_CHANNELMODEIS(host, nick, channel, modes) ":" + (host) + " 324 " + (nick) + " " + (channel) + " :" + (modes) + "\r\n" // 324
 
@@ -42,7 +44,7 @@
 #define ERR_NONICKNAMEGIVEN() "431 * :No nickname given \r\n" //431
 #define ERR_ERRONEUSNICKNAME(nick) "432 * " + (nick) + " :Erroneous nickname" + "\r\n" //432
 #define ERR_NICKNAMEINUSE(nick) "433 * " + (nick) + " :Nickname is already in use" + "\r\n" //433
-#define ERR_NOTONCHANNEL(channel) (channel) + " :You're not on that channel" + "\r\n"
+#define ERR_NOTONCHANNEL(channel) "442 " + (channel) + " :You're not on that channel" + "\r\n"   //442
 #define ERR_NEEDMOREPARAMS(cmd) "461 * " + (cmd) + " :Not enough parameters" + "\r\n" //461
 #define ERR_ALREADYREGISTRED() "462 * :Unauthorized command (already registered) \r\n" //462
 #define	ERR_CHANNELISFULL(channel) (channel) + " :Cannot join channel (+l)\r\n" //471
@@ -51,10 +53,11 @@
 #define	ERR_BANNEDFROMCHAN(channel) "474 * " + (channel) + " :Cannot join channel (+b)\r\n"//474
 #define	ERR_BADCHANNELKEY(channel) "475 * " + (channel) + " :Cannot join channel (+k)\r\n" //475
 #define ERR_BADCHANMASK(channel) "476 * " + (channel) + " :Bad Channel Mask\r\n" //476
-#define ERR_CHANOPRIVSNEEDED(channel, mode) "482 * " + (channel) + " :You must be a channel op or higher to set channel mode " + mode + "\r\n"//482
+#define ERR_CHANOPRIVSNEEDED(channel, mode) "482 * " + (channel) + " :You must be a channel op or higher to set channel mode " + (mode) + "\r\n"//482
 #define ERR_USERONCHANNEL(nickname, channel) "443 " + (nickname) + " " + (channel) + " :is already on channel\r\n"  
 #define ERR_USERSDONTMATCH(hostname, nick) ":" + (hostname) + " 502 " + (nick) + " :Can't view modes for other users\r\n" //502
 #define ERR_UMODEUNKNOWNFLAG(hostname, mode, target) ":" + (hostname) + " 501 :Unknown MODE flag " + (mode) + " for " + (target) + "\r\n" //501
+#define ERR_KEYSET(user, channel) "467 * " + (user) + " " + (channel) + " :Channel key already set\r\n" //467
 
 
 /*

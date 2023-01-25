@@ -39,6 +39,11 @@ void	Channel::setModes(char modes, bool removeMode) {
 }
 
 /* Set member mode flags for a specified client */
+void	Channel::setPassword(const std::string& password)
+{
+	_password = password;
+}
+
 void	Channel::setMemberModes(Client* client, char modes, bool removeMode) {
 	MemberMap::iterator it = _members.find(client);
 	
@@ -48,7 +53,7 @@ void	Channel::setMemberModes(Client* client, char modes, bool removeMode) {
 		/* Check if a user is a member of notMembers */
 		it = _notMembers.find(client);
 
-		/* If user does not exist in notMembers, then add them */
+		/* If user is not known to the Channel, add them */
 		if (it == _notMembers.end())
 		{
 			if (removeMode)
@@ -59,6 +64,8 @@ void	Channel::setMemberModes(Client* client, char modes, bool removeMode) {
 	}
 	/* If setmode is to remove flag*/
 	if (removeMode) {
+		if (modes & PASS_REQ)
+			_password.clear();
 		it->second &= ~(modes);
 		return ;
 	}
@@ -69,13 +76,13 @@ void	Channel::setMemberModes(Client* client, char modes, bool removeMode) {
 }
 
 /* Check channel wide mode flags */
-bool	Channel::checkModes(char modes) {
+bool	Channel::checkModes(char modes) const {
 	return (_modes & modes) == modes;
 }
 
 /* Check member mode flags for specified client */
-bool	Channel::checkMemberModes(Client* client, char modes) {
-	MemberMap::iterator it = _members.find(client);
+bool	Channel::checkMemberModes(Client* client, char modes) const {
+	MemberMap::const_iterator it = _members.find(client);
 	
 	/* Return without doing anything if user not found in list */
 	if (it == _members.end()) {
@@ -86,23 +93,31 @@ bool	Channel::checkMemberModes(Client* client, char modes) {
 	return (it->second & modes) == modes;
 }
 
-std::string 		Channel::getChannelModes(void){
-	std::string channelModes = "";
-	if (checkModes(PRIVATE))
-		channelModes += 'p';
-	if (checkModes(SECRET))
-		channelModes += 's';
-	if (checkModes(MODERATED))
-		channelModes += 'm';
-	if (checkModes(INV_ONLY))
-		channelModes += 'i';
-	if (checkModes(TOPIC_SET_OP))
-		channelModes += 't';
-	if (checkModes(NO_MSG_IN))
-		channelModes += 'n';
-	if (checkModes(PASS_REQ))
-		channelModes += 'k';
+std::string 		Channel::getChannelModes(void) const {
+	std::string channelModes;
+	channelModes.append(checkModes(SECRET)			? "s" : "");
+	channelModes.append(checkModes(TOPIC_SET_OP)	? "t" : "");
+	channelModes.append(checkModes(INV_ONLY)		? "i" : "");
+	channelModes.append(checkModes(NO_MSG_IN)		? "n" : "");
+	channelModes.append(checkModes(PASS_REQ)		? "k" : "");
 	return channelModes;
+}
+
+std::vector<std::string> 		Channel::getBanList(void) const {
+	std::vector<std::string>	banList;
+	MemberMap::const_iterator	ite;
+
+	ite = _members.end();
+	for (MemberMap::const_iterator it = _members.begin(); it != ite; ++it)
+		if (it->second & BAN)
+			banList.push_back(it->first->getPrefix());
+
+	ite = _notMembers.end();
+	for (MemberMap::const_iterator it = _notMembers.begin(); it != ite; ++it)
+		if (it->second & BAN)
+			banList.push_back(it->first->getPrefix());
+
+	return banList;
 }
 
 

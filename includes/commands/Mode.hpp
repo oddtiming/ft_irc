@@ -7,7 +7,7 @@
 #include <string>
 
 /* Local Includes */
-#include "commands/Command.hpp"
+#include "Command.hpp"
 
 class Mode : public Command
 {
@@ -22,13 +22,14 @@ class Mode : public Command
 		/* Function Overloads for Validate */
 
         bool                validateTarget(void);           /* Check if target channel or user exists */
-        bool                executeMode(char mode, bool removeMode) const;           /* Dispatches the mode to the correct command */
+        bool                executeMode(char mode, bool removeMode);           /* Dispatches the mode to the correct command */
         void                execute(const Message& msg);
         bool                parse(const Message& msg);
         void                clearAttributes(void);
 
 		void				sendChannelModes();
 		void				sendUserModes();
+		void				sendBanList() const;
 
     private:
         Client*				_client;
@@ -42,15 +43,13 @@ class Mode : public Command
         std::string					_reply;
 
 		/* Individual mode handlers */
-        bool                _secret(bool removeMode) const;
-        bool                _topic(bool removeMode) const;
-        bool                _invite(bool removeMode) const;
-        bool                _no_msg_in(bool removeMode) const;
-        bool                _password(bool removeMode) const;
-        bool                _ban(bool removeMode) const;
-        bool                _operators(bool removeMode) const;
-
-		bool 				_targetIsChannel;
+        bool                _secret(bool removeMode);
+        bool                _topic(bool removeMode);
+        bool                _invite(bool removeMode);
+        bool                _no_msg_in(bool removeMode);
+        bool                _password(bool removeMode);
+        bool                _ban(bool removeMode);
+        bool                _operators(bool removeMode);
 };
 
 #endif
