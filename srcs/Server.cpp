@@ -14,7 +14,7 @@
 #include "commands/Kick.hpp"
 #include "commands/List.hpp"
 #include "commands/Mode.hpp"
-// #include "commands/Names.hpp"
+#include "commands/Names.hpp"
 #include "commands/Nick.hpp"
 #include "commands/Notice.hpp"
 // #include "commands/Ope.hpp"
@@ -154,7 +154,7 @@ void	Server::initializeCommands(void)
 	_commands["join"] = new Join(this);
 	_commands["part"] = new Part(this);
 	 _commands["list"] = new List(this);
-	// _commands["names"] = new Names(this);
+	_commands["names"] = new Names(this);
 	 _commands["kick"] = new Kick(this);
 	_commands["nick"] = new Nick(this);
 	_commands["user"] = new User(this);
@@ -259,7 +259,7 @@ void	Server::executeCommand(const Message & msg)
 	/* Error message if command is invalid or not supported */
 	catch(std::out_of_range &e) {
 		std::cerr << RED "\t\t\t\tCommand '" << msg.getCommand() << "' was not found." CLEAR << std::endl;
-		//fixme: add ERR_UNKNOWNCOMMAND() reply, to use prefix with _buildPrefix
+		//fixme: add ERR_UNKNOWNCOMMAND() reply #421, to use prefix with _buildPrefix
 	}
 }
 
