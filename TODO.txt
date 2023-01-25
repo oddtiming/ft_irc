@@ -2,19 +2,14 @@
 /*                 TODO LIST                 */
 /*********************************************/
 
-- Cleanup status message output to terminal
+- Cleanup status message output to terminal (ALMOST FINISHED)
 	- Remove (DEBUG) conditional
 	- Add timestamps
 	- Add output to log file
 	- Improve Formatting
 - Check if output buffer is necessary
 	- Do we need/want to use POLLOUT?
-- Update Mode command
-	- Add operator support
-	- Check all permissions and error messaging
-	- Implement +k to make channels password protected
-	- Finalize all flags
-- Fix exceptions and handling
+- Fix exceptions and handling (ALMOST FINISHED)
 	- Ensure all thrown exceptions are being caught
 	- Remove exceptions from server class and use std::runtime_error() for general execeptions
 - Genereal cleanup for Channel .cpp and .hpp
@@ -29,7 +24,9 @@
 	- Do we need to support sending user modes in the initial JOIN command?
 	- Do we need to support sending REAL NAME in the initial JOIN command?
 - Decide which of the remaining commands we want to support
-
+- Review Replies.h
+	- Ensure consistent formatting
+	- Try and find a way to reduce required parameters
 
 
 GENERAL CLEAN UP AND ORGANIZATION!!!

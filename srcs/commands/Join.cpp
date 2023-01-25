@@ -79,7 +79,7 @@ bool	Join::validate(StringPair channel) {
 	/* Check if name contains non-printable characters or is longer than 200 chars */
 	if (name.size() > 200 || !checkInvalidChars(name))
 	{
-		_client->reply(ERR_NOSUCHCHANNEL(name));
+		_client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), _client->getNickname(), name));
 		return (false);
 	}
 
@@ -108,7 +108,7 @@ bool	Join::validate(StringPair channel) {
 		}
 
 		/* If channel is password protected check password match*/
-		if (channelPtr->checkModes(PASS_REQ) && channelPtr->getPass() != pass)
+		if (channelPtr->checkModes(PASS_REQ) && channelPtr->getPassword() != pass)
 		{
 			_client->reply(ERR_BADCHANNELKEY(name));
 			return (false);

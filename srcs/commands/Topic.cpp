@@ -16,7 +16,7 @@ bool	Topic::validate(const Message& msg) {
 	if (_target.empty())
 		return false;
 	if (_server->getChannelPtr(_target)->checkModes(TOPIC_SET_OP) && !_server->getChannelPtr(_target)->checkMemberModes(msg._client, C_OP)) {
-		msg._client->reply(ERR_CHANOPRIVSNEEDED(_target));
+		msg._client->reply(ERR_CHANOPRIVSNEEDED(_target, 't'));
 		return false;
 	}
 	if (!_server->getChannelPtr(_target)->isMember(msg._client)) {

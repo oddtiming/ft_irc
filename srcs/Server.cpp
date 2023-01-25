@@ -5,11 +5,7 @@
 /********************/
 
 #include "commands/Away.hpp"
-// #include "commands/Ban.hpp"
-// #include "commands/Echo.hpp"
-// #include "commands/Exit.hpp"
-// #include "commands/Help.hpp"
-// #include "commands/Info.hpp"
+// #include "commands/Shutdown.hpp"
 #include "commands/Join.hpp"
 // #include "commands/Kick.hpp"
  #include "commands/List.hpp"
@@ -17,7 +13,6 @@
 // #include "commands/Names.hpp"
 #include "commands/Nick.hpp"
 #include "commands/Notice.hpp"
-// #include "commands/Ope.hpp"
 #include "commands/Part.hpp"
  #include "commands/Pass.hpp"
 #include "commands/Ping.hpp"
@@ -135,11 +130,9 @@ void	Server::initializeCommands(void)
 	_commands["ping"] = new Ping(this);
 	_commands["pong"] = new Pong(this);
 	// _commands["info"] = new Info(this);
-	// _commands["exit"] = new Exit(this);
+	// _commands["shutdown"] = new Shutdown(this);
 	// _commands["echo"] = new Echo(this);
 	// _commands["help"] = new Help(this);
-	// _commands["ban"] = new Ban(this);
-	// _commands["ope"] = new Ope(this);
 	_commands["quit"] = new Quit(this);
 	_commands["mode"] = new Mode(this);
 	_commands["away"] = new Away(this);
@@ -290,7 +283,6 @@ void	Server::runServer(void)
 	}
 }
 
-
 /*******************************/
 /*      Client Management      */
 /*******************************/
@@ -397,7 +389,7 @@ bool	Server::channelCheckPass(const std::string& channel, const std::string& pas
 	if (it == _channels.end())
 		return (false);
 	/* Check if password match */
-	if (it->second->getPass() == pass)
+	if (it->second->getPassword() == pass)
 		return (true);
 	return (false);
 }

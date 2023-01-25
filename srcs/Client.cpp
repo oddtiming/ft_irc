@@ -87,11 +87,9 @@ void	Client::read(void) {
 	std::cout << "\t\t\t\t" << tmp << std::endl;
 }
 
-
 /* Send data to client through socket */
 void	Client::reply(const std::string& reply) {
 	size_t sz;
-	
 
 	std::cerr << getTimestamp() << RED "Sending reply to client on socket #" << _socket << ":" <<  CLEAR << std::endl;
 	std::cout << "\t\t\t\t" << reply << std::endl;
