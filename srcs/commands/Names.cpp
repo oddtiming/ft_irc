@@ -55,8 +55,8 @@ void	Names::execute(const Message& msg) {
 			for (; it != ite; ++it)
 			{
 				msg._client->reply(RPL_NAMREPLY(_server->getHostname(), msg._client->getNickname(), *it, _server->getChannelPtr(*it)->getMemberList()));
+				msg._client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), *it));
 			}
-			msg._client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), *it));
 
 		}
 		else
