@@ -21,6 +21,7 @@ class Pass : public Command
         void                execute(const Message& msg);
 
     private:
+        Client*     _client;
 
 };
 

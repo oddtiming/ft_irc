@@ -13,30 +13,31 @@ bool	Pass::validate(const Message& msg) {
 
 	if (msg.getMiddle().empty())
 	{
-		msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
-		std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
+		_client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
 		return false;
 	}
-	if (!msg._client->getUsername().empty())
+	if (!_client->getUsername().empty())
 	{
-		msg._client->reply(ERR_ALREADYREGISTRED());
-		std::cerr << "ERR_ALREADYREGISTRED" << std::endl;
+		_client->reply(ERR_ALREADYREGISTRED());
 		return false;
 	}
 	return true;
 }
 
 void	Pass::execute(const Message& msg) {
+	_client = msg._client;
 
 	if (validate(msg))
 	{
 		if (_server->getServerPassword() == msg.getMiddle().at(0))
+		{
+			_client->setPassStatus(true);
 			return ;
-		else {
-			msg._client->reply("ERROR :Closing Link: localhost (Bad Password)\n");
-			_server->removeClient(msg._client);
 		}
-
+		else 
+		{
+			_client->reply("ERROR :Closing Link: localhost (Bad Password)\n");
+			_server->removeClient(_client);
+		}
 	}
-
 }

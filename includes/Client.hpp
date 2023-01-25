@@ -41,6 +41,8 @@ class Client {
 		const std::time_t&	getConnectTime(void) const { return (_timeConnect); }
 		const std::time_t&	getLastActivityTime(void) const { return _timeLastActivity; }
 		const bool&			getPingStatus(void) const { return _wasPinged; }
+		const bool&			getPassStatus(void) const { return _isPassValidated; }
+		void				setPassStatus(const bool& status) { _isPassValidated = status; }
 		
 		/*************************/
 		/*    Mode Management    */
@@ -68,7 +70,7 @@ class Client {
 		std::string						_awayMessage;
 		// bool							_isAway;
 		bool							_isRegistered;
-
+		bool							_isPassValidated;
 
 		/* Time management */
 		const std::time_t				_timeConnect;

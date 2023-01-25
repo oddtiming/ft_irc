@@ -17,7 +17,6 @@
 - Fix exceptions and handling
 	- Ensure all thrown exceptions are being caught
 	- Remove exceptions from server class and use std::runtime_error() for general execeptions
-- Decide if we want to auto-disconnect clients after a certain period of inactivity
 - Genereal cleanup for Channel .cpp and .hpp
 	- Ensure that closing a channel is handles properly, and that all members are notified.
 	- General clean up for channel .cpp and .hpp
@@ -30,8 +29,7 @@
 	- Do we need to support sending user modes in the initial JOIN command?
 	- Do we need to support sending REAL NAME in the initial JOIN command?
 - Decide which of the remaining commands we want to support
-- Password is only being verified if the command is received
-	- Ensure that if no pass command received that  error is still sent
+
 
 
 GENERAL CLEAN UP AND ORGANIZATION!!!
@@ -50,3 +48,12 @@ KNOWN ERRORS:
 	Potential solution: check each socket before attempting to reply
 
 - PART reply message being sent after client QUIT causing segfault
+
+- Remove REPLY from removeMember function and place in PART, KICK, QUIT -> removeClient, ban
+	- Ensure that replyToOthers is used in quit so that the message is not sent to the user who quits
+
+
+
+COMPLETE:
+- Password is only being verified if the command is received
+	- Ensure that if no pass command received that  error is still sent
