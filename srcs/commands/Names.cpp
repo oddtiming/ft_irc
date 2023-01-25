@@ -34,6 +34,8 @@ bool	Names::validate(const Message& msg) {
 			if (!_server->doesChannelExist(*it)) {
 				msg._client->reply(ERR_NOSUCHCHANNEL(*it));
 				_targetList.erase(it);
+				msg._client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), *it));
+
 			}
 		}
 		if (_targetList.empty())
@@ -65,8 +67,8 @@ void	Names::execute(const Message& msg) {
 			for (; itC != iteC; ++itC)
 			{
 				msg._client->reply(RPL_NAMREPLY(_server->getHostname(), msg._client->getNickname(), itC->first, itC->second->getMemberList()));
+				msg._client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), itC->first));
 			}
-			msg._client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), itC->first));
 		}
 	}
 }
