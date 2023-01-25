@@ -11,7 +11,7 @@ Mode::~Mode() {
 
 /* Parse incoming mode request */
 bool	Mode::parse(const Message& msg) {
-	std::vector<std::string>					input = msg.getMiddle();
+	std::vector<std::string>	input = msg.getMiddle();
 
 	/* Check if there is any target for command */
 	if (input.empty() || input.at(0).empty())
@@ -19,7 +19,7 @@ bool	Mode::parse(const Message& msg) {
 	
 	std::vector<std::string>::const_iterator	it = input.begin();
 	/* Get primary target */
-	_target = *it;
+	_target = *it++;
 
 	/* Check if target is channel */
 	if (_target.at(0) == '#')
@@ -28,15 +28,12 @@ bool	Mode::parse(const Message& msg) {
 		_targetType = USER;
 	
 	/* Check for modes and add to _modes string */
-	if (++it != input.end())
-		_modes = *it;
+	if (it != input.end())
+		_modes = *it++;
 	
 	/* Check for secondary user target(s) for channel member modes */
 	while (it != input.end())
-	{
-		_params.push_back(*it);
-		++it;
-	}
+		_params.push_back(*it++);
 
 	return true;
 }

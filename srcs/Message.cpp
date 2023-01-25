@@ -51,14 +51,14 @@ Message::Message(Client* client, std::string raw) : _client(client)
     
 
     /* DEBUG PRINTOUTS */
-    std::cerr << "Prefix: " << _prefix << std::endl;
-    std::cerr << "Command: " << _cmd << std::endl;
-    std::cerr << "Parameters: " << std::endl;
+    // std::cerr << "Prefix: " << _prefix << std::endl;
+    // std::cerr << "Command: " << _cmd << std::endl;
+    // std::cerr << "Parameters: " << std::endl;
 
-    std::vector<std::string>::iterator it = _middle.begin();
-    for (; it != _middle.end(); ++it)
-        std::cerr << *it << std::endl;
+    // std::vector<std::string>::iterator it = _middle.begin();
+    // for (; it != _middle.end(); ++it)
+    //     std::cerr << *it << std::endl;
     
-    std::cerr << "Trailing: " << _trailing << std::endl;
+    // std::cerr << "Trailing: " << _trailing << std::endl;
 
 }
