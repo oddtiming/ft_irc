@@ -37,24 +37,26 @@ class Channel {
 		const	std::string& getTopic() { return (_topic); }
 		void	setTopic(const std::string topic) { _topic = topic; }
 		void	setOwner(Client* owner) { _owner = owner; }
-		void	setPass(const std::string& pass) { _pass = pass; }
+		void	setPass(const std::string& pass) { _password = pass; }
 
 		Client*		getOwner(void) const { return (_owner); }
-		std::string	getPass() { return (_pass); }
+		std::string	getPassword() { return (_password); }
 		int			getHighestRank(Client* client);
 		const std::time_t&	getStartTime(void) const { return _timeStart; }
 
 		/*******************************/
 		/*        Mode Management      */
 		/*******************************/
-		void	setModes(char modes, bool removeMode = false);
-		void	setMemberModes(Client* client, char modes, bool removeMode = false);
-		bool	checkModes(char modes);
-		bool	checkMemberModes(Client *client, char modes);
-		std::string 		getChannelModes(void);
+		void							setModes(char modes, bool removeMode = false);
+		void							setMemberModes(Client* client, char modes, bool removeMode = false);
+		void							setPassword(const std::string& password);
+		bool							checkModes(char modes) const;
+		bool							checkMemberModes(Client *client, char modes) const;
+		std::string 					getChannelModes(void) const;
+		std::vector<std::string> 		getBanList(void) const;
 
 
-	/***********************************/
+		/***********************************/
 		/*    Channel Member Management    */
 		/***********************************/
 		bool	isMember(Client* client);
@@ -73,15 +75,13 @@ class Channel {
 
 private:
 		const std::string				_name;			/* Channel name */
-		std::string						_pass;
+		std::string						_password;		/* if channel is password protected */
 		std::string						_topic;			/* Channel topic */
 		Client *						_owner;			/* Channel owner */
 		MemberMap						_members;		/* Channel member list, paired with their memberModes */
 		MemberMap						_notMembers;	/* Clients with flags set who are not currently in the channel */
 		char							_modes;			/* Channel modes */
 		const std::time_t				_timeStart;		/* Time channel was created */
-
-
 
 };
 

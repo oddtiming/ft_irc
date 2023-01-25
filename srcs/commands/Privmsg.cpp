@@ -29,13 +29,15 @@ bool Privmsg::validate(const Message& msg) {
     _targetIsChannel = false;
     if (_target.at(0) == '#')
     {
+        Channel*    channel = _server->getChannelPtr(_target);
         _targetIsChannel = true;
-        if(!_server->doesChannelExist(_target))
+        if(!channel)
         {
-			msg._client->reply(ERR_NOSUCHCHANNEL(_target));
+			msg._client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), msg._client->getNickname(), _target));
 			return false;
         }
-		if (!_server->getChannelPtr(_target)->isMember(msg._client))
+		if ((!channel->isMember(msg._client) && !channel->checkModes(NO_MSG_IN))
+            || (channel->checkMemberModes(msg._client, BAN)))
 		{
 			 msg._client->reply(ERR_CANNOTSENDTOCHAN(_target));
 			 return false;

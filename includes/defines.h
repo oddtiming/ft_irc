@@ -21,13 +21,11 @@ typedef enum e_globalModes {
 
 /* Channel Modes */
 typedef enum e_channelModes {
-	PRIVATE = 			0x1,		/* p: private channel (channel cannot be seen unless member, or server op - channel omitted from WHOIS) */
-	SECRET = 			0x2,		/* s: secret channel (extends private channel functionality, cannot be seen by queries for TOPIC, LIST, NAMES) */
-	MODERATED =			0x4,		/* m or -M: moderated channel (only users with +qaov can speak) */
-	INV_ONLY =			0x8,		/* i: invite only (users may only join channel if they have been invited by +qao) */
-	TOPIC_SET_OP =		0x10,		/* t: topic limit (only +qao can set topic) SET DEFAULT */
-	NO_MSG_IN = 		0x20,		/* n: no external messages (external messages cannot be seen in channel) SET BY DEFAULT */
-	PASS_REQ = 			0x40,		/* k: password protected (channel requires a password to join) */
+	SECRET = 			0x1,		/* s: secret channel (extends private channel functionality, cannot be seen by queries for TOPIC, LIST, NAMES) */
+	TOPIC_SET_OP =		0x2,		/* t: topic limit (only +qao can set topic) SET DEFAULT */
+	INV_ONLY =			0x4,		/* i: invite only (users may only join channel if they have been invited by +qao) */
+	NO_MSG_IN = 		0x8,		/* n: no external messages (external messages cannot be seen in channel) SET BY DEFAULT */
+	PASS_REQ = 			0x10,		/* k: password protected (channel requires a password to join) */
 }	t_channelModes;
 
 
@@ -35,10 +33,14 @@ typedef enum e_channelModes {
 typedef enum e_memberModes {
 	BAN = 				0x1,		/* b: ban (prevent user from joining channel, kick them if they are already in channel) */
 	INV =				0x2,		/* i: invited (user has been invite to join this channel) */
-	VOICE =				0x4,		/* v: voice (allows user to speak in +m and +M channels) */
-	C_OP =				0x8,		/* o: operator (3rd highest perm level) */
-	OWNER =				0x10		/* q: owner (highest perm level, only one can exist) */
+	C_OP =				0x4,		/* o: operator (3rd highest perm level) */
+	OWNER =				0x8			/* q: owner (highest perm level, only one can exist) */
 }	t_memberModes;
+
+typedef enum e_targetType {
+	CHANNEL =			0x1,
+	USER =				0x2
+}	t_targetType;
 
 //NOTE: All +qao members automatically inherit (VOICE | BAN_EXEMPT | INV_EXEMPT)
 //They cannot be placed on ban list, never need an invite, and can always speak

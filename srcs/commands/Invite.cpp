@@ -32,7 +32,7 @@ bool	Invite::validate(const Message& msg) {
 
 	/* Check if channel exists */
 	if (!_server->doesChannelExist(channel)){
-		_client->reply(ERR_NOSUCHCHANNEL(channel));
+		_client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), _client->getNickname(), channel));
 		return false;
 	}
 
@@ -55,7 +55,7 @@ bool	Invite::validate(const Message& msg) {
 	/* Check if target channel has +i flag (operator only invite) and user attempting to invite is not OP */
 	if (_targetChannel->checkModes(INV_ONLY) && !_targetChannel->checkMemberModes(_client, C_OP))
 	{
-		_client->reply(ERR_CHANOPRIVSNEEDED(channel));
+		_client->reply(ERR_CHANOPRIVSNEEDED(channel, 'i'));
 		return false;
 	}
 	

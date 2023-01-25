@@ -1,5 +1,5 @@
-#ifndef BAN_HPP
-#define BAN_HPP
+#ifndef SHUTDOWN_HPP
+#define SHUTDOWN_HPP
 
 #pragma once
 
@@ -9,15 +9,14 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Ban : public Command
+class Shutdown : public Command
 {
     public:
         /* Constructors & Destructor */
-        Ban(Server* server);
-        ~Ban();
+        Shutdown(Server* server);
+        ~Shutdown();
 
         /* Public Member Functions */
-        bool                validate(const Message& msg);
         void                execute(const Message& msg);
 
     private:
