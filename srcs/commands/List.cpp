@@ -12,6 +12,7 @@ List::~List() {
 bool	List::validate(const Message& msg) {
 	if (msg.hasMiddle())
 	{
+		/*checks if the command has a _target and if said _target is valid sets it, else sends back an error without a reply */
 		if (msg.hasMiddle() > 0 && msg.getMiddle().at(0).size() > 0) {
 			if (_server->doesChannelExist(msg.getMiddle().at(0))) {
 				_target = msg.getMiddle().at(0);
@@ -29,6 +30,7 @@ void	List::execute(const Message& msg) {
 
 	if (validate(msg)) {
 		if (!_hasTarget) {
+			/*if the command has no _target, iterate over every channel and sends back its name and topic as reply*/
 			std::map<std::string, Channel *> channelList = _server->getChannelList();
 			std::map<std::string, Channel *>::iterator it = channelList.begin();
 			for (; it != channelList.end(); ++it) {
@@ -38,6 +40,7 @@ void	List::execute(const Message& msg) {
 			}
 		}
 		else
+			/*if the command has a _target, sends back its name and topic as reply*/
 			msg._client->reply(RPL_LIST(_server->getChannelPtr(_target)->getName(),
 										std::to_string(_server->getChannelPtr(_target)->getMemberVector().size()),
 										_server->getChannelPtr(_target)->getTopic()));
