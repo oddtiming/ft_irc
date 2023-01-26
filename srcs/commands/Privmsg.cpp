@@ -15,16 +15,17 @@ bool Privmsg::validate(const Message& msg) {
 	/* Ensure there's a target for the message */
     if (args.size() < 1)
     {
-        msg._client->reply(ERR_NORECIPIENT(msg.getCommand()));
-        return false;
-    }
-    if (_message.empty())
-    {
-        msg._client->reply(ERR_NOTEXTTOSEND());
+        msg._client->reply(ERR_NORECIPIENT(_server->getHostname(), _client->getNickname(), msg.getCommand()));
         return false;
     }
     _target = args.at(0);
     args.erase(args.begin());
+    if (_message.empty())
+    {
+        msg._client->reply(ERR_NOTEXTTOSEND(_server->getHostname(), _client->getNickname(), _target));
+        return false;
+    }
+   
 
     _targetIsChannel = false;
     if (_target.at(0) == '#')
@@ -39,7 +40,7 @@ bool Privmsg::validate(const Message& msg) {
 		if ((!channel->isMember(msg._client) && !channel->checkModes(NO_MSG_IN))
             || (channel->checkMemberModes(msg._client, BAN)))
 		{
-			 msg._client->reply(ERR_CANNOTSENDTOCHAN(_target));
+			 msg._client->reply(ERR_CANNOTSENDTOCHAN(_server->getHostname(), _client->getNickname(), _target));
 			 return false;
 		}
         return true;
@@ -47,7 +48,7 @@ bool Privmsg::validate(const Message& msg) {
 
     if (!_server->doesNickExist(_target))
     {
-        msg._client->reply(ERR_NOSUCHNICK(_target));
+        msg._client->reply(ERR_NOSUCHNICK(_server->getHostname(), _client->getNickname(), _target));
         return false;
     }
     if (_server->getClientPtr(_target)->checkGlobalModes(AWAY))
@@ -59,7 +60,8 @@ bool Privmsg::validate(const Message& msg) {
 }
 
 void	Privmsg::execute(const Message& msg)
-{
+{ 
+    _client = msg._client;
     _buildMessage(msg);
 
 	if (!validate(msg))

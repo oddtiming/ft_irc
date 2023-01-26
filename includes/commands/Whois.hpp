@@ -24,7 +24,8 @@ public:
 	void                execute(const Message& msg);
 
 private:
-	Client 		*_target;
+	Client*		_client;
+	Client*		_target;
 };
 
 #endif

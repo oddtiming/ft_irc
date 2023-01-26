@@ -21,6 +21,7 @@ class Privmsg : public Command
         void				execute(const Message& msg);
 
     private:
+        Client*     _client;
         /* Attributes */
         std::string _target;
         std::string _message;

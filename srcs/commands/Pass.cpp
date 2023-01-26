@@ -13,12 +13,12 @@ bool	Pass::validate(const Message& msg) {
 
 	if (msg.getMiddle().empty())
 	{
-		_client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
+		_client->reply(ERR_NEEDMOREPARAMS(_server->getHostname(), _client->getNickname(), msg.getCommand()));
 		return false;
 	}
 	if (!_client->getUsername().empty())
 	{
-		_client->reply(ERR_ALREADYREGISTRED());
+		_client->reply(ERR_ALREADYREGISTRED(_server->getHostname()));
 		return false;
 	}
 	return true;

@@ -12,14 +12,14 @@ bool Nick::validate(const Message& msg) {
 	/* Check if a nickname was given */
 	if (middle.empty())
 	{
-		_client->reply(ERR_NONICKNAMEGIVEN());
+		_client->reply(ERR_NONICKNAMEGIVEN(_server->getHostname()));
 		return (false);
 	}
 	_nick = middle.at(0);
 	/* If nickname is too long, return error */
 	if (_nick.size() > 9)
 	{
-		_client->reply(ERR_ERRONEUSNICKNAME(_nick));
+		_client->reply(ERR_ERRONEUSNICKNAME(_server->getHostname(), _nick));
 		return false;
 	}
 	/* If provided nickname is the same as current nickname, do nothing */
@@ -28,7 +28,7 @@ bool Nick::validate(const Message& msg) {
 	/* If nickname is already in use, return error */
 	if (_server->doesNickExist(_nick))
 	{
-		_client->reply(ERR_NICKNAMEINUSE(_nick));
+		_client->reply(ERR_NICKNAMEINUSE(_server->getHostname(), _nick));
 		return (false);
 	}
 	return true;
@@ -40,7 +40,7 @@ void Nick::execute(const Message &msg) {
 	/* Attempt to validate nickname */
 	if (validate(msg)) {
 		if (_server->doesNickExist(_nick))
-			_client->reply(ERR_NICKNAMEINUSE(_nick));
+			_client->reply(ERR_NICKNAMEINUSE(_server->getHostname(), _nick));
 		else
 		{
 			/* If client already registered, send notification of nickname change */
@@ -53,7 +53,7 @@ void Nick::execute(const Message &msg) {
     if (!_client->getUsername().empty() && !_client->getNickname().empty() && !_client->getRegistration())
     {
         _client->setRegistration(true);
-        _client->reply(RPL_WELCOME(_client->getNickname(), _buildPrefix(msg)));
+        _client->reply(RPL_WELCOME(_server->getHostname(), _client->getNickname(), _buildPrefix(msg)));
 		if (DEBUG)
         	std::cout << getTimestamp() << GREEN "New user successfully registered: " CLEAR << _client->getNickname() << std::endl << std::endl;
     }

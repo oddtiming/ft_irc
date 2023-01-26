@@ -11,16 +11,17 @@
 
 class Away : public Command
 {
-public:
-	/* Constructors & Destructor */
-	Away(Server* server);
-	~Away();
+	public:
+		/* Constructors & Destructor */
+		Away(Server* server);
+		~Away();
 
-	/* Public Member Functions */
-	bool                validate(const Message& msg);
-	void                execute(const Message& msg);
+		/* Public Member Functions */
+		bool                validate(const Message& msg);
+		void                execute(const Message& msg);
 
-private:
+	private:
+		Client*		_client;
 
 };
 

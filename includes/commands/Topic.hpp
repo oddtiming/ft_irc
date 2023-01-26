@@ -21,6 +21,7 @@ public:
 	void                execute(const Message& msg);
 
 private:
+	Client*				_client;
 	std::string 		_target;
 
 };

@@ -13,7 +13,7 @@ bool	Part::parse(const Message& msg)
 {
     if (msg.getMiddle().empty())
 	{
-		msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
+		msg._client->reply(ERR_NEEDMOREPARAMS(_server->getHostname(), _client->getNickname(), msg.getCommand()));
 		return false;
 	}
 
@@ -46,7 +46,7 @@ bool	Part::validate(const std::string& channel, Client *client)
 	
 	if (target->isMember(client) == false)
 	{
-		client->reply(ERR_NOTONCHANNEL(channel));
+		client->reply(ERR_NOTONCHANNEL(_server->getHostname(), _client->getNickname(), channel));
 		return false;
 	}
 	
@@ -57,7 +57,7 @@ bool	Part::validate(const std::string& channel, Client *client)
 
 
 void	Part::execute(const Message& msg) {
-
+	_client = msg._client;
 	if (parse(msg) == false)
 		return ;
 

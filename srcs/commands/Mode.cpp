@@ -53,7 +53,7 @@ bool	Mode::executeMode(char mode, bool removeMode) {
 		case 'k'	:	return _password(removeMode);
 		case 'b'	:	return _ban(removeMode);
 		case 'o'	:	return _operators(removeMode);
-		default		:	_client->reply(ERR_UNKNOWNMODE(std::string(mode, 1), _target));
+		default		:	_client->reply(ERR_UNKNOWNMODE(_server->getHostname(), _client->getNickname(), std::string(mode, 1)));
 	}
 	return false;
 }
@@ -118,14 +118,14 @@ bool                Mode::_secret(bool removeMode)
 	std::string mode("s");
 
 	if (_targetType == USER)
-		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), _client->getNickname(), mode)), false);
 
 	Channel*	channelPtr = _server->getChannelPtr(_target);
 	if (!channelPtr)
 		return false;
 
 	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (secret).")), false);
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (secret).")), false);
 
 	if (removeMode != channelPtr->checkModes(SECRET))
 		return false;
@@ -139,14 +139,14 @@ bool                Mode::_topic(bool removeMode)
 	std::string mode("t");
 
 	if (_targetType == USER)
-		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), _client->getNickname(), mode)), false);
 	
 	Channel*	channelPtr = _server->getChannelPtr(_target);
 	if (!channelPtr)
 		return false;
 
 	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (topic).")), false);
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (topic).")), false);
 	
 	if (removeMode != channelPtr->checkModes(TOPIC_SET_OP))
 		return false;
@@ -160,14 +160,14 @@ bool                Mode::_invite(bool removeMode)
 	std::string mode("i");
 
 	if (_targetType == USER)
-		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), _client->getNickname(), mode)), false);
 	
 	Channel*	channelPtr = _server->getChannelPtr(_target);
 	if (!channelPtr)
 		return false;
 		
 	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (invite).")), false);
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (invite).")), false);
 
 	if (removeMode != channelPtr->checkModes(INV_ONLY))
 		return false;
@@ -181,14 +181,14 @@ bool                Mode::_no_msg_in(bool removeMode)
 	std::string mode("n");
 
 	if (_targetType == USER)
-		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), _client->getNickname(), mode)), false);
 
 	Channel*	channelPtr = _server->getChannelPtr(_target);
 	if (!channelPtr)
 		return false;
 		
 	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (no_msg_in).")), false);
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (no_msg_in).")), false);
 
 	if (removeMode != channelPtr->checkModes(NO_MSG_IN))
 		return false;
@@ -203,22 +203,22 @@ bool                Mode::_password(bool removeMode)
 	std::string	pass;
 
 	if (_targetType == USER)
-		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), _client->getNickname(), mode)), false);
 	
 	Channel*	channelPtr = _server->getChannelPtr(_target);
 	if (!channelPtr)
 		return false;
 		
 	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (password protected).")), false);
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (password protected).")), false);
 	
 	if (_params.empty())
-		return (_client->reply(ERR_NEEDMOREPARAMS(std::string("MODE +k"))), false);
+		return (_client->reply(ERR_NEEDMOREPARAMS(_server->getHostname(), _client->getNickname(), std::string("MODE +k"))), false);
 
 	pass = _params.at(0);
 	_params.erase(_params.begin());
 	if (removeMode && pass.compare(channelPtr->getPassword()))
-		return (_client->reply(ERR_KEYSET(_client->getNickname(), _target)), false);
+		return (_client->reply(ERR_KEYSET(_server->getHostname(), _client->getNickname(), _target)), false);
 
 	if (removeMode != channelPtr->checkModes(PASS_REQ))
 		return false;
@@ -235,14 +235,14 @@ bool                Mode::_ban(bool removeMode)
 	std::string	targetNick;
 
 	if (_targetType == USER)
-		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), _client->getNickname(), mode)), false);
 	
 	Channel*	channelPtr = _server->getChannelPtr(_target);
 	if (!channelPtr)
 		return false;
 		
 	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (ban).")), false);
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (ban).")), false);
 	
 	if (_params.empty())
 		return (sendBanList(), false);
@@ -252,7 +252,7 @@ bool                Mode::_ban(bool removeMode)
 
 	Client*	targetMember = _server->getClientPtr(targetNick);
 	if (!targetMember)
-		return (_client->reply(ERR_NOSUCHNICK(targetNick)), false);
+		return (_client->reply(ERR_NOSUCHNICK(_server->getHostname(), _client->getNickname(), targetNick)), false);
 
 	if (removeMode != channelPtr->checkMemberModes(targetMember, BAN))
 		return false;
@@ -267,14 +267,14 @@ bool                Mode::_operators(bool removeMode)
 	std::string	targetNick;
 
 	if (_targetType == USER)
-		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), mode, _target)), false);
+		return (_client->reply(ERR_UMODEUNKNOWNFLAG(_server->getHostname(), _client->getNickname(), mode)), false);
 	
 	Channel*	channelPtr = _server->getChannelPtr(_target);
 	if (!channelPtr)
 		return false;
 		
 	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_target, mode + " (operator).")), false);
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (operator).")), false);
 	
 	if (_params.empty())
 		return (sendBanList(), false);
@@ -284,7 +284,7 @@ bool                Mode::_operators(bool removeMode)
 
 	Client*	targetMember = _server->getClientPtr(targetNick);
 	if (!targetMember)
-		return (_client->reply(ERR_NOSUCHNICK(targetNick)), false);
+		return (_client->reply(ERR_NOSUCHNICK(_server->getHostname(), _client->getNickname(), targetNick)), false);
 
 	if (removeMode != channelPtr->checkMemberModes(targetMember, C_OP))
 		return false;
@@ -319,7 +319,7 @@ void	Mode::sendUserModes(void) {
 		return ;
 	}
 	/* Reply list of global user modes if users match */
-	_client->reply(RPL_UMODEIS(_client->getGlobalModes()));
+	_client->reply(RPL_UMODEIS(_server->getHostname(), _client->getNickname(), _client->getGlobalModes()));
 }
 
 /* Send a list of modes for a given channel */
@@ -361,7 +361,7 @@ bool	Mode::validateTarget(void) {
 	/* If target type is user, check if user exists*/
 	else if (_targetType == USER && !_server->doesNickExist(_target))
 	{
-		_client->reply(ERR_NOSUCHNICK(_target));
+		_client->reply(ERR_NOSUCHNICK(_server->getHostname(), _client->getNickname(), _target));
 		return false;
 	}
 	return (true);

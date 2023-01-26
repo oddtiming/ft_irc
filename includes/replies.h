@@ -1,29 +1,31 @@
 #include "Command.hpp"
 
 /* Reply Messages */
-#define RPL_WELCOME(nick, prefix) "001 " + (nick) + " Welcome to Internet Relay Network " + (prefix) + "\r\n" //001
-#define RPL_UMODEIS(modes) "221 * " + (modes) + "\r\n" //221
-#define RPL_AWAY(hostname, client, target, message) ":" + (hostname) + " 301 " +  (client) + " " + (target) + " :" + (message) + "\r\n"
-#define RPL_UNAWAY()  "305 * :You are no longer marked as being away \r\n" //305
-#define RPL_NOWAWAY() "306 * :You have been marked as being away \r\n" //306
-#define RPL_WHOISUSER(nick, user, host, realName) "311 * " + (nick) + " " + (user) + " " + (host) + " * :"+ (realName) + "\r\n" //311
-#define RPL_WHOISSERVER(nick, server, serverName) "312 * " + (nick) + " " + (server) + " :" + (serverName) + "\r\n" //312
-#define RPL_WHOISIDLE(nick, idle) "317 * " + (nick) + " " + (idle) + " :seconds idle\r\n" //317
-#define RPL_ENDOFWHOIS(nick) "318 * " + (nick) + " :End of WHOIS list\r\n" //318
-#define RPL_WHOISCHANNELS(msg) "319 * " + (msg) + "\r\n" //319
-#define RPL_LIST(channel,nbUsers,topic) "322 * " + (channel) + " " + (nbUsers) + " : " + (topic) +  "\r\n" //322
-#define RPL_ENDOFNAMES(host, nick, channel) ":" + (host) + " 366 " + (nick) + " " + (channel) + " :End of /NAMES list.\r\n" //366
-#define RPL_BANLIST(nick, channel, target) "367 " + (nick) + " " + (channel) + " " + (target) + "\r\n" //367
-#define RPL_ENDOFBANLIST(nick, channel) "368 " + (nick) + " " + (channel) + " :End of channel ban list.\r\n" //368
-#define RPL_LISTEND(host, nick) ":" + (host) + " 323 " + (nick) + " :End of channel list.\r\n" //323
-#define RPL_CHANNELMODEIS(host, nick, channel, modes) ":" + (host) + " 324 " + (nick) + " " + (channel) + " :" + (modes) + "\r\n" // 324
 
-#define	RPL_NOTOPIC(channel) "331 * " + (channel) + " :No topic is set \r\n" //331
-#define	RPL_TOPIC(channel, topic) "332 * " + (channel) + " :" + (topic) + "\r\n"//332
-//#define RPL_INVITING(channel,nick) "341 * " + (channel) + " " + (nick) + "\r\n" //341
-#define RPL_NAMREPLY(hostname, nick, channel, users) ":" + (hostname) + " 353 " + (nick) + " = " + (channel) + " :" + users +  "\r\n" //353
-#define RPL_ENDOFNAMES(host, nick, channel) ":" + (host) + " 366 " + (nick) + " " + (channel) + " :End of /NAMES list.\r\n" //366
-#define RPL_INVITING(prefix, targetnick, channel) ":" + (prefix) + " INVITE " + (targetnick) + " " + (channel) + "\r\n"
+/* TESTED */
+#define RPL_NOWAWAY(host, client) ":" + (host) + " 306 " + (client) + " :You have been marked as being away" + "\r\n" 						//306
+#define RPL_WELCOME(host, client, prefix) ":" + (host) +  " 001 " + (client) + " :Welcome to the IRC server " + (prefix) + "\r\n" 			//001
+#define RPL_UMODEIS(host, client, modes) ":" + (host) + " 221 " + (client) + " :" + (modes) + "\r\n" 										//221
+#define RPL_AWAY(hostname, client, target, message) ":" + (hostname) + " 301 " +  (client) + " " + (target) + " :" + (message) + "\r\n" 	//301
+#define RPL_UNAWAY(host, client) ":" + (host) + " 305 " + (client) + " :You are no longer marked as being away" + "\r\n" 					//305
+#define RPL_WHOISUSER(host, client, nick, user, address, real) ":" + (host) + " 311 " + (client) + " " + (nick) + " " + (user) + " " + (address) + " * :"+ (real) + "\r\n" 			//311
+
+/* NOT TESTED */
+
+#define RPL_WHOISSERVER(nick, server, serverName) "312 * " + (nick) + " " + (server) + " :" + (serverName) + "\r\n" 						//312
+#define RPL_WHOISIDLE(nick, idle) "317 * " + (nick) + " " + (idle) + " :seconds idle\r\n" 													//317
+#define RPL_ENDOFWHOIS(nick) "318 * " + (nick) + " :End of WHOIS list\r\n" 																	//318
+#define RPL_WHOISCHANNELS(msg) "319 * " + (msg) + "\r\n" 																					//319
+#define RPL_LIST(channel,nbUsers,topic) "322 * " + (channel) + " " + (nbUsers) + " : " + (topic) +  "\r\n" 									//322
+#define RPL_LISTEND(host, nick) ":" + (host) + " 323 " + (nick) + " :End of channel list.\r\n" 												//323
+#define RPL_CHANNELMODEIS(host, nick, channel, modes) ":" + (host) + " 324 " + (nick) + " " + (channel) + " :" + (modes) + "\r\n" 			//324
+#define	RPL_NOTOPIC(channel) "331 * " + (channel) + " :No topic is set \r\n" 																//331
+#define	RPL_TOPIC(channel, topic) "332 * " + (channel) + " :" + (topic) + "\r\n"															//332
+#define RPL_INVITING(hostname, client, target, channel) ":" + (hostname) + " 341 " + (client) + " " + (target) + " :" + (channel) + "\r\n"	//341
+#define RPL_NAMREPLY(hostname, nick, channel, users) ":" + (hostname) + " 353 " + (nick) + " = " + (channel) + " :" + users +  "\r\n" 		//353
+#define RPL_ENDOFNAMES(host, nick, channel) ":" + (host) + " 366 " + (nick) + " " + (channel) + " :End of /NAMES list.\r\n" 				//366
+#define RPL_BANLIST(nick, channel, target) "367 " + (nick) + " " + (channel) + " " + (target) + "\r\n" 										//367
+#define RPL_ENDOFBANLIST(nick, channel) "368 " + (nick) + " " + (channel) + " :End of channel ban list.\r\n" 								//368
 
 
 /* Command Success Messages */
@@ -35,44 +37,78 @@
 #define CMD_PING(hostname, timestamp) ":" + (hostname) + " PING " + (hostname) + " :" + (timestamp) + "\r\n"
 #define CMD_PART(prefix, channel, message) ":" + (prefix) + " PART " + (channel) + " :" + (message) + "\r\n"
 #define CMD_PART_NO_MSG(prefix, channel) ":" + (prefix) + " PART " + (channel) + "\r\n"
-#define CMD_INVITE(hostname, client, target, channel) ":" + (hostname) + " 341 " + (client) + " " + (target) + " :" + (channel) + "\r\n"
+#define CMD_INVITE(prefix, targetnick, channel) ":" + (prefix) + " INVITE " + (targetnick) + " " + (channel) + "\r\n"
 #define CMD_MODE(prefix, channel, modes) ":" + (prefix) + " MODE " + (channel) + " :" + (modes) + "\r\n"
 
-// FIXME: the RPL_INVITING and CMD_INVITE are curently inverted; 
-//  the 341 reply code is meant to be sent to the inviting client, not the invited client
+
+
+
+
 
 /* Error Messages */
-#define ERR_NOSUCHNICK(nickname) "401 * " + (nickname) + " :No such nickname" + "\r\n" //401
-#define ERR_CANNOTSENDTOCHAN(channel) "404 * " + (channel) + " :Cannot send to channel" + "\r\n" //404
-#define ERR_UNKNOWNCOMMAND(cmd) "421 * " + cmd + " :Unknown command\r\n" //421
-#define ERR_NOSUCHCHANNEL(hostname, nick, channel) ":" + (hostname) + " 403 " + (nick) + " " + (channel) + " :No such channel" + "\r\n" //403
-#define	ERR_TOOMANYCHANNELS(channel) (channel) + " :You have joined too many channels\r\n" //405
-#define ERR_NORECIPIENT(cmd) ":No recipient given (" + (cmd) + ")\r\n" //411
-#define ERR_NOTEXTTOSEND() "412 * :No text to send\r\n" //412
-#define ERR_NONICKNAMEGIVEN() "431 * :No nickname given \r\n" //431
-#define ERR_ERRONEUSNICKNAME(nick) "432 * " + (nick) + " :Erroneous nickname" + "\r\n" //432
-#define ERR_NICKNAMEINUSE(nick) "433 * " + (nick) + " :Nickname is already in use" + "\r\n" //433
-#define ERR_NOTONCHANNEL(channel) "442 " + (channel) + " :You're not on that channel" + "\r\n"   //442
-#define ERR_NEEDMOREPARAMS(cmd) "461 * " + (cmd) + " :Not enough parameters" + "\r\n" //461
-#define ERR_ALREADYREGISTRED() "462 * :Unauthorized command (already registered) \r\n" //462
-#define	ERR_CHANNELISFULL(channel) (channel) + " :Cannot join channel (+l)\r\n" //471
-#define ERR_UNKNOWNMODE(mode, target) "472 * " + (mode) + " :is unknown mode char to me for " + (target) + "\r\n" //472
-#define	ERR_INVITEONLYCHAN(channel) "473 * " + (channel) + " :Cannot join channel (+i)\r\n" //473
-#define	ERR_BANNEDFROMCHAN(channel) "474 * " + (channel) + " :Cannot join channel (+b)\r\n"//474
-#define	ERR_BADCHANNELKEY(channel) "475 * " + (channel) + " :Cannot join channel (+k)\r\n" //475
-#define ERR_BADCHANMASK(channel) "476 * " + (channel) + " :Bad Channel Mask\r\n" //476
-#define ERR_CHANOPRIVSNEEDED(channel, mode) "482 * " + (channel) + " :You must be a channel op or higher to set channel mode " + (mode) + "\r\n"//482
-#define ERR_USERONCHANNEL(nickname, channel) "443 " + (nickname) + " " + (channel) + " :is already on channel\r\n"  
-#define ERR_USERSDONTMATCH(hostname, nick) ":" + (hostname) + " 502 " + (nick) + " :Can't view modes for other users\r\n" //502
-#define ERR_UMODEUNKNOWNFLAG(hostname, mode, target) ":" + (hostname) + " 501 :Unknown MODE flag " + (mode) + " for " + (target) + "\r\n" //501
-#define ERR_KEYSET(user, channel) "467 * " + (user) + " " + (channel) + " :Channel key already set\r\n" //467
 
-
+/* TESTED */
+#define ERR_UMODEUNKNOWNFLAG(host, client, mode) ":" + (host) + " 501 " + (client) + " " + (mode) + " :is not a recognised user mode" + "\r\n" 					//501
+#define ERR_KEYSET(host, client, target) ":" + (host) + " 467 " + (client) + " " + (target) + " :Channel key already set" + "\r\n" 								//467
 #define ERR_SHUTDOWN(user, address) "ERROR :Closing link: (" + (user) + "@" + (address) + ") [Server shutting down]\r\n"
+#define ERR_NOSUCHNICK(host, client, target) ":" + (host) + " 401 " + (client) + " " + (target) + " :No such nick" + "\r\n" 									//401
+#define ERR_NOSUCHCHANNEL(host, client, target) ":" + (host) + " 403 " + (client) + " " + (target) + " :No such channel" + "\r\n" 								//403
+#define ERR_UNKNOWNMODE(host, client, mode) ":" + (host) + " 472 " (client) + " " + (mode) + " :is not a recognised channel mode" + "\r\n" 						//472
+#define	ERR_INVITEONLYCHAN(host, client, target) ":" + (host) + " 473 " + (client) + " " (target) + " :Cannot join channel (invite only)" + "\r\n" 				//473
+#define ERR_USERSDONTMATCH(host, nick) ":" + (host) + " 502 " + (nick) + " :Can't view modes for other users" + "\r\n" 											//502
+
+
+
+/* TO BE TESTED */
+#define ERR_UNKNOWNCOMMAND(host, client, target) ":" + (host) + " 421 " + (client) + " " + (target) + " :Unknown command" + "\r\n"								//421
+#define ERR_NORECIPIENT(host, client, cmd) ":" + (host) + " 411 " + (client) + " :No recipient given (" + (cmd) + ")" + "\r\n"									//411
+#define ERR_NOTEXTTOSEND(host, client, target) ":" + (host) + " 412 " + (client) + " " + (target) + " :No text to send" + "\r\n"								//412
+#define ERR_NONICKNAMEGIVEN(host) ":" + (host) + " 431 :No nickname given" + "\r\n" 																			//431
+#define ERR_ERRONEUSNICKNAME(host, nick) ":" + (host) +  " 432 " + (nick) + " :Erroneous nickname" + "\r\n" 													//432
+#define ERR_NICKNAMEINUSE(host, nick) ":" + (host) +  " 433 " + (nick) + " :Nickname is already in use" + "\r\n" 			 									//433
+#define ERR_NOTONCHANNEL(host, client, target) ":" + (host) + " 442 " + (target) + " :You're not on that channel" + "\r\n"   									//442
+#define ERR_NEEDMOREPARAMS(host, client, target) ":" + (host) + " 461 " + (target) + " :Not enough parameters" + "\r\n" 										//461
+#define ERR_ALREADYREGISTRED(host) ":" + (host) + " 462 " + ":Unauthorized command (already registered)" + "\r\n" 												//462
+#define	ERR_BANNEDFROMCHAN(host, client, target) ":" + (host) + " 474 " + (client) + " " + (target) + " :Cannot join channel (+b)" + "\r\n"						//474
+#define	ERR_BADCHANNELKEY(host, client, target) ":" + (host) + " 475 " + (client) + " " + (target) + " :Cannot join channel (+k)" + "\r\n" 			 			//475
+#define ERR_BADCHANMASK(host, client, target) ":" + (host) + " 476 " + (client) + " " + (channel) + " :Bad Channel Mask" + "\r\n" 								//476
+#define CHANOPMSG " :You must be a channel op or higher to set channel mode "
+#define ERR_USERONCHANNEL(host, client, target, channel) ":" + (host) + " 443 " + (client) + " " (nick) + " " + (channel) + " :is already on channel" + "\r\n"	//443
+
+
+/* TO BE FIXED */
+
+//FIXME: 404 reply can support multiple types of replies
+// :penguin.omega.example.org 404 jon #new2 :You cannot send messages to this channel whilst the +m (moderated) mode is set.
+// :penguin.omega.example.org 404 todd #new2 :You cannot send messages to this channel whilst banned.
+#define CANNOTSENDMSG " :You cannot send external messages to this channel whilst the +n (noextmsg) mode is set"												//FIXME: Make sure to test this when mode +n is fixed
+#define ERR_CANNOTSENDTOCHAN(host, client, target) ":" + (host) + " 404 " + (client) + " " + (target) + CANNOTSENDMSG + "\r\n"									//404
+
+
+//FIXME: 482 reply can support multiple types of replies
+// :penguin.omega.example.org 482 Bill #new :You must be a channel op or higher to send an invite.
+// :penguin.omega.example.org 482 jon #new2 :You must be a channel op or higher to set channel mode m (moderated).
+// :penguin.omega.example.org 482 jon #new2 :You must be a channel op or higher to set channel mode m (moderated).
+// :penguin.omega.example.org 482 jon #new2 :You must be a channel op or higher to set channel mode i (inviteonly).
+// :penguin.omega.example.org 482 jon #new2 :You must be a channel op or higher to set channel mode s (secret).
+// :penguin.omega.example.org 482 jon #new2 :You must be a channel op or higher to set channel mode m (moderated).
+#define ERR_CHANOPRIVSNEEDED(host, client, target, mode) ":" + (host) + " 482 " + (client) + " " + (target) + CHANOPMSG + (mode) + "\r\n"						//482
+
+
+
+
+/* NOT IMPLEMENTED */
+
+// :penguin.omega.example.org 696 jon #new k * :You must specify a parameter for the key mode. Syntax: <key>.
+// :penguin.omega.example.org 698 jon #new bill b :Channel ban list does not contain bill
+
+
+
+
+
+
 
 /*
-
-
 
 #define RPL_WELCOME 1
 #define RPL_YOURHOST 2

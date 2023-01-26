@@ -18,15 +18,13 @@ bool    User::validate(const Message& msg) {
     /* If no username was entered reply error */
     if (msg.getMiddle().size() < 1) 
     {
-        client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
-        std::cerr << ERR_NEEDMOREPARAMS(msg.getCommand()) << std::endl;
+        client->reply(ERR_NEEDMOREPARAMS(_server->getHostname(), _client->getNickname(), msg.getCommand()));
         return false;
     }
     /* If username has already registered, do not allow re-use of USER command */
     else if (client->getUsername().size() != 0)
     {
-        client->reply(ERR_ALREADYREGISTRED());
-        std::cerr << ERR_ALREADYREGISTRED() << std::endl;
+        client->reply(ERR_ALREADYREGISTRED(_server->getHostname()));
         return false;
     }
     //FIXME: need to handle possible user modes being passed in USER command
@@ -56,7 +54,7 @@ void    User::execute(const Message& msg) {
     if (!client->getUsername().empty() && !client->getNickname().empty() && !client->getRegistration())
     {
         client->setRegistration(true);
-        client->reply(RPL_WELCOME(msg._client->getNickname(), _buildPrefix(msg)));
+        client->reply(RPL_WELCOME(_server->getHostname(), msg._client->getNickname(), _buildPrefix(msg)));
         if (DEBUG)
             std::cout << getTimestamp() <<  GREEN "New user successfully registered: " CLEAR << client->getNickname() << std::endl << std::endl;
     }

@@ -16,38 +16,35 @@ bool	Kick::validate(const Message& msg) {
 	/*check if there's a target for the command*/
 	if (middle.size() < 2)
 	{
-		msg._client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
-		std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
+		msg._client->reply(ERR_NEEDMOREPARAMS(_server->getHostname(), _client->getNickname(), msg.getCommand()));
 		return false;
 	}
 	std::string					channel = middle.at(0);
 	std::string					user = middle.at(1);
 	/*check if channel exists*/
 	if (!_server->getChannelPtr(channel)->checkMemberModes(msg._client, C_OP)) {
-		msg._client->reply(ERR_CHANOPRIVSNEEDED(channel, "kick"));
+		msg._client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), channel, "kick"));
 		return false;
 	}
 	if (!_server->doesChannelExist(channel)){
 		msg._client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), msg._client->getNickname(), channel));
-		std::cerr << "ERR_NOSUCHCHANNEL" << std::endl;
 		return false;
 	}
 	/*check if target user is on the channel*/
 	if (!_server->getChannelPtr(channel)->isMember(msg._client)){
-		msg._client->reply(ERR_NOTONCHANNEL(channel));
-		std::cerr << "ERR_NOTONCHANNEL" << std::endl;
+		msg._client->reply(ERR_NOTONCHANNEL(_server->getHostname(), _client->getNickname(), channel));
 		return false;
 	}
 	/*check if target is a member of the channel*/
 	if (!_server->getChannelPtr(channel)->isMember(_server->getClientPtr(user))){
-		msg._client->reply(ERR_NOSUCHNICK(user));
-		std::cerr << "ERR_NOSUCHNICK" << std::endl;
+		msg._client->reply(ERR_NOSUCHNICK(_server->getHostname(), _client->getNickname(), user));
 		return false;
 	}
 	return true;
 }
 
 void	Kick::execute(const Message& msg) {
+	_client = msg._client;
 	if (validate(msg)) {
 		std::string channel = msg.getMiddle().at(0);
 		std::string user = msg.getMiddle().at(1);
