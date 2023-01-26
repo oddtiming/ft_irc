@@ -1,6 +1,5 @@
 #include "Message.hpp"
 #include "defines.h"
-#include <iostream>
 
 Message::Message(Client* client, std::string raw) : _client(client)
 {
@@ -47,18 +46,4 @@ Message::Message(Client* client, std::string raw) : _client(client)
     /* Check if any other parameters remain in middle */
     if (!_middle.empty())
         _hasMiddle = true;
-
-    
-
-    /* DEBUG PRINTOUTS */
-    // std::cerr << "Prefix: " << _prefix << std::endl;
-    // std::cerr << "Command: " << _cmd << std::endl;
-    // std::cerr << "Parameters: " << std::endl;
-
-    // std::vector<std::string>::iterator it = _middle.begin();
-    // for (; it != _middle.end(); ++it)
-    //     std::cerr << *it << std::endl;
-    
-    // std::cerr << "Trailing: " << _trailing << std::endl;
-
 }

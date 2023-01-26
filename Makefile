@@ -27,7 +27,8 @@ CPP_FILES		:=	main.cpp \
 					commands/Whois.cpp	\
 					commands/Who.cpp	\
 					commands/Kick.cpp \
-					commands/Names.cpp
+					commands/Names.cpp \
+					commands/Shutdown.cpp
 
 
 
@@ -55,7 +56,8 @@ INC_FILES		:=	defines.h \
                     commands/Whois.hpp	\
                     commands/Who.hpp \
                     commands/Kick.hpp \
-                    commands/Names.hpp
+                    commands/Names.hpp \
+					commands/Shutdown.hpp
 
 
 

@@ -45,6 +45,9 @@ class Client {
 		const bool&			getPassStatus(void) const { return _isPassValidated; }
 		void				setPassStatus(const bool& status) { _isPassValidated = status; }
 		
+		const std::string	getAddress() const;			
+
+
 		/*************************/
 		/*    Mode Management    */
 		/*************************/
@@ -55,7 +58,7 @@ class Client {
 		/************************/
 		/*    I/O Management    */
 		/************************/
-		void				read();
+		int					read();
 		void				reply(const std::string& reply);
 		std::string			retrieveMessage();
 

@@ -10,5 +10,6 @@ Shutdown::~Shutdown() {
 }
 
 void	Shutdown::execute(const Message& msg) {
+	(void)msg;
 	_server->stopServer();
 }

@@ -52,7 +52,7 @@ class Server {
 		void	initializeConnection();
 		void	initializeCommands();
 		void	runServer();
-		void	stopServer() { _status = OFFLINE; }
+		void	stopServer();
 		void	handleConnections();
 		void	handleMessages(Client* client);
 		void	executeCommand(const Message & msg);
