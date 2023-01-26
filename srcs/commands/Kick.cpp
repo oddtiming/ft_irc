@@ -24,11 +24,11 @@ bool	Kick::validate(const Message& msg) {
 	std::string					user = middle.at(1);
 	/*check if channel exists*/
 	if (!_server->getChannelPtr(channel)->checkMemberModes(msg._client, C_OP)) {
-		msg._client->reply(ERR_CHANOPRIVSNEEDED(channel));
+		msg._client->reply(ERR_CHANOPRIVSNEEDED(channel, "kick"));
 		return false;
 	}
 	if (!_server->doesChannelExist(channel)){
-		msg._client->reply(ERR_NOSUCHCHANNEL(channel));
+		msg._client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), msg._client->getNickname(), channel));
 		std::cerr << "ERR_NOSUCHCHANNEL" << std::endl;
 		return false;
 	}
