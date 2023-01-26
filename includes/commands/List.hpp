@@ -21,6 +21,8 @@ public:
 	void                execute(const Message& msg);
 
 private:
+	bool 				_hasTarget;
+	std::string 		_target;
 
 };
 

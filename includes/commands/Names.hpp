@@ -26,7 +26,6 @@ class Names : public Command
     private:
 		std::string 		_target;
 		bool 				_hasTarget;
-		std::vector<std::string> _targetList;
 
 };
 
