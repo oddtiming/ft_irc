@@ -10,6 +10,7 @@ Names::~Names() {
 }
 
 bool	Names::validate(const Message& msg) {
+	_hasTarget = false;
 	if (msg.hasMiddle())
 	{
 		/*checks if the command has a _target and if said _target is valid sets it, else sends back an error without a reply */
