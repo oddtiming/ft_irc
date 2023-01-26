@@ -46,3 +46,6 @@ KNOWN ERRORS:
 
 
 - Setting MODE #chan +n does not seem to be working
+
+- MODE #chan +b TARGET doesn't seem to be working, TARGET is able to keep chatting on the channel afterwards (irssi)
+- Non-chan-op user is able to set MODE #chan +b TARGET (irssi)
