@@ -37,14 +37,23 @@ bool Privmsg::validate(const Message& msg) {
 			msg._client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), msg._client->getNickname(), _target));
 			return false;
         }
-		if ((!channel->isMember(msg._client) && !channel->checkModes(NO_MSG_IN))
-            || (channel->checkMemberModes(msg._client, BAN)))
-		{
-			 msg._client->reply(ERR_CANNOTSENDTOCHAN(_server->getHostname(), _client->getNickname(), _target));
+		if (!channel->isMember(msg._client))
+        {
+            if (channel->checkModes(NO_MSG_IN))
+                msg._client->reply(ERR_CANNOTSENDTOCHAN(_server->getHostname(), _client->getNickname(), _target, "external messages to this channel whilst the +n (noextmsg) mode is set"));
+            else if (channel->checkMemberModes(msg._client, BAN))
+                msg._client->reply(ERR_CANNOTSENDTOCHAN(_server->getHostname(), _client->getNickname(), _target, "messages to this channel whilst banned"));
 			 return false;
-		}
+        }
+        if (channel->isMember(_client) && channel->checkMemberModes(_client, BAN))
+        {
+             msg._client->reply(ERR_CANNOTSENDTOCHAN(_server->getHostname(), _client->getNickname(), _target, "messages to this channel whilst banned"));
+			 return false;
+        }
+
         return true;
     }
+
 
     if (!_server->doesNickExist(_target))
     {

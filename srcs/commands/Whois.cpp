@@ -42,19 +42,22 @@ void	Whois::execute(const Message& msg) {
 		ChannelList::iterator ite = channelList.end();
 		for (; it != ite; ++it)
 		{
-			std::string reply = _target->getNickname() + " : ";
-			if (it->second->isMember(_target) && (!it->second->checkModes(SECRET) ||it->second->isMember(msg._client))) {
+			std::string reply;
+			if (it->second->isMember(_target) && (!it->second->checkModes(SECRET) || it->second->isMember(msg._client))) {
 				if (it->second->checkMemberModes(_target, C_OP))
 					reply += "@" + it->first;
 				else
 					reply += it->first;
-				msg._client->reply(RPL_WHOISCHANNELS(reply));
+				msg._client->reply(RPL_WHOISCHANNELS(_server->getHostname(), _client->getNickname(), _target->getNickname(), reply));
 			}
 		}
-		msg._client->reply(RPL_WHOISSERVER(_target->getNickname(), "ircserv", _server->getHostname()));
-		msg._client->reply(RPL_WHOISIDLE(_target->getNickname(), std::to_string(std::time(nullptr) - _target->getLastActivityTime())));
+		msg._client->reply(RPL_WHOISSERVER(_server->getHostname(), _client->getNickname(), _target->getNickname(), _server->getServername()));
+		msg._client->reply(RPL_WHOISIDLE(_server->getHostname(), _client->getNickname(), _target->getNickname(),
+			std::to_string(std::time(nullptr) - _target->getLastActivityTime()), std::to_string(std::time(nullptr) - _target->getConnectTime())));
 		msg._client->reply(RPL_AWAY(_target->getHostname(), msg._client->getNickname(), _target->getNickname(), _target->getAwayMessage()));
-		msg._client->reply(RPL_ENDOFWHOIS(_target->getNickname()));
+		msg._client->reply(RPL_ENDOFWHOIS(_server->getHostname(), _client->getNickname(), _target->getNickname()));
 	}
+
+	//FIXME: Add RPL_LISTSTART in the the proper spot
 
 }

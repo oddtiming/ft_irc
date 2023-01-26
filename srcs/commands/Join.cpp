@@ -169,9 +169,9 @@ void	Join::execute(const Message& msg) {
 
 		/* Manage topic reply*/
 		if (hasJoined && channelPtr->getTopic().size() > 0)
-			_client->reply(RPL_TOPIC(name, channelPtr->getTopic()));
+			_client->reply(RPL_TOPIC(_server->getHostname(), _client->getNickname(), name, channelPtr->getTopic()));
 		else if (hasJoined)
-			_client->reply(RPL_NOTOPIC(name));
+			_client->reply(RPL_NOTOPIC(_server->getHostname(), _client->getNickname(), name));
 	}
 	_targets.clear();
 }

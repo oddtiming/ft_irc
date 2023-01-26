@@ -50,6 +50,6 @@ void	Topic::execute(const Message& msg) {
 			_server->getChannelPtr(_target)->sendToAll(":" + _buildPrefix(msg) + " TOPIC " + _target + " :"+ msg.getMiddle().at(1) + "\r\n");
 		}
 		else
-			msg._client->reply(RPL_TOPIC(_target, _server->getChannelPtr(_target)->getTopic()));
+			msg._client->reply(RPL_TOPIC(_server->getHostname(), _client->getNickname(), _target, _server->getChannelPtr(_target)->getTopic()));
 	}
 }

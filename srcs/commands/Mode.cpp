@@ -124,8 +124,8 @@ bool                Mode::_secret(bool removeMode)
 	if (!channelPtr)
 		return false;
 
-	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (secret).")), false);
+	if (!channelPtr->checkMemberModes(_client, C_OP | OWNER))
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, "to set channel mode s (secret).")), false);
 
 	if (removeMode != channelPtr->checkModes(SECRET))
 		return false;
@@ -145,8 +145,8 @@ bool                Mode::_topic(bool removeMode)
 	if (!channelPtr)
 		return false;
 
-	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (topic).")), false);
+	if (!channelPtr->checkMemberModes(_client, C_OP | OWNER))
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, "to set channel mode t (topic).")), false);
 	
 	if (removeMode != channelPtr->checkModes(TOPIC_SET_OP))
 		return false;
@@ -166,8 +166,8 @@ bool                Mode::_invite(bool removeMode)
 	if (!channelPtr)
 		return false;
 		
-	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (invite).")), false);
+	if (!channelPtr->checkMemberModes(_client, C_OP | OWNER))
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, "to set channel mode i (invite only).")), false);
 
 	if (removeMode != channelPtr->checkModes(INV_ONLY))
 		return false;
@@ -187,8 +187,8 @@ bool                Mode::_no_msg_in(bool removeMode)
 	if (!channelPtr)
 		return false;
 		
-	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (no_msg_in).")), false);
+	if (!channelPtr->checkMemberModes(_client, C_OP | OWNER))
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, "to set channel mode n (no_msg_in).")), false);
 
 	if (removeMode != channelPtr->checkModes(NO_MSG_IN))
 		return false;
@@ -209,8 +209,8 @@ bool                Mode::_password(bool removeMode)
 	if (!channelPtr)
 		return false;
 		
-	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (password protected).")), false);
+	if (!channelPtr->checkMemberModes(_client, C_OP | OWNER))
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, "to set channel mode k (password protected).")), false);
 	
 	if (_params.empty())
 		return (_client->reply(ERR_NEEDMOREPARAMS(_server->getHostname(), _client->getNickname(), std::string("MODE +k"))), false);
@@ -241,8 +241,8 @@ bool                Mode::_ban(bool removeMode)
 	if (!channelPtr)
 		return false;
 		
-	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (ban).")), false);
+	if (!channelPtr->checkMemberModes(_client, C_OP | OWNER))
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, "to set user mode b (ban).")), false);
 	
 	if (_params.empty())
 		return (sendBanList(), false);
@@ -273,8 +273,8 @@ bool                Mode::_operators(bool removeMode)
 	if (!channelPtr)
 		return false;
 		
-	if (channelPtr->checkMemberModes(_client, C_OP | OWNER))
-		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, mode + " (operator).")), false);
+	if (!channelPtr->checkMemberModes(_client, C_OP | OWNER))
+		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, "to set user mode o (operator).")), false);
 	
 	if (_params.empty())
 		return (sendBanList(), false);
@@ -344,8 +344,8 @@ void	Mode::sendBanList(void) const {
 	std::vector<std::string>			banList = channel->getBanList();
 	std::vector<std::string>::iterator	ite = banList.end();
 	for (std::vector<std::string>::iterator	it = banList.begin(); it != ite; ++it)
-		_client->reply(RPL_BANLIST(_client->getNickname(), _target, *it));
-	_client->reply(RPL_ENDOFBANLIST(_client->getNickname(), _target));
+		_client->reply(RPL_BANLIST(_server->getHostname(), _client->getNickname(), _target, *it));
+	_client->reply(RPL_ENDOFBANLIST(_server->getHostname(), _client->getNickname(), _target));
 }
 
 /* Check if target channel or user exists */

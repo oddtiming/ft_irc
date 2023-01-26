@@ -55,10 +55,10 @@ bool	Invite::validate(const Message& msg) {
 	/* Check if target channel has +i flag (operator only invite) and user attempting to invite is not OP */
 	if (_targetChannel->checkModes(INV_ONLY) && !_targetChannel->checkMemberModes(_client, C_OP))
 	{
-		_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), channel, 'i'));
+		_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _targetUser->getNickname(), "to send an invite."));
 		return false;
 	}
-	
+
 	return true;
 }
 
