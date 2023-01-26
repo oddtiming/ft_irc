@@ -249,8 +249,8 @@ void	Server::executeCommand(const Message & msg)
 	}
 	/* Error message if command is invalid or not supported */
 	catch(std::out_of_range &e) {
-		std::cerr << RED "\t\t\t\tCommand '" << msg.getCommand() << "' was not found." CLEAR << std::endl;
-		//fixme: add ERR_UNKNOWNCOMMAND() reply #421, to use prefix with _buildPrefix
+		msg._client->reply(ERR_UNKNOWNCOMMAND(_hostname, msg._client->getNickname(), msg.getCommand()));
+
 	}
 }
 

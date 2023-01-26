@@ -14,7 +14,7 @@ bool	Invite::validate(const Message& msg) {
 	/* Ensure that there is both a target user and a target channel parameter */
 	if (msg.getMiddle().size() < 2)
 	{
-		_client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
+		_client->reply(ERR_NEEDMOREPARAMS(_server->getHostname(), _client->getNickname(), msg.getCommand()));
 		return false;
 	}
 
@@ -24,7 +24,7 @@ bool	Invite::validate(const Message& msg) {
 	/* Check if target user exists */
 	if (!_server->doesNickExist(nickname))
 	{
-		_client->reply(ERR_NOSUCHNICK(nickname));
+		_client->reply(ERR_NOSUCHNICK(_server->getHostname(), _client->getNickname(), nickname));
 		return false;
 	}
 
@@ -41,24 +41,24 @@ bool	Invite::validate(const Message& msg) {
 	/* Check if user attempting to send invite belongs to the target channel */
 	if (!_targetChannel->isMember(_client))
 	{
-		_client->reply(ERR_NOTONCHANNEL(channel));
+		_client->reply(ERR_NOTONCHANNEL(_server->getHostname(), _client->getNickname(), channel));
 		return false;
 	}
 
 	/* Check if target user is already on target channel */
 	if (_targetChannel->isMember(_targetUser))
 	{
-		_client->reply(ERR_USERONCHANNEL(nickname, channel));
+		_client->reply(ERR_USERONCHANNEL(_server->getHostname(), _client->getNickname(), nickname, channel));
 		return false;
 	}
 	
 	/* Check if target channel has +i flag (operator only invite) and user attempting to invite is not OP */
 	if (_targetChannel->checkModes(INV_ONLY) && !_targetChannel->checkMemberModes(_client, C_OP))
 	{
-		_client->reply(ERR_CHANOPRIVSNEEDED(channel, 'i'));
+		_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _targetUser->getNickname(), "to send an invite."));
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -69,10 +69,10 @@ void	Invite::execute(const Message& msg) {
 	{
 		/* Send message to target user */
 		//NOTE: the prefix for this is the senders, not the receiver
-		_targetUser->reply(RPL_INVITING( _buildPrefix(msg), _targetUser->getNickname(), _targetChannel->getName()));
+		_targetUser->reply(CMD_INVITE(_buildPrefix(msg), _targetUser->getNickname(), _targetChannel->getName()));
 		
 		/* Send message to client */
-		_client->reply(CMD_INVITE(_server->getHostname(), _client->getNickname(), _targetUser->getNickname(), _targetChannel->getName()));
+		_client->reply(RPL_INVITING(_server->getHostname(), _client->getNickname(), _targetUser->getNickname(), _targetChannel->getName()));
 
 		/* If target user is away send reply to client */
 		if (_targetUser->checkGlobalModes(AWAY))

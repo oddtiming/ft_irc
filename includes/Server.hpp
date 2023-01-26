@@ -45,6 +45,7 @@ class Server {
 		const std::string&	getServerPassword(void) const { return _password; }
 		const std::string&	getHostname(void) const { return _hostname; }
 		const std::time_t&	getStartTime(void) const { return _timeStart; }
+		const std::string&	getServername(void) const { return _servername; }
 	
 		/*************************/
 		/*    Server Operation   */
@@ -94,6 +95,7 @@ class Server {
 
 	private:
 		/* General Server Data */
+		std::string							_servername;
 		std::string							_hostname;
 		std::string							_password;
 		int									_status;

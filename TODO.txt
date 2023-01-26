@@ -38,11 +38,6 @@ Bonus Section:
 
 
 KNOWN ERRORS:
-- If a client thinks it has been disconnected, and tries to reconnect
-	it can force the server to send a message to a socket which is not longer
-	connected to anything
-
-	Potential solution: check each socket before attempting to reply
 
 - PART reply message being sent after client QUIT causing segfault
 
@@ -50,7 +45,4 @@ KNOWN ERRORS:
 	- Ensure that replyToOthers is used in quit so that the message is not sent to the user who quits
 
 
-
-COMPLETE:
-- Password is only being verified if the command is received
-	- Ensure that if no pass command received that  error is still sent
+- Setting MODE #chan +n does not seem to be working

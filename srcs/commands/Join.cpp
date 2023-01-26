@@ -16,7 +16,7 @@ bool	Join::parse(const Message& msg) {
 	/* Error message if not enough information received to execute command */
 	if (msg.getMiddle().empty())
 	{
-		_client->reply(ERR_NEEDMOREPARAMS(msg.getCommand()));
+		_client->reply(ERR_NEEDMOREPARAMS(_server->getHostname(), _client->getNickname(), msg.getCommand()));
 		return (false);
 	}
 
@@ -68,7 +68,7 @@ bool	Join::validate(StringPair channel) {
 	/* Check if first character is valid */
 	if (name.size() > 0 && name.at(0) != '#')
 	{
-		_client->reply(ERR_BADCHANMASK(name));
+		_client->reply(ERR_BADCHANMASK(_server->getHostname(), _client->getNickname(), name));
 
 		if (DEBUG)
 			std::cerr << RED "received name is: " << name << CLEAR << std::endl;
@@ -96,21 +96,21 @@ bool	Join::validate(StringPair channel) {
 		/* Check if channel is invite only & user is not invited */
 		if (channelPtr->checkModes(INV_ONLY) && !channelPtr->checkMemberModes(_client, INV))
 		{
-			_client->reply(ERR_INVITEONLYCHAN(name));
+			_client->reply(ERR_INVITEONLYCHAN(_server->getHostname(), _client->getNickname(), name));
 			return (false);
 		}
 
 		/* Check if client is banned from channel */
 		if (channelPtr->checkMemberModes(_client, BAN))
 		{
-			_client->reply(ERR_BANNEDFROMCHAN(name));
+			_client->reply(ERR_BANNEDFROMCHAN(_server->getHostname(), _client->getNickname(), name));
 			return (false);
 		}
 
 		/* If channel is password protected check password match*/
 		if (channelPtr->checkModes(PASS_REQ) && channelPtr->getPassword() != pass)
 		{
-			_client->reply(ERR_BADCHANNELKEY(name));
+			_client->reply(ERR_BADCHANNELKEY(_server->getHostname(), _client->getNickname(), name));
 			return (false);
 		}
 
@@ -169,9 +169,9 @@ void	Join::execute(const Message& msg) {
 
 		/* Manage topic reply*/
 		if (hasJoined && channelPtr->getTopic().size() > 0)
-			_client->reply(RPL_TOPIC(name, channelPtr->getTopic()));
+			_client->reply(RPL_TOPIC(_server->getHostname(), _client->getNickname(), name, channelPtr->getTopic()));
 		else if (hasJoined)
-			_client->reply(RPL_NOTOPIC(name));
+			_client->reply(RPL_NOTOPIC(_server->getHostname(), _client->getNickname(), name));
 	}
 	_targets.clear();
 }
