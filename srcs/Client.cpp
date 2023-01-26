@@ -53,20 +53,16 @@ std::string 		Client::getGlobalModes(void){
 /*****************************/
 
 /* Read data from socket */
-void	Client::read(void) {
+int		Client::read(void) {
     char		buf[MAX_BUFFER_SIZE];
 	int			nbytes;
 	std::string	input;
 
 	/* Read from client socket */
 	nbytes = recv(_socket, buf, MAX_BUFFER_SIZE, 0);
-	if (nbytes < 0)
-	{
-		// FIXME: Handle recv error
-		std::cerr << "recv() call failed on socket #" << _socket << ".\n"
-				  << "errno : " << errno << std::endl;
-	}
-	//Testing fix for weird chars being read (null terminate before attempting to convert to std::string)
+	/* If return is 0 or less, client has disconnected */
+	if (nbytes <= 0)
+		return (nbytes);
 	buf[nbytes] = '\0';
 	input = buf;
 	if (nbytes == MAX_BUFFER_SIZE)
@@ -85,6 +81,7 @@ void	Client::read(void) {
 		tmp.erase(0, pos + 1);
 	}
 	std::cout << "\t\t\t\t" << tmp << std::endl;
+	return (nbytes);
 }
 
 /* Send data to client through socket */
@@ -113,4 +110,16 @@ std::string	Client::retrieveMessage() {
     }
 
 	return rawMessage;
+}
+
+
+
+const std::string	Client::getAddress() const {
+
+	char buf[INET_ADDRSTRLEN + 1];
+
+	if (inet_ntop(AF_INET, &_address.sin_addr, buf, sizeof(buf)) != NULL)
+		return ("127.0.0.1");
+	else
+		return std::string(buf);
 }
