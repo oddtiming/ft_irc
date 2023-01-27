@@ -109,8 +109,6 @@ bool	Join::validate(StringPair channel) {
 
 void	Join::execute(const Message& msg) {
 	_targets.clear();
-
-	/* QoL variable init */
 	_client = msg._client;
 
 	/* Parse raw message into vector of channel/password pairs */
@@ -174,5 +172,3 @@ bool	Join::checkInvalidChars(const std::string& string) {
 	}
 	return (true);
 }
-
-//FIXME: when multiple channels are created at once, all channels after the first are set to invite only
