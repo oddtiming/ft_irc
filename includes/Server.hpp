@@ -18,17 +18,20 @@
 #include <vector>
 #include <map>
 #include <ctime>
+#include <unistd.h>
 
 /* Local Includes */
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
+#include <netdb.h>
 
 /* Class Prototypes */
 class Command;
 
 #define MAX_CONNECTIONS 10
 
+/* Server Status Enum*/
 typedef enum s_serverStatus {
 	OFFLINE = 0,
 	ONLINE = 1,
@@ -37,7 +40,7 @@ typedef enum s_serverStatus {
 
 class Server {
 	public:
-		Server(const std::string& hostname, const int port, const std::string& password);
+		Server(const std::string& servername, const int port, const std::string& password);
 		~Server();
 		
 
@@ -106,6 +109,7 @@ class Server {
 		struct sockaddr_in					_address;
 		int									_socket;
 		std::vector<pollfd>					_pfds;
+		std::string							_ip;
 
 		/* IRC Server Data */
 		std::vector<Client *>				_clients;

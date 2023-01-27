@@ -1,11 +1,13 @@
+/* Local Includes */
+
 #include "Server.hpp"
+#include "Client.hpp"
 #include "defines.h"
-/********************/
+
 /* Command Includes */
-/********************/
 
 #include "commands/Away.hpp"
-#include "commands/Shutdown.hpp"
+#include "commands/Invite.hpp"
 #include "commands/Join.hpp"
 #include "commands/Kick.hpp"
 #include "commands/List.hpp"
@@ -13,27 +15,26 @@
 #include "commands/Names.hpp"
 #include "commands/Nick.hpp"
 #include "commands/Notice.hpp"
-#include "commands/Part.hpp"
 #include "commands/Pass.hpp"
+#include "commands/Part.hpp"
 #include "commands/Ping.hpp"
 #include "commands/Pong.hpp"
 #include "commands/Privmsg.hpp"
 #include "commands/Quit.hpp"
+#include "commands/Shutdown.hpp"
+#include "commands/Topic.hpp"
 #include "commands/User.hpp"
-#include "commands/Invite.hpp"
-#include "Client.hpp"
 #include "commands/Who.hpp"
 #include "commands/Whois.hpp"
-#include "commands/Topic.hpp"
 
 
 /*****************************/
 /* Constructor & Destructor */
 /*****************************/
 
-Server::Server(const std::string& hostname, const int port, const std::string& password) :
-	_hostname(hostname), _password(password), _timeStart(std::time(nullptr)), _port(port) {
-	
+Server::Server(const std::string& servername, const int port, const std::string& password) :
+	_servername(servername), _password(password), _timeStart(std::time(nullptr)), _port(port) {
+	/* Attempt to initialize server */
 	try
 	{
 		/* Setup server connection */
@@ -49,6 +50,7 @@ Server::Server(const std::string& hostname, const int port, const std::string& p
 	{
 		std::cerr << e.what() << '\n';
 		std::cerr << RED "Failure to initialize server, program exiting" CLEAR << std::endl;
+		shutdown(_socket, SHUT_RDWR);
 		exit (1);
 	}
 
@@ -85,10 +87,6 @@ Server::~Server() {
 /*      Server Initialization      */
 /***********************************/
 
-//FIXME: Need to ensure all exceptions are being caught
-//FIXME: Check if we need to buffer outgoing communications (look into POLLOUT option for poll() )
-
-
 /* Open server socket and configure for listening */
 void	Server::initializeConnection(void)
 {
@@ -119,6 +117,16 @@ void	Server::initializeConnection(void)
 	if (listen(_socket, MAX_CONNECTIONS) < 0)
 		throw std::runtime_error("Unable to listen on socket");
 	
+	/* Get server IP */
+
+	char hostname[1024];
+	gethostname(hostname, sizeof(hostname));
+	_hostname = hostname;
+	struct hostent *host = gethostbyname(hostname);
+	char ip[INET_ADDRSTRLEN + 1];
+	inet_ntop(AF_INET, host->h_addr_list[0], ip, sizeof(ip));
+	_ip = ip;
+	
 	/* Set Server Status */
 	_status = ONLINE;
 
@@ -127,16 +135,14 @@ void	Server::initializeConnection(void)
 	_pfds.push_back(pfd);
 }
 
+
 /* Build Server Commands */
 void	Server::initializeCommands(void)
 {
 	/* General Commands */
 	_commands["ping"] = new Ping(this);
 	_commands["pong"] = new Pong(this);
-	// _commands["info"] = new Info(this);
 	_commands["shutdown"] = new Shutdown(this);
-	// _commands["echo"] = new Echo(this);
-	// _commands["help"] = new Help(this);
 	_commands["quit"] = new Quit(this);
 	_commands["mode"] = new Mode(this);
 	_commands["away"] = new Away(this);
@@ -146,18 +152,13 @@ void	Server::initializeCommands(void)
 	_commands["notice"] = new Notice(this);
 	_commands["join"] = new Join(this);
 	_commands["part"] = new Part(this);
-	 _commands["list"] = new List(this);
+	_commands["list"] = new List(this);
 	_commands["names"] = new Names(this);
-	 _commands["kick"] = new Kick(this);
+	_commands["kick"] = new Kick(this);
 	_commands["nick"] = new Nick(this);
 	_commands["user"] = new User(this);
 	_commands["pass"] = new Pass(this);
-	// _commands["mode"] = new Mode(this);
-
-	//_commands["who"] = new Who(this);
-	//_commands["time"] = new Time(this);
 	_commands["invite"] = new Invite(this);
-	//_commands["motd"] = new Motd(this);
 	_commands["who"] = new Who(this);
 	_commands["whois"] = new Whois(this);
 	_commands["topic"] = new Topic(this);
@@ -290,6 +291,7 @@ void	Server::runServer(void)
 	}
 }
 
+/* Stop server and send shutdown message to all clients */
 void	Server::stopServer(void)
 {
 	 _status = OFFLINE;
