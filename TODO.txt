@@ -42,10 +42,10 @@ KNOWN ERRORS:
 - PART reply message being sent after client QUIT causing segfault
 
 - Remove REPLY from removeMember function and place in PART, KICK, QUIT -> removeClient, ban
-	- Ensure that replyToOthers is used in quit so that the message is not sent to the user who quits
+- Ensure that replyToOthers is used in quit so that the message is not sent to the user who quits
 
 
-- Setting MODE #chan +n does not seem to be working
 
-- MODE #chan +b TARGET doesn't seem to be working, TARGET is able to keep chatting on the channel afterwards (irssi)
-- Non-chan-op user is able to set MODE #chan +b TARGET (irssi)
+-/join #new,#new1 a,a & "#new(+k),#new1(-k) a" joins both channel, but "/join #new a" doesnt
+-as of now we can OP a banned user, they get OP powers (ex:set topic) but still cant talk
+Newly OP'd user can ban / KICK the one who OP'd him even if that was the owner
