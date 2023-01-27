@@ -20,6 +20,7 @@
 #include <ctime>
 #include <unistd.h>
 #include <netdb.h>
+#include <exception>
 
 /* Local Includes */
 #include "Client.hpp"
@@ -35,7 +36,6 @@ class Server {
 		Server(const std::string& servername, const int port, const std::string& password);
 		~Server();
 		
-
 		/* Setters & Getters */
 		const std::string&					getServerPassword(void) const	{ return _password; }
 		const std::string&					getHostname(void) const 		{ return _hostname; }
@@ -61,7 +61,6 @@ class Server {
 		Client* 							getClientPtr(const std::string& client);
 		Channel*							getChannelPtr(const std::string& channel);
 		void								removeClient(Client* client);
-
 
 		/************************/
 		/*  Channel Management  */

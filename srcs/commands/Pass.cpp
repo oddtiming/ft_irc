@@ -22,19 +22,10 @@ void	Pass::execute(const Message& msg) {
 	_client = msg._client;
 	if (validate(msg))
 	{
-		/* If password matches set status */
+		/* If password matches set status true */
 		if (msg.getMiddle().at(0) == _password)
-		{
 			_client->setPassStatus(true);
-			return ;
-		}
-		/* If password does not match send error and disconnect client */
-		else 
-		{
-			_client->reply("ERROR :Closing Link: localhost (Bad Password)\n");
-			_server->removeClient(_client);
-		}
+		else
+			throw passException();
 	}
 }
-
-//FIXME: Error message being sent twice

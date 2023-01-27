@@ -5,6 +5,7 @@
 
 /* System Includes */
 #include <string>
+#include <exception>
 
 /* Local Includes */
 #include "Command.hpp"
@@ -18,6 +19,14 @@ class Pass : public Command {
         /* Public Member Functions */
 		bool						validate(const Message& msg);
 		void						execute(const Message& msg);
+
+		class passException : public std::exception {
+			public:
+				const char* what() const throw() {
+					return ("Incorrect password");
+				}
+		};
+
 
 	private:
 		Client*						_client;

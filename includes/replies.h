@@ -72,3 +72,4 @@
 	+ " :is already on channel" + "\r\n" )																														//443
 #define ERR_CANNOTSENDTOCHAN(host, client, target, msg) ":" + (host) + " 404 " + (client) + " " + (target) + " :You cannot send " + (msg) + "\r\n"				//404
 #define ERR_CHANOPRIVSNEEDED(host, client, target, modeMessage) ":" + (host) + " 482 " + (client) + " " + (target) + " " + (modeMessage) + "\r\n"				//482
+#define ERR_NOTREGISTERED(host) ":" + (host) + " 451 :You have not registered" + "\r\n" 																		//451
