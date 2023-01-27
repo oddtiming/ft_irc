@@ -1,8 +1,8 @@
 /* Local Includes */
-
 #include "Server.hpp"
 #include "Client.hpp"
 #include "defines.h"
+#include "replies.h"
 
 /* Command Includes */
 
@@ -198,6 +198,7 @@ void		Server::handleConnections() {
 void		Server::handleMessages(Client* client)
 {	
 	std::string	rawMessage;
+	std::string	cmd;
 	/* Client reads entire input string coming from their socket */
 	if (client->read() <= 0)
 	{
@@ -211,20 +212,41 @@ void		Server::handleMessages(Client* client)
 		/* While there are valid commands (messages) stored in the client's input string */
 		while (rawMessage.empty() == false)
 		{
+			/* Build message from rawMessage */
 			Message	msg(client, rawMessage);
-			/* If command is nick but password has not been validated then remove user and break loop */
-			if (msg.getCommand() == "nick" && !client->getPassStatus())
+			cmd = msg.getCommand();
+
+			/* If message is cap, do nothing */
+			if (cmd != "cap")
 			{
-				client->reply("ERROR :Closing Link: localhost (Bad Password)\n");
-				removeClient(client);
-				break ;
+				/* If password has not been verified and command is not pass, terminate connection */
+				if (!client->getPassStatus() && cmd != "pass")
+				{
+					client->reply("ERROR :Closing Link: localhost (Bad Password)\n");
+					removeClient(client);
+					break;
+				}
+				/* If client is not registered and tries to run a non-registration command send error */
+				else if (!client->getRegistration() && cmd != "pass" && cmd != "nick" && cmd != "user")
+					client->reply(ERR_NOTREGISTERED(_hostname));
+				else
+				{
+					try {
+						executeCommand(msg);
+					}
+					catch (Pass::passException& e) {
+						client->reply("ERROR :Closing Link: localhost (Bad Password)\n");
+						removeClient(client);
+						break;
+					}
+					catch (...) {
+						std::cerr << getTimestamp() << YELLOW "Caught unknown exception" CLEAR << std::endl;
+					}
+				}
 			}
-			/* Attempt to execute command, ignoring CAP commands */
-			else if (msg.getCommand() != "cap")
-				executeCommand(msg);
-			
+
 			/* Retrieve next command */
-			rawMessage = client->retrieveMessage();
+			rawMessage = client->retrieveMessage();	
 		}
 	}
 }
@@ -288,6 +310,7 @@ void		Server::stopServer(void) {
 		client->reply(ERR_SHUTDOWN(client->getUsername(), client->getAddress()));
 	 }
 }
+
 
 /*******************************/
 /*      Client Management      */

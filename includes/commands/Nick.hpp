@@ -16,13 +16,12 @@ class Nick : public Command {
         ~Nick() { }
 
         /* Public Member Functions */
-		bool	validate(const Message& msg);
-        void    execute(const Message& msg);
+		bool		validate(const Message& msg);
+        void		execute(const Message& msg);
 
     private:
         std::string _nick;
         Client*		_client;
-
 };
 
 #endif
