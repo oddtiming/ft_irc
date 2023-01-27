@@ -15,8 +15,8 @@
 #include "commands/Names.hpp"
 #include "commands/Nick.hpp"
 #include "commands/Notice.hpp"
-#include "commands/Pass.hpp"
 #include "commands/Part.hpp"
+#include "commands/Pass.hpp"
 #include "commands/Ping.hpp"
 #include "commands/Pong.hpp"
 #include "commands/Privmsg.hpp"
@@ -83,13 +83,13 @@ Server::~Server() {
 	shutdown(_socket, SHUT_RDWR);
 }
 
+
 /***********************************/
 /*      Server Initialization      */
 /***********************************/
 
 /* Open server socket and configure for listening */
-void	Server::initializeConnection(void)
-{
+void		Server::initializeConnection(void) {
 	int	yes = 1;
 
 	/* Create socket */
@@ -107,7 +107,6 @@ void	Server::initializeConnection(void)
 	_address.sin_port = htons(_port);
 	_address.sin_family = AF_INET;
 	_address.sin_addr.s_addr = INADDR_ANY;
-	//FIXME: convert to using hints and proper method for address struct (confirm if this matters )
 
 	/* Bind Socket */
 	if (bind(_socket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
@@ -117,8 +116,7 @@ void	Server::initializeConnection(void)
 	if (listen(_socket, MAX_CONNECTIONS) < 0)
 		throw std::runtime_error("Unable to listen on socket");
 	
-	/* Get server IP */
-
+	/* Get server hostname & IP */
 	char hostname[1024];
 	gethostname(hostname, sizeof(hostname));
 	_hostname = hostname;
@@ -135,33 +133,28 @@ void	Server::initializeConnection(void)
 	_pfds.push_back(pfd);
 }
 
-
 /* Build Server Commands */
-void	Server::initializeCommands(void)
-{
-	/* General Commands */
+void		Server::initializeCommands(void) {
+	_commands["away"] = new Away(this);
+	_commands["invite"] = new Invite(this);
+	_commands["join"] = new Join(this);
+	_commands["kick"] = new Kick(this);
+	_commands["list"] = new List(this);
+	_commands["mode"] = new Mode(this);
+	_commands["names"] = new Names(this);
+	_commands["nick"] = new Nick(this);
+	_commands["notice"] = new Notice(this);
+	_commands["part"] = new Part(this);
+	_commands["pass"] = new Pass(this);
 	_commands["ping"] = new Ping(this);
 	_commands["pong"] = new Pong(this);
-	_commands["shutdown"] = new Shutdown(this);
-	_commands["quit"] = new Quit(this);
-	_commands["mode"] = new Mode(this);
-	_commands["away"] = new Away(this);
-
-	/* Channel Commands */
 	_commands["privmsg"] = new Privmsg(this);
-	_commands["notice"] = new Notice(this);
-	_commands["join"] = new Join(this);
-	_commands["part"] = new Part(this);
-	_commands["list"] = new List(this);
-	_commands["names"] = new Names(this);
-	_commands["kick"] = new Kick(this);
-	_commands["nick"] = new Nick(this);
+	_commands["quit"] = new Quit(this);
+	_commands["shutdown"] = new Shutdown(this);
+	_commands["topic"] = new Topic(this);
 	_commands["user"] = new User(this);
-	_commands["pass"] = new Pass(this);
-	_commands["invite"] = new Invite(this);
 	_commands["who"] = new Who(this);
 	_commands["whois"] = new Whois(this);
-	_commands["topic"] = new Topic(this);
 }
 
 
@@ -170,11 +163,9 @@ void	Server::initializeCommands(void)
 /****************************************/
 
 /* Manage Connection Requests from New Clients */
-void	Server::handleConnections()
-{
-
+void		Server::handleConnections() {
+	/* Setup variables to manage connection */
 	std::cout << getTimestamp() << RED "Incoming connection request" CLEAR<< std::endl;
-
 	int	new_fd;
 	int	addressLen;
 	struct sockaddr_in clientAddress;
@@ -204,11 +195,9 @@ void	Server::handleConnections()
 }
 
 /* Read incoming data from client socket & perform actions */
-void	Server::handleMessages(Client* client)
+void		Server::handleMessages(Client* client)
 {	
 	std::string	rawMessage;
-
-	
 	/* Client reads entire input string coming from their socket */
 	if (client->read() <= 0)
 	{
@@ -223,7 +212,6 @@ void	Server::handleMessages(Client* client)
 		while (rawMessage.empty() == false)
 		{
 			Message	msg(client, rawMessage);
-
 			/* If command is nick but password has not been validated then remove user and break loop */
 			if (msg.getCommand() == "nick" && !client->getPassStatus())
 			{
@@ -242,22 +230,21 @@ void	Server::handleMessages(Client* client)
 }
 
 /* Execute a command from client */
-void	Server::executeCommand(const Message & msg)
-{
-	try {
-		/* Attempt to execute command */
+void		Server::executeCommand(const Message & msg) {
+	/* Attempt to execute command */
+	try
+	{
 		_commands.at(msg.getCommand())->execute(msg);
 	}
 	/* Error message if command is invalid or not supported */
-	catch(std::out_of_range &e) {
+	catch(std::out_of_range &e)
+	{
 		msg._client->reply(ERR_UNKNOWNCOMMAND(_hostname, msg._client->getNickname(), msg.getCommand()));
-
 	}
 }
 
 /* Main server loop */
-void	Server::runServer(void)
-{
+void		Server::runServer(void) {
 	while (_status == ONLINE)
 	{
 		/* Poll all open sockets for activity */
@@ -292,8 +279,7 @@ void	Server::runServer(void)
 }
 
 /* Stop server and send shutdown message to all clients */
-void	Server::stopServer(void)
-{
+void		Server::stopServer(void) {
 	 _status = OFFLINE;
 	 std::vector<Client*>::iterator it = _clients.begin();
 	 for (; it != _clients.end(); ++it)
@@ -308,8 +294,7 @@ void	Server::stopServer(void)
 /*******************************/
 
 /* Remove a client from the server */
-void	Server::removeClient(Client* client)
-{
+void		Server::removeClient(Client* client) {
 
 	/* Remove client from all channels */
 	std::map<std::string, Channel *>::iterator it = _channels.begin();
@@ -341,10 +326,11 @@ void	Server::removeClient(Client* client)
 }
 
 /* Check if specified nickname is already in use on server */
-bool	Server::doesNickExist(const std::string nick) const {
+bool		Server::doesNickExist(const std::string nick) const {
 	std::vector<Client *>::const_iterator	it = _clients.begin();
 	std::vector<Client *>::const_iterator	ite = _clients.end();
 
+	/* Iterate through clients list and attempt to find specified nickname */
 	while (it != ite)
 	{
 		if ((*it)->getNickname() == nick)
@@ -357,16 +343,14 @@ bool	Server::doesNickExist(const std::string nick) const {
 /* Find and return client pointer using given nickname */
 Client*		Server::getClientPtr(const std::string &client) {
 	std::vector<Client*>::iterator it = _clients.begin();
+	/* Iterate through clients list and attempt to return pointer for given nickname */
 	for (; it != _clients.end(); ++it)
 	{
 		if ((*it)->getNickname() == client)
 			break;
 	}
 	if (it == _clients.end())
-	{
-		std::cerr << RED "Client '" << client << "' was not found." CLEAR << std::endl;
 		return (nullptr);
-	}
 	return *it;
 }
 
@@ -376,17 +360,16 @@ Client*		Server::getClientPtr(const std::string &client) {
 /********************************/
 
 /* Create a new channel with given channel name */
-void	Server::createChannel(const std::string& channel, Client* owner) {
+void		Server::createChannel(const std::string& channel, Client* owner) {
 	/* Check if channel already exists */
 	if (!_channels.empty() && (_channels.find(channel) != _channels.end()))
 		return;
-	if (DEBUG)
-		std::cout << GREEN "New channel created: " CLEAR << channel << std::endl << std::endl;
+	std::cout << getTimestamp() << GREEN "New channel created: " CLEAR << channel << std::endl << std::endl;
 	_channels[channel] = new Channel(channel, owner);
 }
 
 /* Destroy channel with given channel name */
-void	Server::destroyChannel(const std::string& channel) {
+void		Server::destroyChannel(const std::string& channel) {
 	/* Find correct channel in map */
 	std::map<std::string, Channel *>::iterator it = _channels.find(channel);
 	if (it == _channels.end())
@@ -396,14 +379,14 @@ void	Server::destroyChannel(const std::string& channel) {
 }
 
 /* Check if a specified channel name already exists */
-bool	Server::doesChannelExist(const std::string& channel) const {
+bool		Server::doesChannelExist(const std::string& channel) const {
 	if (_channels.find(channel) != _channels.end())
 		return (true);
 	return (false);
 }
 
 /* Check if password provided for given channel is correct */
-bool	Server::channelCheckPass(const std::string& channel, const std::string& pass) {
+bool		Server::channelCheckPass(const std::string& channel, const std::string& pass) {
 	std::map<std::string, Channel *>::iterator it = _channels.find(channel);
 	/* Check if channel exists */
 	if (it == _channels.end())
@@ -418,12 +401,14 @@ bool	Server::channelCheckPass(const std::string& channel, const std::string& pas
 Channel*	Server::getChannelPtr(const std::string& channel) {
 	std::map<std::string, Channel *>::iterator it = _channels.find(channel);
 	if (it == _channels.end())
-	{
-		std::cerr << RED "Channel '" << channel << "' was not found." CLEAR << std::endl;
 		return (nullptr);
-	}
 	return(it->second);
 }
+
+
+/********************************/
+/*      Utility Functions       */
+/********************************/
 
 /* Return a formatted timestamp for current time */
 const std::string	getTimestamp() {
@@ -434,4 +419,3 @@ const std::string	getTimestamp() {
 	output[len] = 0;
 	return (std::string(output));
 }
-

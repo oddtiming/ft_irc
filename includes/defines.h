@@ -10,6 +10,7 @@
 #define MAX_BUFFER_SIZE 512			/* Maximum read size from recv() in bytes */
 #define MAX_CHANNELS 100			/* Maximum number of channels that can exist on server */
 #define PING_INTERVAL 60			/* Interval after which to send a ping to client since their last activity */
+#define MAX_CONNECTIONS 10
 
 /* Global Modes */
 typedef enum e_globalModes {
@@ -41,6 +42,16 @@ typedef enum e_targetType {
 	CHANNEL =			0x1,
 	USER =				0x2
 }	t_targetType;
+
+
+
+
+/* Server Status Enum*/
+typedef enum s_serverStatus {
+	OFFLINE = 0,
+	ONLINE = 1,
+	CLOSED = 2
+}	t_serverStatus;
 
 //NOTE: All +qao members automatically inherit (VOICE | BAN_EXEMPT | INV_EXEMPT)
 //They cannot be placed on ban list, never need an invite, and can always speak
