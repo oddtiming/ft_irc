@@ -18,54 +18,49 @@
 #include <vector>
 #include <map>
 #include <ctime>
+#include <unistd.h>
+#include <netdb.h>
 
 /* Local Includes */
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
+#include "defines.h"
 
 /* Class Prototypes */
 class Command;
 
-#define MAX_CONNECTIONS 10
-
-typedef enum s_serverStatus {
-	OFFLINE = 0,
-	ONLINE = 1,
-	CLOSED = 2
-}	t_serverStatus;
-
 class Server {
 	public:
-		Server(const std::string& hostname, const int port, const std::string& password);
+		Server(const std::string& servername, const int port, const std::string& password);
 		~Server();
 		
 
 		/* Setters & Getters */
-		const std::string&	getServerPassword(void) const { return _password; }
-		const std::string&	getHostname(void) const { return _hostname; }
-		const std::time_t&	getStartTime(void) const { return _timeStart; }
-		const std::string&	getServername(void) const { return _servername; }
+		const std::string&					getServerPassword(void) const	{ return _password; }
+		const std::string&					getHostname(void) const 		{ return _hostname; }
+		const std::time_t&					getStartTime(void) const 		{ return _timeStart; }
+		const std::string&					getServername(void) const 		{ return _servername; }
 	
 		/*************************/
 		/*    Server Operation   */
 		/*************************/
-		void	initializeConnection();
-		void	initializeCommands();
-		void	runServer();
-		void	stopServer();
-		void	handleConnections();
-		void	handleMessages(Client* client);
-		void	executeCommand(const Message & msg);
+		void								initializeConnection();
+		void								initializeCommands();
+		void								runServer();
+		void								stopServer();
+		void								handleConnections();
+		void								handleMessages(Client* client);
+		void								executeCommand(const Message & msg);
 		
 		/*************************/
 		/*   Client Management   */
 		/*************************/
-		bool		doesUserExist(const std::string user) const;
-		bool		doesNickExist(const std::string nick) const;
-		Client* 	getClientPtr(const std::string& client);
-		Channel*	getChannelPtr(const std::string& channel);
-		void		removeClient(Client* client);
+		bool								doesUserExist(const std::string user) const;
+		bool								doesNickExist(const std::string nick) const;
+		Client* 							getClientPtr(const std::string& client);
+		Channel*							getChannelPtr(const std::string& channel);
+		void								removeClient(Client* client);
 
 
 		/************************/
@@ -76,22 +71,6 @@ class Server {
 		void								destroyChannel(const std::string& channel);
 		bool								channelCheckPass(const std::string& channel, const std::string& pass);
 		std::map<std::string, Channel *>	getChannelList() { return _channels; }
-
-
-	/* Exceptions */
-		class pollException : public std::exception {
-			public:
-				const char*	what() const throw() {
-					return("Error when polling");
-				}
-		};
-		class acceptException : public std::exception {
-			public:
-				const char*	what() const throw() {
-					return("Error when accepting");
-				}
-		};
-
 
 	private:
 		/* General Server Data */
@@ -106,6 +85,7 @@ class Server {
 		struct sockaddr_in					_address;
 		int									_socket;
 		std::vector<pollfd>					_pfds;
+		std::string							_ip;
 
 		/* IRC Server Data */
 		std::vector<Client *>				_clients;
@@ -113,6 +93,7 @@ class Server {
 		std::map<std::string, Command *>	_commands;
 };
 
+/* Non-member functions */
 const std::string	getTimestamp();
 
 #endif
