@@ -18,53 +18,51 @@ const std::string	getTimestamp();
 class Client;
 
 class Channel {
-	
-	
 	public:
 	/* Members are stored with their addresses as the key, and their memberModes as the value */
 		typedef uint32_t						Mode;
 		typedef std::map<Client *, Mode>		MemberMap;
 
 		Channel(const std::string& name, Client* owner);
-		~Channel();
+		~Channel() { }
 
 		void	closeChannel();
 
 		/*************************/
 		/*   Setters & Getters   */
 		/*************************/
-		const	std::string& getName() { return (_name); }
-		const	std::string& getTopic() { return (_topic); }
-		void	setTopic(const std::string topic) { _topic = topic; }
-		void	setOwner(Client* owner) { _owner = owner; }
-		void	setPass(const std::string& pass) { _password = pass; }
-
-		Client*		getOwner(void) const { return (_owner); }
-		std::string	getPassword() { return (_password); }
-		int			getHighestRank(Client* client);
-		const std::time_t&	getStartTime(void) const { return _timeStart; }
+		const std::string& 			getName()							{ return (_name); }
+		const std::string& 			getTopic() 							{ return (_topic); }
+		void						setTopic(const std::string topic) 	{ _topic = topic; }
+		void						setOwner(Client* owner) 			{ _owner = owner; }
+		void						setPass(const std::string& pass) 	{ _password = pass; }
+		Client*						getOwner(void) const 				{ return (_owner); }
+		std::string					getPassword() 						{ return (_password); }
+		const std::time_t&			getStartTime(void) const 			{ return _timeStart; }
+		int							getHighestRank(Client* client);
 
 		/*******************************/
 		/*        Mode Management      */
 		/*******************************/
-		void							setModes(char modes, bool removeMode = false);
-		void							setMemberModes(Client* client, char modes, bool removeMode = false);
-		void							setPassword(const std::string& password);
-		bool							checkModes(char modes) const;
-		bool							checkMemberModes(Client *client, char modes) const;
-		std::string 					getChannelModes(void) const;
-		std::vector<std::string> 		getBanList(void) const;
+		void						setModes(char modes, bool removeMode = false);
+		void						setMemberModes(Client* client, char modes, bool removeMode = false);
+		void						setPassword(const std::string& password) { _password = password; }
+		bool						checkModes(char modes) const { return (_modes & modes) == modes; }
+		bool						checkMemberModes(Client *client, char modes) const;
+		std::string 				getChannelModes(void) const;
+		std::vector<std::string>	getBanList(void) const;
 
 
 		/***********************************/
 		/*    Channel Member Management    */
 		/***********************************/
-		bool	isMember(Client* client);
-		void	addMember(Client* client, const std::string& reply, int modes = 0);
-		void	removeMember(Client* client, const std::string& reply);
-		void	ensureOperator(void);
-		std::string getMemberList(void);
-		std::vector<std::string> getMemberVector(void);
+		bool						isMember(Client* client);
+		void						addMember(Client* client, const std::string& reply, int modes = 0);
+		void						removeMember(Client* client, const std::string& reply);
+		void						ensureOperator(void);
+		std::string 				getMemberList(void);
+		std::vector<std::string> 	getMemberVector(void);
+		bool						getIsEmpty() const { return _members.empty(); }
 
 		/* Channel Messaging */
 

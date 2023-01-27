@@ -5,23 +5,10 @@
 
 class Client;
 
-
-/* Constructors & Destructor */
 Channel::Channel(const std::string& name, Client* owner) : _name(name), _owner(owner), _timeStart(std::time(nullptr)) {
 	/* Set default channel modes */
 	_modes = 0;
 	setModes(TOPIC_SET_OP | NO_MSG_IN);
-}
-
-Channel::~Channel() {
-
-}
-
-/* Close channel */
-void	closeChannel() {
-	//FIXME: Ensure all channel members receive proper notification
-	//FIXME: Ensure channel is deleted if there are no members remaining
-	//FIXME: No message being sent when mode +i is set for channel
 }
 
 /*******************************/
@@ -38,11 +25,6 @@ void	Channel::setModes(char modes, bool removeMode) {
 }
 
 /* Set member mode flags for a specified client */
-void	Channel::setPassword(const std::string& password)
-{
-	_password = password;
-}
-
 void	Channel::setMemberModes(Client* client, char modes, bool removeMode) {
 	MemberMap::iterator it = _members.find(client);
 	
@@ -61,6 +43,7 @@ void	Channel::setMemberModes(Client* client, char modes, bool removeMode) {
 			it = _notMembers.find(client);
 		}
 	}
+
 	/* If setmode is to remove flag*/
 	if (removeMode) {
 		if (modes & PASS_REQ)
@@ -69,11 +52,6 @@ void	Channel::setMemberModes(Client* client, char modes, bool removeMode) {
 		return ;
 	}
 	it->second |= modes;
-}
-
-/* Check channel wide mode flags */
-bool	Channel::checkModes(char modes) const {
-	return (_modes & modes) == modes;
 }
 
 /* Check member mode flags for specified client */
@@ -89,6 +67,7 @@ bool	Channel::checkMemberModes(Client* client, char modes) const {
 	return (it->second & modes);
 }
 
+/* Get a string containing all current channel modes */
 std::string 		Channel::getChannelModes(void) const {
 	std::string channelModes;
 	channelModes.append(checkModes(SECRET)			? "s" : "");
@@ -99,6 +78,7 @@ std::string 		Channel::getChannelModes(void) const {
 	return channelModes;
 }
 
+/* Return a list of all banned users */
 std::vector<std::string> 		Channel::getBanList(void) const {
 	std::vector<std::string>	banList;
 	MemberMap::const_iterator	ite;
@@ -142,7 +122,6 @@ void	Channel::addMember(Client* client, const std::string& reply, int modes) {
 		_members.insert(std::pair<Client*, int>(client, modes));
 	}
 	sendToAll(reply);
-	
 	std::cout << getTimestamp() << GREEN "New member: " CLEAR << client->getNickname() << GREEN " joined channel: " CLEAR << this->getName() << std::endl;
 }
 
@@ -170,7 +149,7 @@ void	Channel::removeMember(Client* client, const std::string& reply) {
 	_members.erase(it);
 	
 	/* If member was operator, make sure there is at least one operator in channel */
-	if (wasOpe)
+	if (!_members.empty() && wasOpe)
 		ensureOperator();
 }
 
@@ -221,7 +200,7 @@ void	Channel::ensureOperator(void) {
 	setMemberModes(it->first, C_OP);
 }
 
-/* Send message to all members of channel */
+/* Send message to all members of channel other than client */
 void	Channel::sendToOthers(const std::string& reply, Client* sender) {
 	MemberMap::iterator it = _members.begin();
 
@@ -232,22 +211,9 @@ void	Channel::sendToOthers(const std::string& reply, Client* sender) {
 	}
 }
 
+/* Send reply to all members of channel */
 void	Channel::sendToAll(const std::string& reply) {
 	MemberMap::iterator it = _members.begin();
 	for (; it != _members.end(); ++it)
 			it->first->reply(reply);
 }
-
-/*
-
-:c2r4p2.42quebec.com 482 jon #new to set channel mode k (password protected).
-:bill!jgoad@127.0.0.1 MODE #new2 :+k
-
-:c2r4p2.42quebec.com 475 jon #new2 :Cannot join channel (+k)
-:c2r4p2.42quebec.com 473 jon #new :Cannot join channel (invite only)
-
-
-First channel created sets invite only flag
-Second channel creates cant join with correct password
-
-*/

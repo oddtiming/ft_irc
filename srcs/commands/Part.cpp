@@ -57,6 +57,7 @@ bool	Part::validate(const std::string& channel, Client *client)
 
 
 void	Part::execute(const Message& msg) {
+	//FIXME: Ensure all data is cleared everytime function is called
 	_client = msg._client;
 	if (parse(msg) == false)
 		return ;
@@ -66,7 +67,13 @@ void	Part::execute(const Message& msg) {
 	for (std::vector<std::string>::iterator	it = _targets.begin(); it != ite; ++it)
 	{
 		if (validate(*it, msg._client))
+		{
 			_currTarget->removeMember(msg._client, CMD_PART(_buildPrefix(msg), *it, _partMsg));
+
+			/* If channel is empty, delete it */
+			if (_currTarget->getIsEmpty())
+				_server->destroyChannel(_currTarget->getName());
+		}
 	}
 
 }
