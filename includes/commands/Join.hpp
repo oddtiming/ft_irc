@@ -21,7 +21,7 @@ class Join : public Command
 
         /* Constructors & Destructor */
         Join(Server* server);
-        ~Join();
+        ~Join() { }
 
         /* Public Member Functions */
         bool                parse(const Message& msg);
@@ -31,7 +31,7 @@ class Join : public Command
         bool                checkInvalidChars(const std::string& string);
 
     private:
-        std::vector< std::pair< std::string, std::string > >    _targets;   /* Pairs of channel names w their passwords  */
+        std::vector< std::pair< std::string, std::string > >    _targets;   /* Pairs of channel names /w their passwords  */
         Client*                                                 _client;
 };
 

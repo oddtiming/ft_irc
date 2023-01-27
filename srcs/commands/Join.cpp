@@ -1,18 +1,10 @@
 #include "commands/Join.hpp"
 
-/* Constructors & Destructor */
-Join::Join(Server* server) : Command("join", server) {
-	this->_channelOpRequired = false;
-	this->_globalOpRequired = false;
-}
-
-Join::~Join() {
-}
-
-/* Public Member Functions */
+Join::Join(Server* server) : Command("join", server) { }
 
 /* Parse raw message data into vector of channel/password pairs */
 bool	Join::parse(const Message& msg) {
+
 	/* Error message if not enough information received to execute command */
 	if (msg.getMiddle().empty())
 	{
@@ -25,10 +17,9 @@ bool	Join::parse(const Message& msg) {
 	size_t posChannels = rawChannels.find(',');
 	std::string rawPasswords;
 	size_t posPasswords = std::string::npos;
-	// std::string empty;
 	bool pass = false;
-	
-	/* Check passwords were also provided */
+
+	/* Check if passwords were also provided */
 	if (msg.getMiddle().size() > 1)
 	{
 		pass = true;
@@ -40,18 +31,20 @@ bool	Join::parse(const Message& msg) {
 	while ((posChannels = rawChannels.find(',')) != std::string::npos)
 	{
 		/* If passwords and still remaining passwords add name/pass to vector */
-		if (pass && (posPasswords != std::string::npos))
+		if (pass && !rawPasswords.empty())
 		{
 			_targets.push_back(StringPair(rawChannels.substr(0, posChannels), rawPasswords.substr(0, posPasswords)));
 			rawPasswords.erase(0, posPasswords + 1);
+			posPasswords = rawPasswords.find(',');
 		}
 		/* Otherwise add name and empty password to vector */
 		else
 			_targets.push_back(StringPair(rawChannels.substr(0, posChannels), std::string()));
 		rawChannels.erase(0, posChannels + 1);
 	}
+
 	/* Add remaining name/pass to vector */
-	if (pass && (posPasswords != std::string::npos))
+	if (pass && !rawPasswords.empty())
 		_targets.push_back(StringPair(rawChannels, rawPasswords));
 	else
 		_targets.push_back(StringPair(rawChannels, std::string()));
@@ -69,10 +62,6 @@ bool	Join::validate(StringPair channel) {
 	if (name.size() > 0 && name.at(0) != '#')
 	{
 		_client->reply(ERR_BADCHANMASK(_server->getHostname(), _client->getNickname(), name));
-
-		if (DEBUG)
-			std::cerr << RED "received name is: " << name << CLEAR << std::endl;
-
 		return (false);
 	}
 
@@ -117,9 +106,9 @@ bool	Join::validate(StringPair channel) {
 	}
 	return (true);
 }
-	//FIXME: Implement +k for channel password mode
 
 void	Join::execute(const Message& msg) {
+	_targets.clear();
 
 	/* QoL variable init */
 	_client = msg._client;
@@ -127,7 +116,7 @@ void	Join::execute(const Message& msg) {
 	/* Parse raw message into vector of channel/password pairs */
 	if (!parse(msg))
 		return;
-	
+
 	/* Iterate through channels list and attempt to validate and exectute for each one */
 	ChannelList::iterator 	ite = _targets.end();
 	bool					hasJoined = true;
@@ -150,14 +139,13 @@ void	Join::execute(const Message& msg) {
 			hasJoined = false;
 		}
 
+		/* Get pointer to channel */
 		channelPtr = _server->getChannelPtr(name);
 		if (channelPtr == nullptr)
-		{
-			_targets.clear();
 			return ;
-		}
-		channelPtr->addMember(_client, CMD_JOIN(_buildPrefix(msg), name));
 
+		/* Add new member to channel*/
+		channelPtr->addMember(_client, CMD_JOIN(_buildPrefix(msg), name));
 
 		/* If the channel didn't exist, make the client a channel operator */
 		if (!hasJoined)
@@ -167,13 +155,12 @@ void	Join::execute(const Message& msg) {
 		_client->reply(RPL_NAMREPLY(_server->getHostname(), _client->getNickname(), name, channelPtr->getMemberList()));
 		_client->reply(RPL_ENDOFNAMES(_server->getHostname(), _client->getNickname(), name));
 
-		/* Manage topic reply*/
+		/* Manage topic reply */
 		if (hasJoined && channelPtr->getTopic().size() > 0)
 			_client->reply(RPL_TOPIC(_server->getHostname(), _client->getNickname(), name, channelPtr->getTopic()));
 		else if (hasJoined)
 			_client->reply(RPL_NOTOPIC(_server->getHostname(), _client->getNickname(), name));
 	}
-	_targets.clear();
 }
 
 /* Check for unprintable characters in channel name */
@@ -187,3 +174,5 @@ bool	Join::checkInvalidChars(const std::string& string) {
 	}
 	return (true);
 }
+
+//FIXME: when multiple channels are created at once, all channels after the first are set to invite only
