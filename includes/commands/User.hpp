@@ -9,12 +9,11 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class User : public Command
-{
+class User : public Command {
     public:
         /* Constructors & Destructor */
         User(Server* server);
-        ~User();
+        ~User() { }
 
         /* Public Member Functions */
         bool		validate(const Message& msg);
