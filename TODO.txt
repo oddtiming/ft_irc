@@ -2,47 +2,75 @@
 /*                 TODO LIST                 */
 /*********************************************/
 
-- Cleanup status message output to terminal (ALMOST FINISHED)
-	- Remove (DEBUG) conditional
-	- Add timestamps
-	- Add output to log file
-	- Improve Formatting
-- Check if output buffer is necessary
-	- Do we need/want to use POLLOUT?
-- Fix exceptions and handling (ALMOST FINISHED)
-	- Ensure all thrown exceptions are being caught
-	- Remove exceptions from server class and use std::runtime_error() for general execeptions
-- Genereal cleanup for Channel .cpp and .hpp
-	- Ensure that closing a channel is handles properly, and that all members are notified.
-	- General clean up for channel .cpp and .hpp
-- Review Privmsg
-	- Cleanup and ensure working for @channel and @user
-	- Ensure permissions checks are being done properly in all clientAddress
-- Review topic and add proper permission checks
-	- Ensure topic clearing is handled correctly
-- Review User .cpp and .hpp
-	- Do we need to support sending user modes in the initial JOIN command?
-	- Do we need to support sending REAL NAME in the initial JOIN command?
-- Decide which of the remaining commands we want to support
-- Review Replies.h
+/*    MANDATORY SECTION    */
+- Leak check
+- Thouroughly review each command including:
+	- functionality
+	- replies
+	- logic and formatting
+	= comments
+- Get proper hostname (IP) for server
+	- Set serverName upon initialization
+- Check all printouts
 	- Ensure consistent formatting
-	- Try and find a way to reduce required parameters
+	- Remove debug printouts
+- Check all exception handling
+	- Ensure all thrown exceptions are being caught
+	- Ensure proper use of std::runtime_error vs. custom exception
+- Update readme.md
+- Fix or remove github actions file
+- Remove unused files (syntax_notes, everything in test/)
+
+/*    BONUS SECTION    */
+- Finish writing timebot
+- Confirm steps for demonstrating DCC file transfer during evaluation
 
 
-GENERAL CLEAN UP AND ORGANIZATION!!!
+/*********************************/
+/*    SECTIONS TO BE REVIEWED    */
+/*********************************/
 
-Bonus Section:
-- Write simple GetTime bot that replies to a specifically formatted message with the current time.
+/*    Main Files    */
+Server.cpp/.hpp
+Client.cpp/.hpp
+Channel.cpp/.hpp
+Message.cpp/.hpp
+defines.h
+replies.h
+main.cpp
 
-- Try and get DCC file transfer working properly.
+/*    Commands    */
+Away.cpp/.hpp
+Invite.cpp/.hpp
+Join.cpp/.hpp
+Kick.cpp/.hpp
+List.cpp/.hpp
+Mode.cpp/.hpp
+Names.cpp/.hpp
+Nick.cpp/.hpp
+Notice.cpp/.hpp
+Part.cpp/.hpp
+Pass.cpp/.hpp
+Ping.cpp/.hpp
+Pong.cpp/.hpp
+Privmsg.cpp/.hpp
+Quit.cpp/.hpp
+Shutdown.cpp/.hpp
+Topic.cpp/.hpp
+User.cpp/.hpp
+Who.cpp/.hpp
+Whois.cpp/.hpp
 
 
-KNOWN ERRORS:
+/******************************************/
+/*    SECTIONS THAT HAVE BEEN REVIEWED    */
+/******************************************/
 
-- PART reply message being sent after client QUIT causing segfault
+/*    Main Files    */
 
-- Remove REPLY from removeMember function and place in PART, KICK, QUIT -> removeClient, ban
-	- Ensure that replyToOthers is used in quit so that the message is not sent to the user who quits
+/*    Commands    */
 
 
-- Setting MODE #chan +n does not seem to be working
+/******************************************/
+/*      KNOWN BUGS TO BE ADDRESSED        */
+/******************************************/
