@@ -397,6 +397,7 @@ void		Server::destroyChannel(const std::string& channel) {
 	std::map<std::string, Channel *>::iterator it = _channels.find(channel);
 	if (it == _channels.end())
 		return;
+	std::cout << getTimestamp() << YELLOW "Deleting channel: " << it->first << CLEAR << std::endl; 
 	delete it->second;
 	_channels.erase(it);
 }
