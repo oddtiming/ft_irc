@@ -12,8 +12,7 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Join : public Command
-{
+class Join : public Command {
     public:
         /* QoL typedefs */
         typedef std::vector< std::pair< std::string, std::string > > ChannelList;
@@ -21,18 +20,17 @@ class Join : public Command
 
         /* Constructors & Destructor */
         Join(Server* server);
-        ~Join();
+        ~Join() { }
 
         /* Public Member Functions */
         bool                parse(const Message& msg);
         bool                validate(StringPair channel);
         void                execute(const Message& msg);
-
         bool                checkInvalidChars(const std::string& string);
 
     private:
-        std::vector< std::pair< std::string, std::string > >    _targets;   /* Pairs of channel names w their passwords  */
-        Client*                                                 _client;
+        ChannelList			_targets;   /* Pairs of channel names /w their passwords  */
+        Client*				_client;
 };
 
 #endif

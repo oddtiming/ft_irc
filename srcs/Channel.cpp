@@ -8,12 +8,9 @@ class Client;
 
 /* Constructors & Destructor */
 Channel::Channel(const std::string& name, Client* owner) : _name(name), _owner(owner), _timeStart(std::time(nullptr)) {
-
 	/* Set default channel modes */
+	_modes = 0;
 	setModes(TOPIC_SET_OP | NO_MSG_IN);
-
-	/* Set channel password */
-	//FIXME: Need to set +k flag is password provided. Might want to change so password can only be assigned after channel creation
 }
 
 Channel::~Channel() {
@@ -23,6 +20,8 @@ Channel::~Channel() {
 /* Close channel */
 void	closeChannel() {
 	//FIXME: Ensure all channel members receive proper notification
+	//FIXME: Ensure channel is deleted if there are no members remaining
+	//FIXME: No message being sent when mode +i is set for channel
 }
 
 /*******************************/
@@ -70,9 +69,6 @@ void	Channel::setMemberModes(Client* client, char modes, bool removeMode) {
 		return ;
 	}
 	it->second |= modes;
-	
-	//FIXME:After member mode is set run KICK command on banned user.
-	//TODO: MODE command will remove the client if the provided mode has "+b"
 }
 
 /* Check channel wide mode flags */
@@ -90,7 +86,7 @@ bool	Channel::checkMemberModes(Client* client, char modes) const {
 		if (it == _notMembers.end())
 			return (false);
 	}
-	return (it->second & modes) == modes;
+	return (it->second & modes);
 }
 
 std::string 		Channel::getChannelModes(void) const {
@@ -147,7 +143,7 @@ void	Channel::addMember(Client* client, const std::string& reply, int modes) {
 	}
 	sendToAll(reply);
 	
-	std::cout << getTimestamp() << " : " <<  GREEN "New member: " CLEAR << client->getNickname() << GREEN " joined channel: " CLEAR << this->getName() << std::endl;
+	std::cout << getTimestamp() << GREEN "New member: " CLEAR << client->getNickname() << GREEN " joined channel: " CLEAR << this->getName() << std::endl;
 }
 
 /* Remove a member from channel */
@@ -241,3 +237,17 @@ void	Channel::sendToAll(const std::string& reply) {
 	for (; it != _members.end(); ++it)
 			it->first->reply(reply);
 }
+
+/*
+
+:c2r4p2.42quebec.com 482 jon #new to set channel mode k (password protected).
+:bill!jgoad@127.0.0.1 MODE #new2 :+k
+
+:c2r4p2.42quebec.com 475 jon #new2 :Cannot join channel (+k)
+:c2r4p2.42quebec.com 473 jon #new :Cannot join channel (invite only)
+
+
+First channel created sets invite only flag
+Second channel creates cant join with correct password
+
+*/
