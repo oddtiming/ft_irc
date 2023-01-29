@@ -68,8 +68,9 @@ void	Part::execute(const Message& msg) {
 	{
 		if (validate(*it, msg._client))
 		{
-			_currTarget->removeMember(msg._client, CMD_PART(_buildPrefix(msg), *it, _partMsg));
-
+			/*Sends a part message to every user on the channel then remove the user*/
+			_currTarget->sendToAll(CMD_PART(_buildPrefix(msg), _currTarget->getName(), _partMsg));
+			_currTarget->removeMember(msg._client);
 			/* If channel is empty, delete it */
 			if (_currTarget->getIsEmpty())
 				_server->destroyChannel(_currTarget->getName());

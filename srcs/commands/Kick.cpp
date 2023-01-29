@@ -44,8 +44,8 @@ bool	Kick::validate(const Message& msg) {
 }
 
 void	Kick::execute(const Message& msg) {
-	_client = msg._client;
 	if (validate(msg)) {
+		_client = msg._client;
 		std::string channel = msg.getMiddle().at(0);
 		std::string user = msg.getMiddle().at(1);
 		std::string message;
@@ -55,9 +55,10 @@ void	Kick::execute(const Message& msg) {
 			message = msg.getMiddle().at(2);
 		else
 			message = msg.getTrailing();
-		channelPtr->removeMember(_server->getClientPtr(user),
-													  ":" + _buildPrefix(msg) + " KICK " + channel + " " + user + " :" +
-													  message + "\r\n");
+		/*Sends a kick message to every user on the channel then remove target member*/
+		channelPtr->sendToAll(":" + _buildPrefix(msg) + " KICK " + channel + " " + user + " :" +
+							  message + "\r\n");
+		channelPtr->removeMember(_server->getClientPtr(user));
 		
 		/* If channel is empty, delete it */
 		if (channelPtr->getIsEmpty())

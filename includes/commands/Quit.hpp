@@ -12,16 +12,14 @@
 class Quit : public Command
 {
 	public:
-		/* Constructors & Destructor */
+		typedef std::map<std::string, Channel *> ChannelList;
+	/* Constructors & Destructor */
 		Quit(Server* server);
-		~Quit();
+		~Quit() { };
 
 		/* Public Member Functions */
 		bool                validate(const Message& msg);
 		void                execute(const Message& msg);
-
-	private:
-
 };
 
 #endif
