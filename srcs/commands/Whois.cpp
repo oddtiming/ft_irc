@@ -78,6 +78,4 @@ void Whois::execute(const Message& msg) {
 		msg._client->reply(RPL_ENDOFWHOIS(
 		  _server->getHostname( ), _client->getNickname( ), _target->getNickname( )));
 	}
-
-	// FIXME: Add RPL_LISTSTART in the the proper spot
 }
