@@ -13,20 +13,19 @@ class Notice : public Command {
 	public:
 		/* Constructors & Destructor */
 		Notice(Server* server);
-		~Notice();
+		~Notice() { }
 
 		/* Public Member Functions */
 		bool	validate(const Message& msg);
 		void    execute(const Message& msg);
+		void	clearData();
 
 	private:
-        /* Attributes */
-        std::string _target;
-        std::string _message;
-        bool        _targetIsChannel;
-        
-        /* Private Member Functions */
-        void				_buildMessage(const Message& msg);
+		Client*			_client;
+		Channel*		_channel;
+        std::string		_target;
+        std::string		_message;
+        bool        	_targetIsChannel;
 };
 
 #endif

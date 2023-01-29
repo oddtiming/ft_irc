@@ -1,63 +1,57 @@
 #include "commands/Notice.hpp"
 
 
-Notice::Notice(Server* server) : Command("notice", server) {
-	_channelOpRequired = false;
-	_globalOpRequired = false;
-}
+Notice::Notice(Server* server) : Command("notice", server) { }
 
-Notice::~Notice() {
-
-}
-
+/* Validate if command can be executed */
 bool	Notice::validate(const Message& msg) {
-    std::vector<std::string>  args = msg.getMiddle();
 
-    if(args.size() == 0 || _message.empty())
-        return false;
+	/* If no target parameter return false*/
+	if (!msg.hasMiddle())
+		return false;
 
-    _target = args.at(0);
-    args.erase(args.begin());
-	_targetIsChannel = false;
+	_target = msg.getMiddle().at(0);
+
+	/* If target is a channel */
     if(_target.at(0) == '#')
     {
         _targetIsChannel = true;
-        if(!_server->doesChannelExist(_target) 
-			|| (!_server->getChannelPtr(_target)->isMember(msg._client) 
-				&& (!_server->getChannelPtr(_target)->checkModes(NO_MSG_IN))))
+		
+		/* Check if channel exists */
+		if (!_server->doesChannelExist(_target))
 			return false;
-		return true;
+		
+		_channel = _server->getChannelPtr(_target);
+		/* Check if channel has +n flag and client is not a member */
+		if (!_channel->isMember(_client) && _channel->checkModes(NO_MSG_IN))
+			return false;
     }
-	if (!_server->doesNickExist(_target))
+	/* Check if user target exists */
+	else if (!_server->doesNickExist(_target))
 		return false;
     return true;
 }
 
-void	Notice::execute(const Message& msg)
-{
-	_buildMessage(msg);
+/* Clear data from previous function calls */
+void	Notice::clearData() {
+	_client = nullptr;
+	_channel = nullptr;
+	_target.clear();
+    _message.clear();
+	_targetIsChannel = false;
+}
+
+/* Attempt to validate and execute command */
+void	Notice::execute(const Message& msg) {
+	clearData();
+	_client = msg._client;
 
 	if (!validate(msg))
 		return ;
+	_message = msg.getTrailing();
 
 	if (_targetIsChannel)
-		_server->getChannelPtr(_target)->sendToOthers(
-			CMD_NOTICE(_buildPrefix(msg), _target, _message), msg._client);
+		_channel->sendToOthers(CMD_NOTICE(_buildPrefix(msg), _target, _message), _client);
 	else
-		_server->getClientPtr(_target)->reply(
-			CMD_NOTICE(_buildPrefix(msg), _target, _message));
-}
-
-void	Notice::_buildMessage(const Message& msg)
-{
-	/* Clear the message buffer, since the Privmsg object never gets out of scope */
-	_message.clear();
-	
-	size_t	nb_args = msg.getMiddle().size();
-	
-	/* If the message was a single word, some clients (e.g. Limechat) do not
-		prepend a ':' before it, so it stays in the msg's _middle field */
-	for (size_t i = 2; i < nb_args; ++i)
-		_message.append(msg.getMiddle().at(i));
-	_message.append(msg.getTrailing());
+		_server->getClientPtr(_target)->reply(CMD_NOTICE(_buildPrefix(msg), _target, _message));
 }
