@@ -208,7 +208,7 @@ bool Mode::_inviteOrInvis(bool removeMode) {
 		/* If the mode is already set to what was asked, do nothing */
 		if (removeMode != clientPtr->checkGlobalModes(INVIS))
 			return false;
-		clientPtr->setModes(INVIS, removeMode);
+		clientPtr->setGlobalModes(INVIS, removeMode);
 		return true;
 	}
 
