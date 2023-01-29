@@ -147,6 +147,9 @@ void	Channel::removeMember(Client* client) {
 		ensureOperator( );
 }
 
+/*
+ * @param isMember: Invisible (mode +i) users will only be displayed to member requesting users
+ */
 std::string Channel::getMemberList(bool isMember) {
 	MemberMap::iterator it = _members.begin( );
 	std::string         list;
