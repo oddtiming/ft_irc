@@ -21,6 +21,9 @@
 #define RPL_WHOISSERVER(host, client, target, servername)                                \
 	(":" + (host) + " 312 " + (client) + " " + (target) + " " + (host) + " :"            \
 	 + (servername) + "\r\n") // 312
+#define RPL_ENDOFWHO(host, client, target)                                               \
+	(":" + (host) + " 315 " + (client) + " " + (target) + " :End of /WHOIS list."        \
+	 + "\r\n") // 315
 #define RPL_WHOISIDLE(host, client, target, idle, signon)                                \
 	(":" + (host) + " 317 " + (nick) + " " + (target) + " " + (idle) + " " + (signon)    \
 	 + " :seconds idle, signon time" + "\r\n") // 317
@@ -42,13 +45,16 @@
 	":" + (host) + " 331 " + (client) + " " + (channel) + " :No topic is set"            \
 	  + "\r\n" // 331
 #define RPL_TOPIC(host, client, channel, topic)                                          \
-	":" + (host) + " 332 " + (client) + " " + (channel) + " :" + (topic) + "\r\n" // 332
+	(":" + (host) + " 332 " + (client) + " " + (channel) + " :" + (topic) + "\r\n") // 332
 #define RPL_INVITING(host, client, target, channel)                                      \
-	":" + (host) + " 341 " + (client) + " " + (target) + " :" + (channel) + "\r\n" // 341
+	(":" + (host) + " 341 " + (client) + " " + (target) + " :" + (channel) + "\r\n") // 341
+#define RPL_WHOREPLY(host, target, nick, user, status, real)                             \
+	(":" + (host) + " 352 " + (target) + " " + (nick) + " " + (user) + " " + (host)      \
+	 + " " + (status) + " :0 " + (real) + "\r\n") // 352
 #define RPL_NAMREPLY(host, nick, channel, users)                                         \
-	":" + (host) + " 353 " + (nick) + " = " + (channel) + " :" + users + "\r\n" // 353
+	(":" + (host) + " 353 " + (nick) + " = " + (channel) + " :" + users + "\r\n") // 353
 #define RPL_ENDOFNAMES(host, nick, channel)                                              \
-	":" + (host) + " 366 " + (nick) + " " + (channel) + " :End of /NAMES list.\r\n" // 366
+	(":" + (host) + " 366 " + (nick) + " " + (channel) + " :End of /NAMES list.\r\n") // 366
 #define RPL_BANLIST(host, client, target, user)                                          \
 	(":" + (host) + " 367 " + (client) + " " + (target) + " " + (user) + " " + (client)  \
 	 + "\r\n") // 367

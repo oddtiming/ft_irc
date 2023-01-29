@@ -7,11 +7,16 @@
 #include <string>
 
 /* Local Includes */
-#include "../Command.hpp"
+#include "Client.hpp"
+#include "Command.hpp"
+#include "defines.h" // e_targetType{}
 
 class Who : public Command
 {
   public:
+	/* QoL typedefs */
+	typedef std::map< std::string, Channel* > ChannelList;
+
 	/* Constructors & Destructor */
 	Who(Server* server);
 	~Who( );
@@ -22,7 +27,13 @@ class Who : public Command
 
   private:
 	/* Private member attributes */
-	bool _requestOpers;
+	Client* _client;
+	void*   _target;
+	int     _targetType;
+
+	/* Private member functions */
+	void _listChannelMembers();
+	void _listClientChannels();
 };
 
 #endif
