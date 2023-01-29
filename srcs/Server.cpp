@@ -5,7 +5,6 @@
 #include "replies.h"
 
 /* Command Includes */
-
 #include "commands/Away.hpp"
 #include "commands/Invite.hpp"
 #include "commands/Join.hpp"
@@ -204,6 +203,12 @@ void		Server::handleMessages(Client* client)
 	{
 		/* Handle forcefully disconnected clients */
 		std::cout << getTimestamp() << RED "Removing disconnected client: " CLEAR << client->getUsername() << std::endl;
+		std::map<std::string, Channel*>::iterator it = _channels.begin();
+		for (; it != _channels.end(); ++it)
+		{
+			if (it->second->isMember(client))
+				it->second->sendToOthers(CMD_QUIT(client->getNickname(), client->getUsername(), client->getAddress()));
+		}
 		removeClient(client);
 	}
 	else
@@ -325,7 +330,7 @@ void		Server::removeClient(Client* client) {
 	{
 		/* Remove ban from user to prevent stale memory pointer from remaining in _notMembers */
 		it->second->setMemberModes(client, BAN, true);
-		it->second->removeMember(client, CMD_PART(client->getNickname(), it->second->getName(), ""));
+		it->second->removeMember(client);
 	}
 
 	/* Remove client socket from pollFD vector */

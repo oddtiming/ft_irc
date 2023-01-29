@@ -9,26 +9,23 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Part : public Command
-{
+class Part : public Command {
     public:
         /* Constructors & Destructor */
         Part(Server* server);
-        ~Part();
+        ~Part() { }
 
         /* Public Member Functions */
         bool                parse(const Message& msg);
         bool                validate(const std::string& channel, Client *client);
         void                execute(const Message& msg);
+        void                clearData();
 
     private:
         Client*                     _client;
-        std::vector<std::string>    _targets;
-        std::string                 _partMsg;
         Channel *                   _currTarget;
-
-        /* FIXME: not needed for now, but it was there when I overhauled the fct, ask @alx if he uses it */
-        static std::string          _validChanPrefixes;
+        std::vector<std::string>    _targetChannels;
+        std::string                 _message;
 };
 
 

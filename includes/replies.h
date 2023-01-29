@@ -40,10 +40,12 @@
 #define CMD_PART_NO_MSG(prefix, channel) ":" + (prefix) + " PART " + (channel) + "\r\n"
 #define CMD_INVITE(prefix, targetnick, channel) ":" + (prefix) + " INVITE " + (targetnick) + " " + (channel) + "\r\n"
 #define CMD_MODE(prefix, channel, modes) ":" + (prefix) + " MODE " + (channel) + " :" + (modes) + "\r\n"
+#define	CMD_KICK(prefix, channel, target, msg) ":" + (prefix) + " KICK " + (channel) + " " + (target) + " :" + (msg) + "\r\n"
+#define CMD_QUIT(nick, user, ip) ":" + (nick) + "!" + (user) + "@" + (ip) + " QUIT :Connection closed" + "\r\n"
+
+
 
 /* Error Messages */
-
-/* TESTED */
 #define ERR_UMODEUNKNOWNFLAG(host, client, mode) ":" + (host) + " 501 " + (client) + " " + (mode) + " :is not a recognised user mode" + "\r\n" 					//501
 #define ERR_KEYSET(host, client, target) ":" + (host) + " 467 " + (client) + " " + (target) + " :Channel key already set" + "\r\n" 								//467
 #define ERR_SHUTDOWN(user, address) "ERROR :Closing link: (" + (user) + "@" + (address) + ") [Server shutting down]\r\n"
@@ -52,10 +54,7 @@
 #define ERR_UNKNOWNMODE(host, client, mode) ":" + (host) + " 472 " + (client) + " " + (mode) + " :is not a recognised channel mode" + "\r\n" 					//472
 #define	ERR_INVITEONLYCHAN(host, client, target) ":" + (host) + " 473 " + (client) + " " + (target) + " :Cannot join channel (invite only)" + "\r\n" 			//473
 #define ERR_USERSDONTMATCH(host, nick) ":" + (host) + " 502 " + (nick) + " :Can't view modes for other users" + "\r\n" 											//502
-
-
-
-/* TO BE TESTED */
+#define ERR_LOSTCONNECT(user, address) "ERROR :Closing link: (" + (user) + "@" + (address) + ") [Connection closed]\r\n"
 #define ERR_UNKNOWNCOMMAND(host, client, target) ":" + (host) + " 421 " + (client) + " " + (target) + " :Unknown command" + "\r\n"								//421
 #define ERR_NORECIPIENT(host, client, cmd) ":" + (host) + " 411 " + (client) + " :No recipient given (" + (cmd) + ")" + "\r\n"									//411
 #define ERR_NOTEXTTOSEND(host, client, target) ":" + (host) + " 412 " + (client) + " " + (target) + " :No text to send" + "\r\n"								//412

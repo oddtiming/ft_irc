@@ -1,66 +1,73 @@
 #include "commands/Kick.hpp"
 
-Kick::Kick(Server* server) : Command("kick", server) {
-	_channelOpRequired = true;
-	_globalOpRequired = false;
-}
-
-
-Kick::~Kick() {
-
-}
+Kick::Kick(Server* server) : Command("kick", server) { }
 
 bool	Kick::validate(const Message& msg) {
 	std::vector<std::string>	middle = msg.getMiddle();
 
-	/*check if there's a target for the command*/
+	/* Check if there's a target for the command */
 	if (middle.size() < 2)
 	{
-		msg._client->reply(ERR_NEEDMOREPARAMS(_server->getHostname(), _client->getNickname(), msg.getCommand()));
+		_client->reply(ERR_NEEDMOREPARAMS(_server->getHostname(), _client->getNickname(), msg.getCommand()));
 		return false;
 	}
-	std::string					channel = middle.at(0);
-	std::string					user = middle.at(1);
-	/*check if channel exists*/
-	if (!_server->getChannelPtr(channel)->checkMemberModes(msg._client, C_OP)) {
-		msg._client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), channel, "kick"));
+	_targetChannel = middle.at(0);
+	_targetUser = middle.at(1);
+
+
+	/* Check if channel exists */
+	if (!_server->doesChannelExist(_targetChannel)) {
+		_client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), _client->getNickname(), _targetChannel));
 		return false;
 	}
-	if (!_server->doesChannelExist(channel)){
-		msg._client->reply(ERR_NOSUCHCHANNEL(_server->getHostname(), msg._client->getNickname(), channel));
+	_channel = _server->getChannelPtr(_targetChannel);
+
+	/* Check if client has OP privs for specified channel */
+	if (_channel->checkMemberModes(_client, C_OP)) {
+		_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _targetChannel, "kick"));
 		return false;
 	}
-	/*check if target user is on the channel*/
-	if (!_server->getChannelPtr(channel)->isMember(msg._client)){
-		msg._client->reply(ERR_NOTONCHANNEL(_server->getHostname(), _client->getNickname(), channel));
+
+	/* Check if client is a member of the specified channel */
+	if (!_channel->isMember(_client)) {
+		_client->reply(ERR_NOTONCHANNEL(_server->getHostname(), _client->getNickname(), _targetChannel));
 		return false;
 	}
-	/*check if target is a member of the channel*/
-	if (!_server->getChannelPtr(channel)->isMember(_server->getClientPtr(user))){
-		msg._client->reply(ERR_NOSUCHNICK(_server->getHostname(), _client->getNickname(), user));
+
+	/* Check if target is a member of the specified channel */
+	if (!_channel->isMember(_server->getClientPtr(_targetUser))) {
+		_client->reply(ERR_NOSUCHNICK(_server->getHostname(), _client->getNickname(), _targetUser));
 		return false;
 	}
 	return true;
 }
 
+/* Clear all data from previous function calls */
+void	Kick::clearData() {
+	_client = nullptr;
+	_channel = nullptr;
+	_targetChannel.clear();
+	_targetUser.clear();
+	_message.clear();
+}
+
 void	Kick::execute(const Message& msg) {
+	/* Ensure that all data from previous function calls is removed */
+	clearData();
 	_client = msg._client;
 	if (validate(msg)) {
-		std::string channel = msg.getMiddle().at(0);
-		std::string user = msg.getMiddle().at(1);
-		std::string message;
-		Channel* channelPtr = _server->getChannelPtr(channel);
-
-		if (msg.getMiddle().size() > 2)
-			message = msg.getMiddle().at(2);
-		else
-			message = msg.getTrailing();
-		channelPtr->removeMember(_server->getClientPtr(user),
-													  ":" + _buildPrefix(msg) + " KICK " + channel + " " + user + " :" +
-													  message + "\r\n");
 		
+		/* If a kick message was provided then add to reply */
+		_message = msg.getTrailing();
+	
+		/* Send message to all channel members */
+		_channel->sendToAll(CMD_KICK(_buildPrefix(msg), _targetChannel, _targetUser, _message));
+
+		/* Remove kicked user from channel */
+		_channel->removeMember(_server->getClientPtr(_targetUser));
+
 		/* If channel is empty, delete it */
-		if (channelPtr->getIsEmpty())
-			_server->destroyChannel(channel);
+		if (_channel->getIsEmpty())
+			_server->destroyChannel(_targetChannel);
 	}
 }
