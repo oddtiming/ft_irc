@@ -9,18 +9,14 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Pong : public Command
-{
+class Pong : public Command {
     public:
         /* Constructors & Destructor */
         Pong(Server* server);
-        ~Pong();
+        ~Pong() { }
 
         /* Public Member Functions */
         void                execute(const Message& msg);
-
-    private:
-
 };
 
 #endif
