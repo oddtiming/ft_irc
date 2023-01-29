@@ -60,16 +60,14 @@ INC_FILES		:=	defines.h \
 					commands/Shutdown.hpp
 
 
-
-
 #---------------------------------------------------------#
 #   Directory information and object directory building   #
 #---------------------------------------------------------#
 
+BOTS_DIR		:= ./bots
 
 INC_DIR			:= ./includes
 INCS			= $(addprefix $(INC_DIR)/, $(INC_FILES))
-INCS			:= 
 
 SRC_DIR			= ./srcs
 SRCS			= $(addprefix $(SRC_DIR)/, $(CPP_FILES))
@@ -94,7 +92,11 @@ CFLAGS			= -Wall -Wextra -Werror -Wshadow -Wno-shadow -std=c++98 -I$(INC_DIR) -g
 #--------------------------------#
 
 all:			$(NAME)
-				@echo Done.
+				@echo Compiled executable $(NAME).
+
+bots:			
+				@echo Launching Bots..
+				@make -s run -C $(BOTS_DIR)
 
 $(NAME):		$(OBJS)
 				@$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
@@ -102,11 +104,13 @@ $(NAME):		$(OBJS)
 clean:			
 				@$(RM) $(OBJ_DIR)
 				@echo Clean complete.
+clean_bots:			
+				@make -s fclean -C $(BOTS_DIR)
 
-fclean:			clean
+fclean:			clean clean_bots
 				@$(RM) $(NAME)
 				@echo Full clean complete.
 
 re:				fclean $(NAME)
 
-.PHONY:			all clean fclean re
+.PHONY:			all bots clean clean_bots fclean re 
