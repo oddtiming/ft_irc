@@ -19,7 +19,9 @@ typedef enum e_globalModes {
 	              * DEPRECATED this fiels is currently unused */
 	AWAY  = 0x2, /* a: away (user mode is set as away)
 	              * INTERNAL USE ONLY, set through /away command. */
-	INVIS = 0x4  /* i: invisible (user should not be announced to channel) */
+	INVIS = 0x4  /* i: invisible (user should not be announced to channel)
+	              * DEPRECATED this fiels is currently unused, reference client (irssi)
+	              * does not work with it */
 } t_globalModes;
 
 /* Channel Modes */

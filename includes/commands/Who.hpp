@@ -11,17 +11,18 @@
 
 class Who : public Command
 {
-public:
+  public:
 	/* Constructors & Destructor */
 	Who(Server* server);
-	~Who();
+	~Who( );
 
 	/* Public Member Functions */
-	bool                validate(const Message& msg);
-	void                execute(const Message& msg);
+	bool validate(const Message& msg);
+	void execute(const Message& msg);
 
-private:
-
+  private:
+	/* Private member attributes */
+	bool _requestOpers;
 };
 
 #endif

@@ -217,34 +217,6 @@ bool Mode::_inviteOrInvis(bool removeMode) {
 	        false);
 }
 
-// std::string mode("i");
-
-// /* If the target is a user, +i is currently unrecognized */
-// if (_targetType == USER)
-// 	return (_client->reply(ERR_UMODEUNKNOWNFLAG(
-// 	          _server->getHostname( ), _client->getNickname( ), mode)),
-// 	        false);
-
-// /* If the target is a channel, set its mode to +i */
-// Channel *channelPtr = _server->getChannelPtr(_target);
-// if (!channelPtr)
-// 	return false;
-
-// /* Ensure the query comes from an authorized user (chan op or higher)  */
-// if (!channelPtr->checkMemberModes(_client, C_OP | OWNER))
-// 	return (
-// 	  _client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname( ),
-// 	                                      _client->getNickname( ),
-// 	                                      _target,
-// 	                                      "to set channel mode i (invite only).")),
-// 	  false);
-
-// if (removeMode != channelPtr->checkModes(INV_ONLY))
-// 	return false;
-// channelPtr->setModes(INV_ONLY, removeMode);
-// return true;
-// }
-
 /* +n - no message in channel mode (users that are not channel members can not
  * send messages to channel) */
 bool Mode::_no_msg_in(bool removeMode) {
@@ -330,15 +302,15 @@ bool Mode::_ban(bool removeMode) {
 	if (!channelPtr)
 		return false;
 
+	if (_params.empty( ))
+		return (sendBanList( ), false);
+
 	if (!channelPtr->checkMemberModes(_client, C_OP | OWNER))
 		return (_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname( ),
 		                                            _client->getNickname( ),
 		                                            _target,
 		                                            "to set user mode b (ban).")),
 		        false);
-
-	if (_params.empty( ))
-		return (sendBanList( ), false);
 
 	targetNick = _params.at(0);
 	_params.erase(_params.begin( ));

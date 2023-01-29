@@ -109,8 +109,9 @@
 	  + "\r\n" // 411
 #define ERR_NOTEXTTOSEND(host, client, target)                                           \
 	":" + (host) + " 412 " + (client) + " " + (target) + " :No text to send"             \
-	  + "\r\n"                                                                      // 412
-#define ERR_NONICKNAMEGIVEN(host) ":" + (host) + " 431 :No nickname given" + "\r\n" // 431
+	  + "\r\n" // 412
+#define ERR_NONICKNAMEGIVEN(host)                                                        \
+	":" + (host) + " 431 : No nickname given" + "\r\n" // 431
 #define ERR_ERRONEUSNICKNAME(host, nick)                                                 \
 	":" + (host) + " 432 " + (nick) + " :Erroneous nickname" + "\r\n" // 432
 #define ERR_NICKNAMEINUSE(host, nick)                                                    \
@@ -137,7 +138,7 @@
 	":" + (host) + " 404 " + (client) + " " + (target) + " :You cannot send " + (msg)    \
 	  + "\r\n" // 404
 #define ERR_CHANOPRIVSNEEDED(host, client, target, modeMessage)                          \
-	":" + (host) + " 482 " + (client) + " " + (target) + " " + (modeMessage)             \
-	  + "\r\n" // 482
+	":" + (host) + " 482 " + (client) + " " + (target)                                   \
+	  + " :You must be channel op or higher " + (modeMessage) + "\r\n" // 482
 #define ERR_NOTREGISTERED(host)                                                          \
 	":" + (host) + " 451 :You have not registered" + "\r\n" // 451
