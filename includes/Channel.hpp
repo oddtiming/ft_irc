@@ -59,7 +59,7 @@ class Channel
 	/***********************************/
 	bool        isMember(Client* client);
 	void        addMember(Client* client, const std::string& reply, int modes = 0);
-	void        removeMember(Client* client, const std::string& reply);
+	void        removeMember(Client* client);
 	void        ensureOperator(void);
 	std::string getMemberList(void);
 	size_t      getNbVisibleUsers(void) const;

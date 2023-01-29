@@ -1,13 +1,6 @@
 #include "commands/Quit.hpp"
 
-Quit::Quit(Server* server) : Command("quit", server) {
-	_channelOpRequired = false;
-	_globalOpRequired = false;
-}
-
-Quit::~Quit() {
-
-}
+Quit::Quit(Server* server) : Command("quit", server) { }
 
 bool	Quit::validate(const Message& msg) {
 
@@ -17,13 +10,21 @@ bool	Quit::validate(const Message& msg) {
 
 void	Quit::execute(const Message& msg) {
 	/* Check permissions for execution of function */
-	//FIXME: check for proper response to quit
-	std::string message = "QUIT ";
-
+	std::string message = "";
 	if (!msg.getTrailing().empty())
 	{
 		message += msg.getTrailing();
 	}
-	msg._client->reply(message);
+	Client *_client = msg._client;
+	/* Iterate over every channel to see which the target user is part of*/
+	ChannelList channelList = _server->getChannelList();
+	ChannelList::iterator it = channelList.begin();
+	ChannelList::iterator ite = channelList.end();
+	for (; it != ite; ++it)
+	{
+		/*Sends a quit message to every user on the channel then remove client member*/
+		if (it->second->isMember(_client))
+			it->second->sendToAll(CMD_PART(_buildPrefix(msg), it->first, message));
+	}
 	_server->removeClient(msg._client);
 }

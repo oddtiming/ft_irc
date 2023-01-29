@@ -9,20 +9,23 @@
 /* Local Includes */
 #include "Command.hpp"
 
-class Kick : public Command
-{
+class Kick : public Command {
     public:
         /* Constructors & Destructor */
         Kick(Server *server);
-        ~Kick();
+        ~Kick() { }
 
         /* Public Member Functions */
         bool                validate(const Message& msg);
         void                execute(const Message& msg);
+        void                clearData();
 
     private:
-        Client*     _client;
-
+        Client*         _client;
+        Channel*        _channel;
+        std::string     _targetChannel;
+        std::string     _targetUser;
+        std::string     _message;
 };
 
 #endif

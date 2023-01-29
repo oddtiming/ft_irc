@@ -70,14 +70,14 @@
 #define CMD_PART(prefix, channel, message)                                               \
 	":" + (prefix) + " PART " + (channel) + " :" + (message) + "\r\n"
 #define CMD_PART_NO_MSG(prefix, channel) ":" + (prefix) + " PART " + (channel) + "\r\n"
+#define	CMD_KICK(prefix, channel, target, msg) ":" + (prefix) + " KICK " + (channel) + " " + (target) + " :" + (msg) + "\r\n"
+#define CMD_QUIT(nick, user, ip) ":" + (nick) + "!" + (user) + "@" + (ip) + " QUIT :Connection closed" + "\r\n"
 #define CMD_INVITE(prefix, targetnick, channel)                                          \
 	":" + (prefix) + " INVITE " + (targetnick) + " " + (channel) + "\r\n"
 #define CMD_MODE(prefix, channel, modes)                                                 \
 	":" + (prefix) + " MODE " + (channel) + " :" + (modes) + "\r\n"
 
 /* Error Messages */
-
-/* TESTED */
 #define ERR_UMODEUNKNOWNFLAG(host, client, mode)                                         \
 	":" + (host) + " 501 " + (client) + " " + (mode) + " :is not a recognised user mode" \
 	  + "\r\n" // 501
@@ -100,7 +100,6 @@
 #define ERR_USERSDONTMATCH(host, nick)                                                   \
 	":" + (host) + " 502 " + (nick) + " :Can't view modes for other users" + "\r\n" // 502
 
-/* TO BE TESTED */
 #define ERR_UNKNOWNCOMMAND(host, client, target)                                         \
 	":" + (host) + " 421 " + (client) + " " + (target) + " :Unknown command"             \
 	  + "\r\n" // 421

@@ -1,16 +1,11 @@
 #include "commands/Part.hpp"
 
-/* Constructors & Destructor */
-Part::Part(Server* server) : Command("part", server) {
-	this->_channelOpRequired = false;
-	this->_globalOpRequired = false;
-}
+Part::Part(Server* server) : Command("part", server) { }
 
-Part::~Part() {
-}
-
+/* Parse msg to get list of all channels */
 bool	Part::parse(const Message& msg)
 {
+	/* If message is empty send error reply */
     if (msg.getMiddle().empty())
 	{
 		msg._client->reply(ERR_NEEDMOREPARAMS(_server->getHostname(), _client->getNickname(), msg.getCommand()));
@@ -20,23 +15,24 @@ bool	Part::parse(const Message& msg)
 	std::string raw = msg.getMiddle().at(0);
 	size_t pos;
 
+	/* Iterate through string and split out all channel names */
 	while ((pos = raw.find(',')) != std::string::npos)
 	{
-		_targets.push_back(raw.substr(0, pos));
+		_targetChannels.push_back(raw.substr(0, pos));
 		raw.erase(0, pos + 1);
 	}
     if (raw.size() > 0)
-		_targets.push_back(raw);
+		_targetChannels.push_back(raw);
 	
-    _partMsg = msg.getTrailing();
+	/* Get part message */
+    _message = msg.getTrailing();
 	
 	return true;
 }
 
-/* Public Member Functions */
-bool	Part::validate(const std::string& channel, Client *client)
-{	
-	Channel * target = _server->getChannelPtr(channel);
+/* Run validation to ensure command can be executed */
+bool	Part::validate(const std::string& channel, Client *client) {	
+	Channel* target = _server->getChannelPtr(channel);
 
 	if (target == nullptr)
 	{
@@ -55,20 +51,27 @@ bool	Part::validate(const std::string& channel, Client *client)
 	return true;
 }
 
-
+/* Control function for command */
 void	Part::execute(const Message& msg) {
-	//FIXME: Ensure all data is cleared everytime function is called
+	clearData();
 	_client = msg._client;
+
+	/* Attempt to parse command parameters */
 	if (parse(msg) == false)
 		return ;
 
-	std::vector<std::string>::iterator	ite = _targets.end();
+	/* Iterate through target channels and attempt to validate and execute command for each one */
+	std::vector<std::string>::iterator	ite = _targetChannels.end();
 
-	for (std::vector<std::string>::iterator	it = _targets.begin(); it != ite; ++it)
+	for (std::vector<std::string>::iterator	it = _targetChannels.begin(); it != ite; ++it)
 	{
 		if (validate(*it, msg._client))
 		{
-			_currTarget->removeMember(msg._client, CMD_PART(_buildPrefix(msg), *it, _partMsg));
+			/* Send reply to all channel members */
+			_currTarget->sendToAll(CMD_PART(_buildPrefix(msg), *it, _message));
+
+			/* Remove members from channel */
+			_currTarget->removeMember(_client);
 
 			/* If channel is empty, delete it */
 			if (_currTarget->getIsEmpty())
@@ -78,4 +81,10 @@ void	Part::execute(const Message& msg) {
 
 }
 
-std::string Part::_validChanPrefixes = "#&!+";
+/* Clear all data from previous function calls */
+void	Part::clearData() {
+	_client = nullptr;
+	_currTarget = nullptr;
+	_targetChannels.clear();
+	_message.clear();
+}
