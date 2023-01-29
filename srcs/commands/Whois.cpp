@@ -27,11 +27,11 @@ bool Whois::validate(const Message& msg) {
 void Whois::execute(const Message& msg) {
 	_client = msg._client;
 	if (validate(msg)) {
-		std::string host    = _server->getHostname( );
-		std::string nick    = _target->getNickname( );
-		std::string user    = _target->getUsername( );
-		std::string address = _target->getAddress( );
-		std::string real    = _target->getRealname( );
+		const std::string& host    = _server->getHostname( );
+		const std::string& nick    = _target->getNickname( );
+		const std::string& user    = _target->getUsername( );
+		const std::string& address = _target->getAddress( );
+		const std::string& real    = _target->getRealname( );
 		msg._client->reply(
 		  RPL_WHOISUSER(host, _client->getNickname( ), nick, user, address, real));
 
@@ -41,6 +41,7 @@ void Whois::execute(const Message& msg) {
 		ChannelList::iterator ite         = channelList.end( );
 		bool                  hasTargets  = false;
 
+		
 		std::string reply;
 		for (; it != ite; ++it) {
 			/* If both querying and target users share the channel, target is not set as

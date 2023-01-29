@@ -3,8 +3,6 @@
 #--------------------------------#
 NAME			:= ircBot
 
-PID_FILES 		:= pid1 pid2 pid3
-
 CPP_FILES		:=	main.cpp \
 					Bot.cpp \
 					TimeBot.cpp \
@@ -73,13 +71,22 @@ run: all
 	@echo "Launched $(ARG1)Bot, $(ARG2)Bot, and $(ARG3)Bot"
 
 clean:
-	-kill `cat $(PID1)`
-	-kill `cat $(PID2)`
-	-kill `cat $(PID3)`
-	@echo "Killed program instances PIDs `cat $(PID1)`, `cat $(PID2)`, `cat $(PID3)` stopped"
-	@rm $(PID1) $(PID2) $(PID3)
+	@if [ -f $(PID1) ]; then \
+	  kill `cat $(PID1)` 2&> /dev/null; \
+	  echo "Killed program instance with PID `cat $(PID1)`"; \
+	fi
+	@if [ -f $(PID2) ]; then \
+	  kill `cat $(PID2)` 2&> /dev/null; \
+	  echo "Killed program instance with PID `cat $(PID2)`"; \
+	fi
+	@if [ -f $(PID3) ]; then \
+	  kill `cat $(PID3)` 2&> /dev/null; \
+	  echo "Killed program instance with PID `cat $(PID3)`"; \
+	fi
+	@rm -f $(PID1) $(PID2) $(PID3)
 	@$(RM) $(OBJ_DIR)
-	@echo Bots Clean complete.
+	@echo "Bots Clean complete."
+
 
 
 $(NAME):		$(OBJS)

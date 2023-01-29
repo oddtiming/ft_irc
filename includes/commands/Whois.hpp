@@ -11,21 +11,22 @@
 
 class Whois : public Command
 {
-public:
+  public:
 	/* QoL typedefs */
-	typedef std::map<std::string, Channel *> ChannelList;
+	typedef std::map< std::string, Channel* > ChannelList;
 
 	/* Constructors & Destructor */
 	Whois(Server* server);
-	~Whois();
+	~Whois( );
 
 	/* Public Member Functions */
-	bool                validate(const Message& msg);
-	void                execute(const Message& msg);
+	bool validate(const Message& msg);
+	void execute(const Message& msg);
 
-private:
-	Client*		_client;
-	Client*		_target;
+  private:
+	/* Private member attributes */
+	Client* _client;
+	Client* _target;
 };
 
 #endif
