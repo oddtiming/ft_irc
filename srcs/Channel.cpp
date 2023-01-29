@@ -147,7 +147,7 @@ void	Channel::removeMember(Client* client) {
 		ensureOperator( );
 }
 
-std::string Channel::getMemberList(void) {
+std::string Channel::getMemberList(bool isMember) {
 	MemberMap::iterator it = _members.begin( );
 	std::string         list;
 
@@ -156,7 +156,10 @@ std::string Channel::getMemberList(void) {
 	/*loops through the MemberMap and build a space-separated list of every nickname
 	 * on this channel, adding a '@' in front of the nick of owner/ops */
 	for (; it != _members.end( ); ++it) {
-		if (it->second == C_OP || it->second == OWNER)
+		if (!isMember && it->first->checkGlobalModes(INVIS)){
+			continue;
+		}
+		if (checkMemberModes(it->first,C_OP | OWNER))
 			list.append("@" + it->first->getNickname( ));
 		else
 			list.append(it->first->getNickname( ));

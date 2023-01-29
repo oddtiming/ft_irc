@@ -147,7 +147,7 @@ void Join::execute(const Message& msg) {
 		_client->reply(RPL_NAMREPLY(_server->getHostname( ),
 		                            _client->getNickname( ),
 		                            name,
-		                            channelPtr->getMemberList( )));
+		                            channelPtr->getMemberList(channelPtr->isMember(_client))));
 		_client->reply(
 		  RPL_ENDOFNAMES(_server->getHostname( ), _client->getNickname( ), name));
 
