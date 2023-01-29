@@ -127,6 +127,7 @@ void	Channel::addMember(Client* client, const std::string& reply, int modes) {
 
 /* Remove a member from channel */
 void	Channel::removeMember(Client* client) {
+void	Channel::removeMember(Client* client) {
 	bool				wasOpe = false;
 	MemberMap::iterator it = _members.find(client);
 
