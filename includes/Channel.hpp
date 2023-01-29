@@ -61,7 +61,7 @@ class Channel
 	void        addMember(Client* client, const std::string& reply, int modes = 0);
 	void        removeMember(Client* client);
 	void        ensureOperator(void);
-	std::string getMemberList(void);
+	std::string getMemberList(bool isMember);
 	size_t      getNbVisibleUsers(void) const;
 	bool        getIsEmpty( ) const { return _members.empty( ); }
 	std::vector< std::string > getMemberVector(void);

@@ -33,8 +33,14 @@ void	Names::execute(const Message& msg) {
 	if (validate(msg)) {
 		if (_hasTarget)
 		{
+			Channel *targetChannel = _server->getChannelPtr(_target);
+			bool clientIsMember = targetChannel->isMember(msg._client);
+
 			/*if the command has a _target, sends back its name and users as reply*/
-			msg._client->reply(RPL_NAMREPLY(_server->getHostname(), msg._client->getNickname(), _target, _server->getChannelPtr(_target)->getMemberList()));
+			if (!targetChannel->checkModes(SECRET) || clientIsMember) {
+				msg._client->reply(RPL_NAMREPLY(_server->getHostname(), msg._client->getNickname(), _target,
+												targetChannel->getMemberList(clientIsMember)));
+			}
 			msg._client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), _target));
 		}
 		else
@@ -47,7 +53,7 @@ void	Names::execute(const Message& msg) {
 			{
 				if (!itC->second->checkModes(SECRET) || itC->second->isMember(msg._client)) {
 					msg._client->reply(RPL_NAMREPLY(_server->getHostname(), msg._client->getNickname(), itC->first,
-													itC->second->getMemberList()));
+													itC->second->getMemberList(itC->second->isMember(msg._client))));
 					msg._client->reply(RPL_ENDOFNAMES(_server->getHostname(), msg._client->getNickname(), itC->first));
 				}
 			}
