@@ -207,7 +207,7 @@ void		Server::handleMessages(Client* client)
 		for (; it != _channels.end(); ++it)
 		{
 			if (it->second->isMember(client))
-				it->second->sendToOthers(CMD_QUIT(client->getNickname(), client->getUsername(), client->getAddress()));
+				it->second->sendToOthers(CMD_QUIT(client->getNickname(), client->getUsername(), client->getAddress()), client);
 		}
 		removeClient(client);
 	}
