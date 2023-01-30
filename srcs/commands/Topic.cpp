@@ -29,7 +29,7 @@ bool	Topic::validate(const Message& msg) {
 
 	/* If +t flag is set, check is client has OP privs on target channel */
 	if (_channel->checkModes(TOPIC_SET_OP) && !_channel->checkMemberModes(_client, C_OP)) {
-		_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, "to set channel topic"));
+		_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _target, "to change the topic"));
 		return false;
 	}
 	return true;
