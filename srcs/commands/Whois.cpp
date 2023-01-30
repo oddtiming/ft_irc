@@ -71,7 +71,7 @@ void Whois::execute(const Message& msg) {
 		  _client->getNickname( ),
 		  _target->getNickname( ),
 		  std::to_string(std::time(nullptr) - _target->getLastActivityTime( )),
-		  std::to_string(std::time(nullptr) - _target->getConnectTime( ))));
+		  std::to_string(_target->getConnectTime( ))));
 		msg._client->reply(RPL_AWAY(_target->getHostname( ),
 		                            msg._client->getNickname( ),
 		                            _target->getNickname( ),
