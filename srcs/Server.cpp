@@ -275,8 +275,11 @@ void		Server::runServer(void) {
 	while (g_status == ONLINE)
 	{
 		/* Poll all open sockets for activity */
-		if (poll(_pfds.data(), _pfds.size(), 10) < 0)
+		if (poll(_pfds.data(), _pfds.size(), 10) < 0) {
+			if (g_status == OFFLINE)	// If server is terminated through SIGINT, poll will fail
+				return ;
 			throw std::runtime_error("Error when attempting to poll");
+		}
 			
 		/* Iterate through sockets to check for events */
 		for (size_t i = 0; i < _pfds.size(); i++)

@@ -9,7 +9,7 @@ extern int	g_status;
 /* General server settings */
 #define MAX_BUFFER_SIZE 512		/* Maximum read size from recv() in bytes */
 #define MAX_CHANNELS    100		/* Maximum number of channels that can exist on server */
-#define PING_INTERVAL   60		/* Interval after which to send a ping to client since their last activity */
+#define PING_INTERVAL   180		/* Interval after which to send a ping to client since their last activity */
 #define MAX_CONNECTIONS 10
 
 /* Global Modes */
