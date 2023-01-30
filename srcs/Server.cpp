@@ -331,6 +331,8 @@ void		Server::removeClient(Client* client) {
 		/* Remove ban from user to prevent stale memory pointer from remaining in _notMembers */
 		it->second->setMemberModes(client, BAN, true);
 		it->second->removeMember(client);
+		if (it->second->getIsEmpty())
+            destroyChannel(it->first);
 	}
 
 	/* Remove client socket from pollFD vector */
