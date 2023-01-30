@@ -59,7 +59,7 @@ bool Mode::executeMode(char mode, bool removeMode) {
 		return _operators(removeMode);
 	default:
 		_client->reply(ERR_UNKNOWNMODE(
-		  _server->getHostname( ), _client->getNickname( ), std::string(mode, 1)));
+		  _server->getHostname( ), _client->getNickname( ), std::string(1, mode)));
 	}
 	return false;
 }
