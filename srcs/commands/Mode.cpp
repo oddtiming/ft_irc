@@ -108,7 +108,7 @@ void Mode::execute(const Message &msg) {
 		  CMD_MODE(_buildPrefix(msg), _target, _reply));
 	else if (_targetType == USER)
 		_client->reply(CMD_MODE(_buildPrefix(msg), _target, _reply));
-	// FIXME: RFC 2812 seems to suggest that the correct reply is RPL_UMODEIS
+	// NOTE: RFC 2812 seems to suggest that the correct reply is RPL_UMODEIS
 	// (221), but our tests so far suggest that the answer recognized by clients
 	// is what corresponds to our CMD_MODE reply
 }
