@@ -74,7 +74,7 @@ Server::~Server() {
 	
 	/* Delete channels */
 	std::map<std::string, Channel *>::iterator it_ch = _channels.begin();
-	for (; it_ch != _channels.end(); it_ch++)
+	for (; it_ch != _channels.end(); ++it_ch)
 		delete (it_ch->second);
 	_channels.clear();
 
@@ -325,16 +325,15 @@ void		Server::removeClient(Client* client) {
 
 	/* Remove client from all channels */
 	std::map<std::string, Channel *>::iterator it = _channels.begin();
-	for (; it != _channels.end(); ++it)
+	while (it != _channels.end())
 	{
 		/* Remove ban from user to prevent stale memory pointer from remaining in _notMembers */
 		it->second->setMemberModes(client, BAN, true);
 		it->second->removeMember(client);
 		if (it->second->getIsEmpty())
-		{
-            destroyChannel(it->first);
-			it = _channels.begin();
-		}
+            destroyChannel(it++->first);
+		else
+			++it;
 	}
 
 	/* Remove client socket from pollFD vector */
