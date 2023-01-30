@@ -125,7 +125,7 @@ void		Server::initializeConnection(void) {
 	_ip = ip;
 	
 	/* Set Server Status */
-	_status = ONLINE;
+	g_status = ONLINE;
 
 	/* Set up pollFDs */
 	pollfd pfd = {.fd = _socket, .events = POLLIN, .revents = 0};
@@ -272,7 +272,7 @@ void		Server::executeCommand(const Message & msg) {
 
 /* Main server loop */
 void		Server::runServer(void) {
-	while (_status == ONLINE)
+	while (g_status == ONLINE)
 	{
 		/* Poll all open sockets for activity */
 		if (poll(_pfds.data(), _pfds.size(), 10) < 0)
@@ -307,15 +307,14 @@ void		Server::runServer(void) {
 
 /* Stop server and send shutdown message to all clients */
 void		Server::stopServer(void) {
-	 _status = OFFLINE;
-	 std::vector<Client*>::iterator it = _clients.begin();
-	 for (; it != _clients.end(); ++it)
-	 {
-		Client* client = *it;
-		client->reply(ERR_SHUTDOWN(client->getUsername(), client->getAddress()));
-	 }
+	g_status = OFFLINE;
+	std::vector<Client*>::iterator it = _clients.begin();
+	for (; it != _clients.end(); ++it)
+	{
+	Client* client = *it;
+	client->reply(ERR_SHUTDOWN(client->getUsername(), client->getAddress()));
+	}
 }
-
 
 /*******************************/
 /*      Client Management      */
@@ -332,7 +331,10 @@ void		Server::removeClient(Client* client) {
 		it->second->setMemberModes(client, BAN, true);
 		it->second->removeMember(client);
 		if (it->second->getIsEmpty())
+		{
             destroyChannel(it->first);
+			it = _channels.begin();
+		}
 	}
 
 	/* Remove client socket from pollFD vector */

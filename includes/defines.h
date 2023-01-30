@@ -3,6 +3,9 @@
 
 #pragma once
 
+extern int	g_status;
+
+
 /* General server settings */
 #define MAX_BUFFER_SIZE 512		/* Maximum read size from recv() in bytes */
 #define MAX_CHANNELS    100		/* Maximum number of channels that can exist on server */

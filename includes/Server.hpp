@@ -49,6 +49,7 @@ class Server {
 		void								initializeCommands();
 		void								runServer();
 		void								stopServer();
+		void								stopServer(int signum);	/* Overload for signal() */
 		void								handleConnections();
 		void								handleMessages(Client* client);
 		void								executeCommand(const Message & msg);
@@ -56,7 +57,6 @@ class Server {
 		/*************************/
 		/*   Client Management   */
 		/*************************/
-		bool								doesUserExist(const std::string user) const;
 		bool								doesNickExist(const std::string nick) const;
 		Client* 							getClientPtr(const std::string& client);
 		Channel*							getChannelPtr(const std::string& channel);
@@ -76,7 +76,6 @@ class Server {
 		std::string							_servername;
 		std::string							_hostname;
 		std::string							_password;
-		int									_status;
 		const std::time_t					_timeStart;
 
 		/* Networking Data */
