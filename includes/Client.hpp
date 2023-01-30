@@ -72,7 +72,6 @@ class Client {
 		char							_globalModes;		/* Mode flags stored using bitmask */
 		std::string						_inputBuffer;		/* Raw data received from socket reads */
 		std::string						_awayMessage;
-		// bool							_isAway;
 		bool							_isRegistered;
 		bool							_isPassValidated;
 
@@ -83,8 +82,7 @@ class Client {
 
 		struct sockaddr_in				_address;
 		std::string						_hostname;
-		
-		/* Private Member Functions */
+
 };
 
 #endif
