@@ -23,7 +23,7 @@ bool	Kick::validate(const Message& msg) {
 	_channel = _server->getChannelPtr(_targetChannel);
 
 	/* Check if client has OP privs for specified channel */
-	if (_channel->checkMemberModes(_client, C_OP)) {
+	if (!_channel->checkMemberModes(_client, C_OP)) {
 		_client->reply(ERR_CHANOPRIVSNEEDED(_server->getHostname(), _client->getNickname(), _targetChannel, "kick"));
 		return false;
 	}
