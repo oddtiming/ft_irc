@@ -6,10 +6,10 @@ It was developed in collaboration with [jgoad](https://github.com/jongoad) and [
 ## Usage
 
 - ft_irc currently only works on MacOS.
-- To build the executable, simply run
+- To launch the server, simply run
     
     ```bash
-    $> make && ./ircserv <port> <password>
+    make && ./ircserv <port> <password>
     ```
     
 
@@ -117,9 +117,9 @@ If you encounter any issues while using ft_irc, please contact us via the [Issue
     - Once this is done, set `OXFORD_APP_KEY` and `OXFORD_APP_ID` environment variables, and launch `DictBot` again.
 
   ```bash
-    $> export OXFORD_APP_ID="your_app_id"
-    $> export OXFORD_APP_KEY="your_app_key"
-    $> ./ircBot "dict"
+    export OXFORD_APP_ID="your_app_id"
+    export OXFORD_APP_KEY="your_app_key"
+    ./ircBot "dict"
   ```
 
 ### JokeBot
